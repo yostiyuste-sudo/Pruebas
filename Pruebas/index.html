@@ -1,0 +1,117 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Contactos CRM</title>
+    <link rel="stylesheet" href="{% static 'style.css' %}">
+</head>
+
+<body>
+    <h1>Mis Contactos (CRM Global)</h1>
+
+    <!-- 1. Mensaje de error (Viene de views.py de Django) -->
+    {% if error %}
+    <p class="error" id="mensajeDjango">{{ error }}</p>
+    {% endif %}
+
+    <!-- 2. Mensaje de error escondido (JS) -->
+    <p class="error" id="mensajeJS" style="display: none;"></p>
+
+    <!-- La caja grande que contiene dos columnas -->
+    <div class="contenedor">
+
+        <!-- =================== LADO IZQUIERDO: EL FORMULARIO =================== -->
+        <div class="caja-formulario">
+            <h2>Crear Contacto</h2>
+            <form method="POST" onsubmit="return validarJavascript()">
+                {% csrf_token %}
+
+                <label>Tipo de Contacto:</label>
+                <select name="tipo_contacto" required>
+                    {% for tc in tipos_contacto %}
+                    <option value="{{ tc.id }}">{{ tc.nombre_tipo }}</option>
+                    {% endfor %}
+                </select>
+
+                <label>Tipo de Identificación:</label>
+                <select name="tipo_doc" required>
+                    {% for td in tipos_doc %}
+                    <option value="{{ td.id }}">{{ td.nombre_tipo }}</option>
+                    {% endfor %}
+                </select>
+
+                <label>Documento o NIT:</label>
+                <input type="text" name="documento_nit" placeholder="Ej: 123456789" required>
+
+                <label>Nombre Completo / Razón Social:</label>
+                <input type="text" name="nombre" id="nombreId" placeholder="Ej: Juan Pérez" required>
+
+                <label>Correo Electrónico:</label>
+                <input type="email" name="correo" id="correoId" placeholder="Ej: pedro@empresa.com">
+
+                <label>Teléfono Opcional:</label>
+                <input type="text" name="telefono" id="telefonoId" placeholder="Ej: 320 000 0000">
+
+                <button type="submit">Guardar Contacto</button>
+            </form>
+        </div>
+
+        <!-- =================== LADO DERECHO: LA TABLA =================== -->
+        <div class="caja-tabla">
+            <h2>Lista de Contactos Globales</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Nombre / Razón Social</th>
+                        <th>Tipo (Rol)</th>
+                        <th>Doc/NIT</th>
+                        <th>Correo</th>
+                        <th>Teléfono</th>
+                        <th>Fecha Reg.</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for contacto in contactos %}
+                    <tr>
+                        <td style="font-weight: bold;">{{ contacto.nombre }}</td>
+                        <td>{{ contacto.tipo_contacto.nombre_tipo }}</td>
+                        <td>{{ contacto.tipo_doc.nombre_tipo }} - {{ contacto.documento_nit }}</td>
+                        <td>{{ contacto.correo|default:"Sin correo" }}</td>
+                        <td>{{ contacto.telefono|default:"Sin celular" }}</td>
+                        <td>{{ contacto.fecha_registro|date:"d/m/Y" }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="6" style="text-align: center;">No has creado ningún contacto en la base de datos de
+                            Postgres.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+
+    <!-- =================== SCRIPT JAVASCRIPT =================== -->
+    <script>
+        function validarJavascript() {
+            var correoEscrito = document.getElementById("correoId").value;
+            var telefonoEscrito = document.getElementById("telefonoId").value;
+            var mensajeNormal = document.getElementById("mensajeDjango");
+            var mensajeParaJavascript = document.getElementById("mensajeJS");
+
+            if (mensajeNormal) { mensajeNormal.style.display = 'none'; }
+
+            if (correoEscrito === "" && telefonoEscrito === "") {
+                mensajeParaJavascript.innerText = "ALERTA: Debes registrar al menos un Teléfono o un Correo Eléctronico para guardar esta persona.";
+                mensajeParaJavascript.style.display = "block";
+                return false;
+            }
+            return true;
+        }
+    </script>
+</body>
+
+</html>

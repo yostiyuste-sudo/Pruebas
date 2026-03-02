@@ -1,0 +1,108 @@
+/* reseteo simple */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f0f2f5; /* Fondo gris claro */
+    margin: 20px;
+    color: #333;
+}
+
+h1 {
+    text-align: center;
+    color: #2c3e50;
+    margin-bottom: 30px;
+}
+
+/* Caja de advertencias */
+.error {
+    background-color: #ffdddd;
+    color: #d8000c;
+    padding: 10px;
+    border-left: 5px solid #d8000c;
+    border-radius: 4px;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+/* Contenedor Flexbox para tener formulario a la izq y tabla a la der */
+.contenedor {
+    display: flex;
+    gap: 20px; /* Separacion entre las dos cajas */
+    justify-content: center;
+    flex-wrap: wrap; /* Para que en celulares se baje la tabla y no se exprima */
+}
+
+/* Las dos cajas en blanco de fondo */
+.caja-formulario, .caja-tabla {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.caja-formulario {
+    width: 320px;
+}
+
+.caja-tabla {
+    flex-grow: 1; /* Esto hace que la tabla ocupe todo el espacio que sobra a la derecha */
+    min-width: 400px;
+}
+
+/* Letras de los apartados */
+label {
+    display: block;
+    margin-top: 15px;
+    font-weight: bold;
+    font-size: 14px;
+}
+
+/* inputs - Cajas de texto */
+input, select {
+    width: 100%;
+    padding: 10px;
+    margin-top: 5px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box; /* Previene desbordamiento en bordes */
+}
+
+/* Diseño del boton enviar */
+button {
+    width: 100%;
+    margin-top: 20px;
+    background-color: #3498db;
+    color: white;
+    border: none;
+    padding: 12px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: bold;
+    border-radius: 4px;
+    transition: 0.3s; /* animacion sencilla al poner el mouse encima */
+}
+
+button:hover {
+    background-color: #2980b9;
+}
+
+/* --- ESTILOS DE LA TABLA --- */
+table {
+    width: 100%;
+    border-collapse: collapse; /* Quita dobles lineas en los bordes */
+    margin-top: 10px;
+}
+
+th, td {
+    border: 1px solid #ddd;
+    padding: 12px;
+    text-align: left;
+}
+
+th {
+    background-color: #34495e; /* Fila negra arriba */
+    color: white;
+}
+
+tr:nth-child(even) {
+    background-color: #f9f9f9; /* Fila grisecita para modo "zebra" y leer facil */
+}
