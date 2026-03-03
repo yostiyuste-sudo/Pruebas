@@ -1,0 +1,149 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Editar Contacto - CRM</title>
+    <link rel="stylesheet" href="{% static 'style.css' %}">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #f4f6f9;
+            color: #333;
+            padding: 40px;
+        }
+
+        .caja-editar {
+            max-width: 600px;
+            margin: auto;
+            background: white;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 20px;
+        }
+
+        label {
+            font-weight: bold;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        input {
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        .sub-label {
+            font-size: 11px;
+            color: #777;
+            margin-top: 4px;
+        }
+
+        button {
+            background-color: #f39c12;
+            color: white;
+            border: none;
+            padding: 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            width: 100%;
+            transition: background 0.3s;
+            margin-top: 10px;
+        }
+
+        button:hover {
+            background-color: #d68910;
+        }
+
+        .link-volver {
+            display: block;
+            text-align: center;
+            margin-top: 20px;
+            text-decoration: none;
+            color: #3498db;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="caja-editar">
+        <h1>Actualizar Información de Contacto</h1>
+        <p style="text-align: center; color: #666; margin-bottom: 30px;">Edite todos los campos necesarios para mantener
+            la base de datos actualizada.</p>
+
+        {% if error %}<div
+            style="color: red; background: #fee; padding: 10px; border-radius: 5px; margin-bottom: 20px;">{{ error }}
+        </div>{% endif %}
+
+        <form method="POST">
+            {% csrf_token %}
+
+            <div class="form-group">
+                <label>Número de Identificación (Doc/NIT)</label>
+                <input type="text" name="documento_nit" value="{{ c.documento_nit }}" required>
+                <span class="sub-label">Sin puntos ni guiones</span>
+            </div>
+
+            {% if c.nombre %}
+            <div class="form-group">
+                <label>Nombre(s)</label>
+                <input type="text" name="nombre" value="{{ c.nombre|default:'' }}">
+            </div>
+            <div class="form-group">
+                <label>Apellido(s)</label>
+                <input type="text" name="apellido" value="{{ c.apellido|default:'' }}">
+            </div>
+            {% else %}
+            <div class="form-group">
+                <label>Razón Social (Nombre Legal Empresa)</label>
+                <input type="text" name="razon_social" value="{{ c.razon_social|default:'' }}">
+                <span class="sub-label">¿Qué es? Es el nombre oficial bajo el cual está registrada la empresa.</span>
+            </div>
+            {% endif %}
+
+            <div class="form-group">
+                <label>Correo Electrónico</label>
+                <input type="email" name="correo" value="{{ c.correo|default:'' }}">
+            </div>
+
+            <div class="form-group">
+                <label>Número de Celular</label>
+                <input type="text" name="celular" value="{{ c.celular|default:'' }}">
+            </div>
+
+            <div class="form-group">
+                <label>Ciudad</label>
+                <input type="text" name="ciudad" value="{{ c.ciudad|default:'' }}">
+            </div>
+
+            <div class="form-group">
+                <label>Dirección</label>
+                <input type="text" name="direccion" value="{{ c.direccion|default:'' }}">
+            </div>
+
+            <button type="submit">ACTUALIZAR DATOS</button>
+            <a href="/" class="link-volver">&larr; Volver al listado principal</a>
+        </form>
+    </div>
+
+</body>
+
+</html>

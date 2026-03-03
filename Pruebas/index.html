@@ -4,110 +4,295 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>Contactos CRM</title>
+    <title>Constructora CRM</title>
     <link rel="stylesheet" href="{% static 'style.css' %}">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #f4f6f9;
+            color: #333;
+            margin: 0;
+            padding: 15px;
+        }
+
+        .nav-link {
+            text-align: right;
+            margin-bottom: 20px;
+        }
+
+        .nav-link a {
+            text-decoration: none;
+            color: #007bff;
+            font-weight: bold;
+            padding: 8px 15px;
+            border: 1px solid #007bff;
+            border-radius: 4px;
+            font-size: 13px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 20px;
+            font-size: 22px;
+        }
+
+        .error {
+            background-color: #f8d7da;
+            color: #721c24;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 15px;
+            font-size: 14px;
+        }
+
+        .contenedor {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            max-width: 1000px;
+            margin: auto;
+        }
+
+        .caja {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        h2 {
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 8px;
+            margin-top: 0;
+            color: #3498db;
+            font-size: 17px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group.full-width {
+            grid-column: span 2;
+        }
+
+        label {
+            font-weight: bold;
+            margin-bottom: 4px;
+            font-size: 13px;
+            color: #555;
+        }
+
+        input,
+        select {
+            padding: 9px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+            box-sizing: border-box;
+        }
+
+        button {
+            background-color: #27ae60;
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 15px;
+            font-weight: bold;
+            width: 100%;
+            margin-top: 5px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+            font-size: 13px;
+        }
+
+        th,
+        td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        th {
+            background-color: #2c3e50;
+            color: white;
+        }
+
+        .badge {
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: bold;
+        }
+
+        .badge-natural {
+            background-color: #e3f2fd;
+            color: #1976d2;
+        }
+
+        .badge-juridica {
+            background-color: #f3e5f5;
+            color: #7b1fa2;
+        }
+
+        .btn-edit {
+            color: #f39c12;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .btn-status {
+            color: #e74c3c;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .btn-activate {
+            color: #27ae60;
+            text-decoration: none;
+            font-weight: bold;
+        }
+    </style>
 </head>
 
 <body>
-    <h1>Mis Contactos (CRM Global)</h1>
-
-    <!-- 1. Mensaje de error (Viene de views.py de Django) -->
-    {% if error %}
-    <p class="error" id="mensajeDjango">{{ error }}</p>
-    {% endif %}
-
-    <!-- 2. Mensaje de error escondido (JS) -->
-    <p class="error" id="mensajeJS" style="display: none;"></p>
-
-    <!-- La caja grande que contiene dos columnas -->
+    <div class="nav-link"><a href="/interacciones/">Ver Interacciones &rarr;</a></div>
+    <h1>Datos de Contactos</h1>
+    {% if error %}<div class="error">{{ error }}</div>{% endif %}
+    <div id="mensajeJS" class="error" style="display:none;"></div>
     <div class="contenedor">
-
-        <!-- =================== LADO IZQUIERDO: EL FORMULARIO =================== -->
-        <div class="caja-formulario">
-            <h2>Crear Contacto</h2>
+        <div class="caja">
+            <h2>Datos del Contacto</h2>
             <form method="POST" onsubmit="return validarJavascript()">
                 {% csrf_token %}
-
-                <label>Tipo de Contacto:</label>
-                <select name="tipo_contacto" required>
-                    {% for tc in tipos_contacto %}
-                    <option value="{{ tc.id }}">{{ tc.nombre_tipo }}</option>
-                    {% endfor %}
-                </select>
-
-                <label>Tipo de Identificación:</label>
-                <select name="tipo_doc" required>
-                    {% for td in tipos_doc %}
-                    <option value="{{ td.id }}">{{ td.nombre_tipo }}</option>
-                    {% endfor %}
-                </select>
-
-                <label>Documento o NIT:</label>
-                <input type="text" name="documento_nit" placeholder="Ej: 123456789" required>
-
-                <label>Nombre Completo / Razón Social:</label>
-                <input type="text" name="nombre" id="nombreId" placeholder="Ej: Juan Pérez" required>
-
-                <label>Correo Electrónico:</label>
-                <input type="email" name="correo" id="correoId" placeholder="Ej: pedro@empresa.com">
-
-                <label>Teléfono Opcional:</label>
-                <input type="text" name="telefono" id="telefonoId" placeholder="Ej: 320 000 0000">
-
-                <button type="submit">Guardar Contacto</button>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Tipo Persona</label>
+                        <select name="tipo_contacto" id="tipoSelect" onchange="cambiar()" required>
+                            {% for tc in tipos_contacto %}
+                            <option value="{{ tc.id }}">{{ tc.nombre_tipo }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Tipo Doc</label>
+                        <select name="tipo_doc" required>
+                            {% for td in tipos_doc %}
+                            <option value="{{ td.id }}">{{ td.nombre_tipo }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group" style="margin-bottom: 15px;">
+                    <label>Identificación (Doc o NIT)</label>
+                    <input type="text" name="documento_nit" required>
+                </div>
+                <div id="sn" class="form-grid">
+                    <div class="form-group"><label>Nombres</label><input type="text" name="nombre" id="n"></div>
+                    <div class="form-group"><label>Apellidos</label><input type="text" name="apellido"></div>
+                </div>
+                <div id="sj" class="form-grid" style="display:none;">
+                    <div class="form-group full-width"><label>Razón Social</label><input type="text" name="razon_social"
+                            id="rs"></div>
+                </div>
+                <div class="form-grid">
+                    <div class="form-group"><label>Correo</label><input type="email" name="correo" id="c"></div>
+                    <div class="form-group"><label>Celular</label><input type="text" name="celular" id="cel"></div>
+                </div>
+                <div class="form-grid">
+                    <div class="form-group"><label>Ciudad</label><input type="text" name="ciudad"></div>
+                    <div class="form-group"><label>Dirección</label><input type="text" name="direccion"></div>
+                </div>
+                <button type="submit">GUARDAR CONTACTO</button>
             </form>
         </div>
-
-        <!-- =================== LADO DERECHO: LA TABLA =================== -->
-        <div class="caja-tabla">
-            <h2>Lista de Contactos Globales</h2>
+        <div class="caja">
+            <h2>Contactos Activos</h2>
             <table>
                 <thead>
                     <tr>
+                        <th>Doc</th>
+                        <th>Tipo</th>
                         <th>Nombre / Razón Social</th>
-                        <th>Tipo (Rol)</th>
-                        <th>Doc/NIT</th>
-                        <th>Correo</th>
-                        <th>Teléfono</th>
-                        <th>Fecha Reg.</th>
+                        <th>Contacto</th>
+                        <th>Acción</th>
                     </tr>
                 </thead>
                 <tbody>
-                    {% for contacto in contactos %}
+                    {% for c in activos %}
                     <tr>
-                        <td style="font-weight: bold;">{{ contacto.nombre }}</td>
-                        <td>{{ contacto.tipo_contacto.nombre_tipo }}</td>
-                        <td>{{ contacto.tipo_doc.nombre_tipo }} - {{ contacto.documento_nit }}</td>
-                        <td>{{ contacto.correo|default:"Sin correo" }}</td>
-                        <td>{{ contacto.telefono|default:"Sin celular" }}</td>
-                        <td>{{ contacto.fecha_registro|date:"d/m/Y" }}</td>
+                        <td>{{ c.documento_nit }}</td>
+                        <td>{% if c.nombre %}<span class="badge badge-natural">NATURAL</span>{% else %}<span
+                                class="badge badge-juridica">JURÍDICA</span>{% endif %}</td>
+                        <td>{% if c.nombre %}{{ c.nombre }} {{ c.apellido }}{% else %}{{ c.razon_social }}{% endif %}
+                        </td>
+                        <td>{{ c.celular|default:c.correo }}</td>
+                        <td><a href="/edit/{{ c.id }}/" class="btn-edit">Editar</a> | <a href="/status/{{ c.id }}/"
+                                class="btn-status">Inact.</a></td>
                     </tr>
                     {% empty %}
                     <tr>
-                        <td colspan="6" style="text-align: center;">No has creado ningún contacto en la base de datos de
-                            Postgres.</td>
+                        <td colspan="5" style="text-align:center;">No hay registros.</td>
                     </tr>
                     {% endfor %}
                 </tbody>
             </table>
         </div>
-
+        <div class="caja" style="opacity:0.8;">
+            <h2>Inactivos</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Doc</th>
+                        <th>Nombre</th>
+                        <th>Acción</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for c in inactivos %}
+                    <tr>
+                        <td>{{ c.documento_nit }}</td>
+                        <td>{% if c.nombre %}{{ c.nombre }} {{ c.apellido }}{% else %}{{ c.razon_social }}{% endif %}
+                        </td>
+                        <td><a href="/status/{{ c.id }}/" class="btn-activate">Activar</a></td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="3" style="text-align:center;">Ninguno.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
     </div>
-
-    <!-- =================== SCRIPT JAVASCRIPT =================== -->
     <script>
+        function cambiar() {
+            var s = document.getElementById("tipoSelect");
+            var t = s.options[s.selectedIndex].text;
+            document.getElementById("sn").style.display = t.includes("Jurídica") ? "none" : "grid";
+            document.getElementById("sj").style.display = t.includes("Jurídica") ? "grid" : "none";
+        }
         function validarJavascript() {
-            var correoEscrito = document.getElementById("correoId").value;
-            var telefonoEscrito = document.getElementById("telefonoId").value;
-            var mensajeNormal = document.getElementById("mensajeDjango");
-            var mensajeParaJavascript = document.getElementById("mensajeJS");
-
-            if (mensajeNormal) { mensajeNormal.style.display = 'none'; }
-
-            if (correoEscrito === "" && telefonoEscrito === "") {
-                mensajeParaJavascript.innerText = "ALERTA: Debes registrar al menos un Teléfono o un Correo Eléctronico para guardar esta persona.";
-                mensajeParaJavascript.style.display = "block";
-                return false;
+            if (document.getElementById("c").value === "" && document.getElementById("cel").value === "") {
+                var m = document.getElementById("mensajeJS");
+                m.innerText = "Error: Ingrese Correo o Celular.";
+                m.style.display = "block"; window.scrollTo(0, 0); return false;
             }
             return true;
         }
