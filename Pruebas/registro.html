@@ -1,0 +1,301 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro - Constructora Dyco</title>
+    <meta name="description" content="Crea tu cuenta en el CRM de Constructora Dyco.">
+    <link rel="stylesheet" href="{% static 'auth.css' %}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body class="auth-page">
+
+    <!-- ═══════════════════════════════════════════
+         FONDO: SOLO AQUÍ SE APLICA EL BLUR
+    ════════════════════════════════════════════ -->
+    <div class="auth-bg">
+        <div class="auth-bg-image" id="bgImage"></div>
+        <div class="auth-bg-overlay"></div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════
+         TARJETA CENTRAL — 100% NÍTIDA
+    ════════════════════════════════════════════ -->
+    <div class="auth-center">
+        <div class="glass-card glass-card--tall">
+
+            <!-- ── Panel izquierdo: carrusel sin blur ── -->
+            <div class="glass-panel-left">
+                <div class="carousel-track">
+                    <div class="carousel-slide active" style="background-image: url('{% static 'img/slide1.png' %}')">
+                    </div>
+                    <div class="carousel-slide" style="background-image: url('{% static 'img/slide2.png' %}')"></div>
+                    <div class="carousel-slide" style="background-image: url('{% static 'img/slide3.png' %}')"></div>
+                </div>
+
+                <div class="carousel-overlay">
+                    <div class="carousel-brand">
+                        <img src="{% static 'img/logo_dyco.png' %}" alt="Logo Dyco" class="carousel-logo">
+                        <h2 class="carousel-title">Constructora Dyco</h2>
+                        <p class="carousel-subtitle">Únete a nuestro equipo de gestión</p>
+                    </div>
+                    <div class="carousel-dots" id="carouselDots">
+                        <button class="dot active" data-index="0" aria-label="Proyecto 1"></button>
+                        <button class="dot" data-index="1" aria-label="Proyecto 2"></button>
+                        <button class="dot" data-index="2" aria-label="Proyecto 3"></button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ── Panel derecho: formulario de registro ── -->
+            <div class="glass-panel-right">
+
+                <div class="form-header">
+                    <div class="form-icon form-icon--register">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                            <circle cx="8.5" cy="7" r="4"></circle>
+                            <line x1="20" y1="8" x2="20" y2="14"></line>
+                            <line x1="23" y1="11" x2="17" y2="11"></line>
+                        </svg>
+                    </div>
+                    <h1 class="form-title">Crear Cuenta</h1>
+                    <p class="form-subtitle">Regístrate en Constructora Dyco</p>
+                </div>
+
+                {% if error %}
+                <div class="auth-alert auth-alert-error">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <line x1="12" y1="8" x2="12" y2="12"></line>
+                        <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                    </svg>
+                    {{ error }}
+                </div>
+                {% endif %}
+
+                {% if success %}
+                <div class="auth-alert auth-alert-success">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="20 6 9 17 4 12"></polyline>
+                    </svg>
+                    {{ success }}
+                </div>
+                {% endif %}
+
+                <form method="POST" class="auth-form" id="registerForm">
+                    {% csrf_token %}
+
+                    <!-- Nombre de usuario -->
+                    <div class="field-group">
+                        <label class="field-label" for="usuario">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
+                                stroke-linejoin="round">
+                                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                                <circle cx="12" cy="7" r="4"></circle>
+                            </svg>
+                            Nombre de Usuario
+                        </label>
+                        <div class="field-wrap">
+                            <input type="text" name="usuario" id="usuario" class="field-input"
+                                placeholder="Ej: paula.garcia" required autocomplete="username">
+                        </div>
+                    </div>
+
+                    <!-- Email -->
+                    <div class="field-group">
+                        <label class="field-label" for="email">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
+                                stroke-linejoin="round">
+                                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z">
+                                </path>
+                                <polyline points="22,6 12,13 2,6"></polyline>
+                            </svg>
+                            Correo Electrónico
+                        </label>
+                        <div class="field-wrap">
+                            <input type="email" name="email" id="email" class="field-input"
+                                placeholder="ejemplo@correo.com" required autocomplete="email">
+                        </div>
+                    </div>
+
+                    <!-- Rol -->
+                    <div class="field-group">
+                        <label class="field-label" for="rol_id">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
+                                stroke-linejoin="round">
+                                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                                <circle cx="9" cy="7" r="4"></circle>
+                                <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                                <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                            </svg>
+                            Selecciona tu Rol
+                        </label>
+                        <div class="field-wrap">
+                            <select name="rol_id" id="rol_id" class="field-input" required>
+                                <option value=""> Seleccionar Rol </option>
+                                {% for r in roles %}
+                                <option value="{{ r.id }}">{{ r.nombre_rol }}</option>
+                                {% endfor %}
+                            </select>
+                            <span class="field-arrow">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24"
+                                    fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
+                                    stroke-linejoin="round">
+                                    <polyline points="6 9 12 15 18 9"></polyline>
+                                </svg>
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Contraseña + medidor -->
+                    <div class="field-group">
+                        <label class="field-label" for="password">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
+                                stroke-linejoin="round">
+                                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                                <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                            </svg>
+                            Contraseña
+                        </label>
+                        <div class="field-wrap">
+                            <input type="password" name="password" id="password" class="field-input"
+                                placeholder="••••••••" required autocomplete="new-password">
+                            <button type="button" class="field-eye" id="togglePwd" aria-label="Mostrar contraseña">
+                                <svg id="eyeIcon" xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                                    viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                    stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                    <circle cx="12" cy="12" r="3"></circle>
+                                </svg>
+                            </button>
+                        </div>
+                        <!-- Medidor fuerza -->
+                        <div class="pwd-strength">
+                            <div class="pwd-bar" id="pwdBar"></div>
+                        </div>
+                        <p class="pwd-hint" id="pwdHint"></p>
+                    </div>
+
+                    <button type="submit" class="btn-auth btn-auth--register" id="btnRegister">
+                        <span>Crear mi cuenta</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="20 6 9 17 4 12"></polyline>
+                        </svg>
+                    </button>
+                </form>
+
+                <div class="form-footer">
+                    <p>¿Ya tienes cuenta? <a href="/login/" class="form-link">Inicia sesión aquí</a></p>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        // ═══════════════════════════════════════════════
+        // CARRUSEL
+        // ═══════════════════════════════════════════════
+        const slides = document.querySelectorAll('.carousel-slide');
+        const dots = document.querySelectorAll('.dot');
+        const bgImage = document.getElementById('bgImage');
+
+        const imgSrcs = [
+            "{% static 'img/slide1.png' %}",
+            "{% static 'img/slide2.png' %}",
+            "{% static 'img/slide3.png' %}"
+        ];
+
+        let current = 0;
+        bgImage.style.backgroundImage = `url('${imgSrcs[0]}')`;
+
+        function goTo(idx) {
+            slides[current].classList.remove('active');
+            dots[current].classList.remove('active');
+            current = idx;
+            slides[current].classList.add('active');
+            dots[current].classList.add('active');
+            bgImage.style.backgroundImage = `url('${imgSrcs[current]}')`;
+        }
+
+        let timer = setInterval(() => goTo((current + 1) % slides.length), 7000);
+
+        dots.forEach(dot => {
+            dot.addEventListener('click', () => {
+                clearInterval(timer);
+                goTo(parseInt(dot.dataset.index));
+                timer = setInterval(() => goTo((current + 1) % slides.length), 7000);
+            });
+        });
+
+        // ═══════════════════════════════════════════════
+        // TOGGLE CONTRASEÑA
+        // ═══════════════════════════════════════════════
+        const togglePwd = document.getElementById('togglePwd');
+        const pwdInput = document.getElementById('password');
+        const eyeIcon = document.getElementById('eyeIcon');
+
+        const EYE_OPEN = `<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle>`;
+        const EYE_CLOSED = `<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line>`;
+
+        togglePwd.addEventListener('click', () => {
+            const visible = pwdInput.type === 'text';
+            pwdInput.type = visible ? 'password' : 'text';
+            eyeIcon.innerHTML = visible ? EYE_OPEN : EYE_CLOSED;
+            togglePwd.setAttribute('aria-label', visible ? 'Mostrar contraseña' : 'Ocultar contraseña');
+        });
+
+        // ═══════════════════════════════════════════════
+        // MEDIDOR DE FUERZA DE CONTRASEÑA
+        // ═══════════════════════════════════════════════
+        const pwdBar = document.getElementById('pwdBar');
+        const pwdHint = document.getElementById('pwdHint');
+
+        pwdInput.addEventListener('input', () => {
+            const val = pwdInput.value;
+            if (!val) { pwdBar.style.width = '0'; pwdHint.textContent = ''; return; }
+
+            let score = 0;
+            if (val.length >= 8) score++;
+            if (/[A-Z]/.test(val)) score++;
+            if (/[0-9]/.test(val)) score++;
+            if (/[^A-Za-z0-9]/.test(val)) score++;
+
+            const levels = [
+                { pct: '25%', color: '#ef4444', text: 'Muy débil' },
+                { pct: '50%', color: '#f97316', text: 'Débil' },
+                { pct: '75%', color: '#eab308', text: 'Aceptable' },
+                { pct: '100%', color: '#22c55e', text: 'Segura ✓' },
+            ];
+
+            const lvl = levels[Math.max(0, score - 1)];
+            pwdBar.style.width = lvl.pct;
+            pwdBar.style.background = lvl.color;
+            pwdHint.textContent = lvl.text;
+            pwdHint.style.color = lvl.color;
+        });
+
+        // ═══════════════════════════════════════════════
+        // ANIMACIÓN BOTÓN AL ENVIAR
+        // ═══════════════════════════════════════════════
+        document.getElementById('registerForm').addEventListener('submit', function () {
+            const btn = document.getElementById('btnRegister');
+            btn.classList.add('loading');
+            btn.querySelector('span').textContent = 'Registrando...';
+        });
+    </script>
+</body>
+
+</html>

@@ -25,4 +25,7 @@ urlpatterns = [
     path('edit/<int:id_contacto>/', views.editar_contacto, name='editar_contacto'),
     path('status/<int:id_contacto>/', views.cambiar_estado, name='cambiar_estado'),
     path('inter_del/<int:id_inter>/', views.eliminar_interaccion, name='eliminar_interaccion'),
+    path('login/', views.login_view, name='login'),
+    path('logout/', views.logout_view, name='logout'),
+    path('registro/', views.registro_view, name='registro'),
 ]
