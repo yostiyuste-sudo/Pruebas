@@ -4,251 +4,167 @@
 
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Interacciones - CRM</title>
     <link rel="stylesheet" href="{% static 'style.css' %}">
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
-    <style>
-        body {
-            font-family: 'Roboto', sans-serif;
-            background-color: #f4f6f9;
-            color: #333;
-            margin: 0;
-            padding: 20px;
-        }
-
-        .nav-link {
-            text-align: right;
-            margin-bottom: 20px;
-        }
-
-        .nav-link a {
-            text-decoration: none;
-            color: #007bff;
-            font-weight: bold;
-            padding: 10px 20px;
-            border: 1px solid #007bff;
-            border-radius: 5px;
-            transition: all 0.3s;
-        }
-
-        .nav-link a:hover {
-            background-color: #007bff;
-            color: white;
-        }
-
-        h1 {
-            text-align: center;
-            color: #2c3e50;
-            margin-bottom: 20px;
-            font-size: 24px;
-        }
-
-        .error {
-            background-color: #f8d7da;
-            color: #721c24;
-            padding: 10px;
-            border-radius: 5px;
-            margin-bottom: 20px;
-            border: 1px solid #f5c6cb;
-        }
-
-        .contenedor {
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-            max-width: 1000px;
-            margin: auto;
-        }
-
-        .caja {
-            background: white;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        }
-
-        h2 {
-            border-bottom: 2px solid #3498db;
-            padding-bottom: 8px;
-            margin-top: 0;
-            color: #3498db;
-            font-size: 18px;
-        }
-
-        .form-group {
-            display: flex;
-            flex-direction: column;
-            margin-bottom: 15px;
-        }
-
-        label {
-            font-weight: bold;
-            margin-bottom: 5px;
-            font-size: 13px;
-        }
-
-        input,
-        select,
-        textarea {
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            font-size: 14px;
-            width: 100%;
-            box-sizing: border-box;
-        }
-
-        button {
-            background-color: #27ae60;
-            color: white;
-            border: none;
-            padding: 12px;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 15px;
-            font-weight: bold;
-            width: 100%;
-            transition: background 0.3s;
-        }
-
-        button:hover {
-            background-color: #219150;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 10px;
-            background: white;
-            font-size: 13px;
-        }
-
-        th,
-        td {
-            padding: 12px;
-            text-align: left;
-            border-bottom: 1px solid #eee;
-        }
-
-        th {
-            background-color: #2c3e50;
-            color: white;
-        }
-
-        .badge-ok {
-            background-color: #d4edda;
-            color: #155724;
-            padding: 4px 8px;
-            border-radius: 4px;
-            font-weight: bold;
-            font-size: 11px;
-        }
-
-        .badge-no {
-            background-color: #f8d7da;
-            color: #721c24;
-            padding: 4px 8px;
-            border-radius: 4px;
-            font-weight: bold;
-            font-size: 11px;
-        }
-
-        .btn-del {
-            color: #e74c3c;
-            text-decoration: none;
-            font-weight: bold;
-        }
-    </style>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Inter:wght@400;500;600&display=swap"
+        rel="stylesheet">
+    <script src="{% static 'js/validaciones.js' %}"></script>
 </head>
 
 <body>
-    <div class="nav-link"><a href="/">&larr; Volver</a></div>
-    <h1>Gestión de Interacciones</h1>
-
-    {% if error %}<div class="error">{{ error }}</div>{% endif %}
-    <div id="msgJS" class="error" style="display:none;"></div>
-
-    <div class="contenedor">
-        <div class="caja" style="max-width: 450px; margin: auto; width: 100%;">
-            <h2>Nueva Gestión</h2>
-            <form method="POST" onsubmit="return val()">
-                {% csrf_token %}
-                <div class="form-group">
-                    <label>Contacto</label>
-                    <select name="contacto" id="contId" required>
-                        <option value="">-- Seleccionar --</option>
-                        {% for c in contactos %}
-                        <option value="{{ c.id }}">
-                            {% if c.nombre %}{{ c.nombre }} {{ c.apellido }}{% else %}{{ c.razon_social }}{% endif %}
-                        </option>
-                        {% endfor %}
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label>Canal</label>
-                    <select name="tipo_interaccion">
-                        {% for t in tipos %}<option value="{{ t.id }}">{{ t.nombre_tipo }}</option>{% endfor %}
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label>Detalle</label>
-                    <textarea name="detalle" id="detId" rows="3" placeholder="Resumen de la charla..."></textarea>
-                </div>
-                <div class="form-group" style="flex-direction: row; align-items: center; gap: 8px;">
-                    <input type="checkbox" name="es_exitosa" style="width: auto;">
-                    <label style="margin-bottom: 0;">¿Interacción exitosa?</label>
-                </div>
-                <button type="submit">GUARDAR GESTIÓN</button>
-            </form>
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <div class="logo-icon">C</div>
+            <div class="logo-text">CONSTRUCTORA CRM</div>
         </div>
 
-        <div class="caja">
-            <h2>HISTORIAL DE ACTIVIDADES</h2>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Fecha</th>
-                        <th>Cliente</th>
-                        <th>Canal</th>
-                        <th>Estado</th>
-                        <th>Acción</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for inter in interacciones %}
-                    <tr>
-                        <td>{{ inter.fecha_interaccion|date:"d/m/Y H:i" }}</td>
-                        <td style="font-weight: bold;">
-                            {% if inter.contacto.nombre %}
-                            {{ inter.contacto.nombre }} {{ inter.contacto.apellido }}
-                            {% else %}
-                            {{ inter.contacto.razon_social }}
-                            {% endif %}
-                        </td>
-                        <td>{{ inter.tipo_interaccion.nombre_tipo }}</td>
-                        <td>
-                            {% if inter.es_exitosa %}<span class="badge-ok">ÉXITO</span>{% else %}<span
-                                class="badge-no">PENDIENTE</span>{% endif %}
-                        </td>
-                        <td><a href="/inter_del/{{ inter.id }}/" class="btn-del"
-                                onclick="return confirm('¿Eliminar?')">Borrar</a></td>
-                    </tr>
-                    {% empty %}
-                    <tr>
-                        <td colspan="5" style="text-align: center; color: #999;">Sin registros.</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+        <div class="user-profile">
+            <div class="user-info">
+                <span class="user-name">{{ usuario_logueado.nombre_usuario }}</span>
+                <span class="user-role">{{ usuario_logueado.rol.nombre_rol }}</span>
+            </div>
         </div>
-    </div>
+
+        <nav class="sidebar-nav">
+            <a href="/" class="nav-item">
+                <span class="nav-icon">👤</span>
+                <span class="nav-text">Contactos</span>
+            </a>
+            <a href="/interacciones/" class="nav-item active">
+                <span class="nav-icon">💬</span>
+                <span class="nav-text">Interacciones</span>
+            </a>
+        </nav>
+
+        <div class="sidebar-footer">
+            <a href="/logout/" class="btn-logout">
+                <span class="logout-icon">🚪</span>
+                <span>Cerrar Sesión</span>
+            </a>
+        </div>
+    </aside>
+
+    <main class="main-content">
+        <header class="page-header">
+            <h1 class="page-title">Gestión de Interacciones</h1>
+            <p class="page-subtitle">Seguimiento de comunicaciones con clientes potenciales</p>
+        </header>
+
+        {% if error %}
+        <div class="error-message"
+            style="margin-bottom: 20px; padding: 15px; background: #FFEBEE; color: #D32F2F; border-radius: 12px; border-left: 5px solid #D32F2F; font-size: 14px;">
+            {{ error }}
+        </div>
+        {% endif %}
+        <div id="msgJS" class="error-message"
+            style="display:none; margin-bottom: 20px; padding: 15px; background: #FFEBEE; color: #D32F2F; border-radius: 12px; border-left: 5px solid #D32F2F; font-size: 14px;">
+        </div>
+
+        <div class="dashboard-grid" style="grid-template-columns: 1fr 1.5fr;">
+            <!-- Nueva Gestión -->
+            <section class="caja">
+                <h2>Registrar Actividad</h2>
+                <form method="POST" onsubmit="return validarInter()">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <label>Seleccionar Cliente / Prospecto</label>
+                        <select name="contacto" id="contId" required>
+                            <option value="">-- Elige un contacto activo --</option>
+                            {% for c in contactos %}
+                            <option value="{{ c.id }}">
+                                {% if c.nombre %}{{ c.nombre }} {{ c.apellido }}{% else %}{{ c.razon_social }}{% endif
+                                %}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Canal de Contacto</label>
+                        <select name="tipo_interaccion">
+                            {% for t in tipos %}
+                            <option value="{{ t.id }}">{{ t.nombre_tipo }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Detalle de la Gestión Comercial</label>
+                        <textarea name="detalle" id="detId" rows="5"
+                            placeholder="Resume lo hablado con el cliente..."></textarea>
+                    </div>
+
+                    <div class="form-group"
+                        style="display: flex; align-items: center; gap: 12px; background: var(--bg-light); padding: 15px; border-radius: 12px; cursor: pointer;">
+                        <input type="checkbox" name="es_exitosa" style="width: 20px; height: 20px; cursor: pointer;">
+                        <label style="margin-bottom: 0; cursor: pointer;">¿Se cerró con éxito o hay interés
+                            real?</label>
+                    </div>
+
+                    <button type="submit">REGISTRAR EN EL HISTORIAL</button>
+                </form>
+            </section>
+
+            <!-- Historial -->
+            <section class="caja">
+                <h2>Historial de Actividades</h2>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Fecha / Hora</th>
+                                <th>Cliente / Empresa</th>
+                                <th>Canal</th>
+                                <th>Estado</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for inter in interacciones %}
+                            <tr>
+                                <td style="font-size: 12px;">{{ inter.fecha_interaccion|date:"d M, Y H:i" }}</td>
+                                <td style="font-weight: 600;">
+                                    {% if inter.contacto.nombre %}{{ inter.contacto.nombre }}{% else %}{{
+                                    inter.contacto.razon_social }}{% endif %}
+                                </td>
+                                <td>{{ inter.tipo_interaccion.nombre_tipo }}</td>
+                                <td>
+                                    {% if inter.es_exitosa %}
+                                    <span class="badge" style="background-color: #E8F5E9; color: #2E7D32;">ÉXITO</span>
+                                    {% else %}
+                                    <span class="badge"
+                                        style="background-color: #FFF3E0; color: #EF6C00;">PENDIENTE</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <a href="/inter_del/{{ inter.id }}/"
+                                        onclick="return confirm('¿Seguro que deseas eliminar esta gestión?')"
+                                        class="action-link status-link">Eliminar</a>
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="5"
+                                    style="text-align: center; padding: 40px; color: var(--text-secondary);">
+                                    No hay actividades registradas aún.
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </div>
+    </main>
+
     <script>
-        function val() {
-            if (document.getElementById("contId").value === "" || document.getElementById("detId").value.trim() === "") {
+        function validarInter() {
+            if (!validarCampoRequerido(document.getElementById("contId").value) || !validarCampoRequerido(document.getElementById("detId").value)) {
                 var m = document.getElementById("msgJS");
-                m.innerText = "Complete los campos obligatorios.";
-                m.style.display = "block";
-                return false;
+                m.innerText = "Debes seleccionar un contacto y detallar la actividad.";
+                m.style.display = "block"; return false;
             }
             return true;
         }
