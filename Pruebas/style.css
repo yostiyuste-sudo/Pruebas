@@ -1,108 +1,353 @@
-/* reseteo simple */
+/* ═══════════════════════════════════════════
+   VARIABLES Y ESTILOS BASE
+   ════════════════════════════════════════════ */
+:root {
+    --rojo-primario: #D32F2F;
+    --rojo-hover: #B71C1C;
+    --blanco: #FFFFFF;
+    --gris-fondo: #F8F9FA;
+    --gris-borde: #E0E0E0;
+    --texto-principal: #333333;
+    --texto-secundario: #757575;
+    --ancho-sidebar-expandido: 260px;
+    --ancho-sidebar-contraido: 80px;
+    --sombra-suave: 0 4px 20px rgba(0, 0, 0, 0.05);
+    --transicion: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
 body {
-    font-family: Arial, sans-serif;
-    background-color: #f0f2f5; /* Fondo gris claro */
-    margin: 20px;
-    color: #333;
-}
-
-h1 {
-    text-align: center;
-    color: #2c3e50;
-    margin-bottom: 30px;
-}
-
-/* Caja de advertencias */
-.error {
-    background-color: #ffdddd;
-    color: #d8000c;
-    padding: 10px;
-    border-left: 5px solid #d8000c;
-    border-radius: 4px;
-    text-align: center;
-    margin-bottom: 20px;
-}
-
-/* Contenedor Flexbox para tener formulario a la izq y tabla a la der */
-.contenedor {
+    font-family: 'Inter', sans-serif;
+    background-color: var(--gris-fondo);
+    color: var(--texto-principal);
+    overflow-x: hidden;
     display: flex;
-    gap: 20px; /* Separacion entre las dos cajas */
-    justify-content: center;
-    flex-wrap: wrap; /* Para que en celulares se baje la tabla y no se exprima */
 }
 
-/* Las dos cajas en blanco de fondo */
-.caja-formulario, .caja-tabla {
-    background: white;
+/* ═══════════════════════════════════════════
+   BARRA LATERAL (SIDEBAR)
+   ════════════════════════════════════════════ */
+.barra-lateral {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    width: var(--ancho-sidebar-contraido);
+    background-color: var(--blanco);
+    border-right: 1px solid var(--gris-borde);
+    display: flex;
+    flex-direction: column;
+    z-index: 1000;
+    transition: var(--transicion);
+    overflow: hidden;
+}
+
+.barra-lateral:hover, 
+.barra-lateral.expandida {
+    width: var(--ancho-sidebar-expandido);
+}
+
+/* Encabezado / Logo */
+.barra-cabecera {
     padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    height: 80px;
 }
 
-.caja-formulario {
-    width: 320px;
+.logo-inicial {
+    min-width: 40px;
+    height: 40px;
+    background-color: var(--rojo-primario);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 10px;
+    font-weight: 800;
+    font-size: 20px;
 }
 
-.caja-tabla {
-    flex-grow: 1; /* Esto hace que la tabla ocupe todo el espacio que sobra a la derecha */
-    min-width: 400px;
+.logo-texto {
+    font-weight: 800;
+    font-size: 18px;
+    color: var(--rojo-primario);
+    white-space: nowrap;
+    opacity: 0;
+    transition: opacity 0.2s ease;
 }
 
-/* Letras de los apartados */
-label {
+.barra-lateral:hover .logo-texto,
+.barra-lateral.expandida .logo-texto {
+    opacity: 1;
+}
+
+/* Perfil de Usuario */
+.perfil-usuario {
+    padding: 20px;
+    margin: 10px;
+    border-radius: 15px;
+    background: #fdf2f2;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    transition: var(--transicion);
+}
+
+.avatar-circular {
+    min-width: 40px;
+    height: 40px;
+    background: white;
+    border: 2px solid var(--rojo-primario);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    color: var(--rojo-primario);
+}
+
+.perfil-info {
+    white-space: nowrap;
+    overflow: hidden;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+
+.perfil-nombre {
     display: block;
-    margin-top: 15px;
-    font-weight: bold;
+    font-weight: 600;
     font-size: 14px;
 }
 
-/* inputs - Cajas de texto */
-input, select {
-    width: 100%;
-    padding: 10px;
-    margin-top: 5px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    box-sizing: border-box; /* Previene desbordamiento en bordes */
+.perfil-rol {
+    display: block;
+    font-size: 11px;
+    color: var(--rojo-primario);
+    font-weight: 700;
+    text-transform: uppercase;
 }
 
-/* Diseño del boton enviar */
-button {
+.barra-lateral:hover .perfil-info,
+.barra-lateral.expandida .perfil-info {
+    opacity: 1;
+}
+
+/* Navegación */
+.navegacion-sidebar {
+    flex: 1;
+    padding: 10px;
+}
+
+.nav-enlace {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 14px;
+    text-decoration: none;
+    color: var(--texto-secundario);
+    border-radius: 12px;
+    margin-bottom: 5px;
+    transition: var(--transicion);
+    white-space: nowrap;
+}
+
+.nav-enlace:hover {
+    background-color: #FEEBEB;
+    color: var(--rojo-primario);
+}
+
+.nav-enlace.activo {
+    background-color: var(--rojo-primario);
+    color: white;
+}
+
+.iconosvg {
+    min-width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.texto-enlace {
+    font-size: 14px;
+    font-weight: 500;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+
+.barra-lateral:hover .texto-enlace,
+.barra-lateral.expandida .texto-enlace {
+    opacity: 1;
+}
+
+/* Footer Sidebar (Cerrar Sesión) */
+.barra-pie {
+    padding: 10px;
+    border-top: 1px solid var(--gris-borde);
+}
+
+/* ═══════════════════════════════════════════
+   CONTENIDO PRINCIPAL (PUSH EFFECT)
+   ════════════════════════════════════════════ */
+.contenido-principal {
+    margin-left: var(--ancho-sidebar-contraido);
+    flex: 1;
+    padding: 40px;
+    transition: var(--transicion);
+    width: calc(100% - var(--ancho-sidebar-contraido));
+}
+
+body:has(.barra-lateral:hover) .contenido-principal,
+body:has(.barra-lateral.expandida) .contenido-principal {
+    margin-left: var(--ancho-sidebar-expandido);
+    width: calc(100% - var(--ancho-sidebar-expandido));
+}
+
+/* ═══════════════════════════════════════════
+   LAYOUT DASHBOARD
+   ════════════════════════════════════════════ */
+.cuadricula-dashboard {
+    display: grid;
+    grid-template-columns: 1fr 1.5fr;
+    gap: 30px;
+    align-items: start;
+}
+
+@media (max-width: 1100px) {
+    .cuadricula-dashboard {
+        grid-template-columns: 1fr;
+    }
+}
+
+.tarjeta-blanca {
+    background: var(--blanco);
+    padding: 30px;
+    border-radius: 20px;
+    box-shadow: var(--sombra-suave);
+}
+
+.tarjeta-blanca h2 {
+    font-size: 18px;
+    margin-bottom: 25px;
+    color: var(--texto-principal);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+/* Formulario */
+.grupo-campo {
+    margin-bottom: 20px;
+}
+
+.grupo-campo label {
+    display: block;
+    font-size: 13px;
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: var(--texto-secundario);
+}
+
+.entrada-texto, select {
     width: 100%;
-    margin-top: 20px;
-    background-color: #3498db;
+    padding: 12px 16px;
+    border: 1.5px solid var(--gris-borde);
+    border-radius: 12px;
+    font-size: 14px;
+    transition: var(--transicion);
+    outline: none;
+}
+
+.entrada-texto:focus, select:focus {
+    border-color: var(--rojo-primario);
+    background-color: #fff9f9;
+}
+
+.boton-principal {
+    width: 100%;
+    background-color: var(--rojo-primario);
     color: white;
     border: none;
-    padding: 12px;
+    padding: 15px;
+    border-radius: 12px;
+    font-weight: 700;
+    font-size: 14px;
     cursor: pointer;
-    font-size: 16px;
-    font-weight: bold;
-    border-radius: 4px;
-    transition: 0.3s; /* animacion sencilla al poner el mouse encima */
+    transition: var(--transicion);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
 }
 
-button:hover {
-    background-color: #2980b9;
+.boton-principal:hover {
+    background-color: var(--rojo-hover);
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(211, 47, 47, 0.2);
 }
 
-/* --- ESTILOS DE LA TABLA --- */
-table {
+/* ═══════════════════════════════════════════
+   TABLAS (ESTILO BOOTSTRAP LIMPIO)
+   ════════════════════════════════════════════ */
+.tabla-contenedor {
     width: 100%;
-    border-collapse: collapse; /* Quita dobles lineas en los bordes */
-    margin-top: 10px;
+    overflow-x: auto;
 }
 
-th, td {
-    border: 1px solid #ddd;
-    padding: 12px;
-    text-align: left;
+.tabla-directorio {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0 8px;
 }
 
-th {
-    background-color: #34495e; /* Fila negra arriba */
-    color: white;
+.tabla-directorio th {
+    padding: 15px;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--texto-secundario);
+    border-bottom: 1.5px solid var(--gris-borde);
 }
 
-tr:nth-child(even) {
-    background-color: #f9f9f9; /* Fila grisecita para modo "zebra" y leer facil */
+.tabla-directorio td {
+    padding: 15px;
+    background: white;
+    border-bottom: 1px solid #f1f1f1;
+    font-size: 14px;
+}
+
+.tabla-directorio tr:hover td {
+    background-color: #fafbfc;
+}
+
+.badge {
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 700;
+}
+
+.badge-natural { background: #E3F2FD; color: #1976D2; }
+.badge-juridica { background: #F3E5F5; color: #7B1FA2; }
+
+/* ═══════════════════════════════════════════
+   UTILIDADES
+   ════════════════════════════════════════════ */
+.alerta-error {
+    background: #FFEBEE;
+    color: #C62828;
+    padding: 15px;
+    border-radius: 12px;
+    margin-bottom: 25px;
+    font-weight: 500;
+    font-size: 14px;
+    border: 1px solid #FFCDD2;
 }
