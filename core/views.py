@@ -73,12 +73,17 @@ def contactos(request):
     usuario_logueado = Usuario.objects.get(id=id_sesion)
     
     error = ""
+    # Asegurar tipos base
     if not TipoContacto.objects.exists():
         TipoContacto.objects.create(nombre_tipo="Persona Natural")
         TipoContacto.objects.create(nombre_tipo="Persona Jurídica")
-    if not TipoIdentificacion.objects.exists():
-        TipoIdentificacion.objects.create(nombre_tipo="CC")
-        TipoIdentificacion.objects.create(nombre_tipo="NIT")
+    
+    # Asegurar tipos de identificación
+    if not TipoIdentificacion.objects.filter(nombre_tipo="CC").exists(): TipoIdentificacion.objects.get_or_create(nombre_tipo="CC")
+    if not TipoIdentificacion.objects.filter(nombre_tipo="NIT").exists(): TipoIdentificacion.objects.get_or_create(nombre_tipo="NIT")
+    if not TipoIdentificacion.objects.filter(nombre_tipo="TI").exists(): TipoIdentificacion.objects.get_or_create(nombre_tipo="TI")
+    if not TipoIdentificacion.objects.filter(nombre_tipo="Pasaporte").exists(): TipoIdentificacion.objects.get_or_create(nombre_tipo="Pasaporte")
+    if not TipoIdentificacion.objects.filter(nombre_tipo="CE").exists(): TipoIdentificacion.objects.get_or_create(nombre_tipo="CE")
     
     if request.method == "POST":
         tipo_contacto_id = request.POST.get("tipo_contacto")
@@ -91,27 +96,28 @@ def contactos(request):
         nombre = request.POST.get("nombre")
         apellido = request.POST.get("apellido")
         razon_social = request.POST.get("razon_social")
+        nombre_rep_legal = request.POST.get("nombre_rep_legal")
         
         identificador = nombre if nombre else razon_social
         
         if not identificador or not documento_nit:
-            error = "Nombre y Documento son obligatorios."
+            error = "Nombre/Razón Social y Identificación son obligatorios."
+        elif Contacto.objects.filter(documento_nit=documento_nit).exists():
+            error = f"El documento/NIT '{documento_nit}' ya se encuentra registrado."
         elif not correo and not celular:
-            error = "Ingrese Correo o Celular."
+            error = "Ingrese al menos Correo o Celular."
         else:
-            if correo and Contacto.objects.filter(correo=correo).exists():
-                error = "Correo ya registrado."
-            else:
-                try:
-                    Contacto.objects.create(
-                        tipo_contacto_id=tipo_contacto_id, tipo_doc_id=tipo_doc_id,
-                        documento_nit=documento_nit, celular=celular,
-                        direccion=direccion, ciudad=ciudad, correo=correo,
-                        usuario_asignado=usuario_logueado, nombre=nombre,
-                        apellido=apellido, razon_social=razon_social, activo=True
-                    )
-                    return redirect('/')
-                except Exception as e: error = f"Error: {e}"
+            try:
+                Contacto.objects.create(
+                    tipo_contacto_id=tipo_contacto_id, tipo_doc_id=tipo_doc_id,
+                    documento_nit=documento_nit, celular=celular,
+                    direccion=direccion, ciudad=ciudad, correo=correo,
+                    usuario_asignado=usuario_logueado, nombre=nombre,
+                    apellido=apellido, razon_social=razon_social, 
+                    nombre_rep_legal=nombre_rep_legal, activo=True
+                )
+                return redirect('/')
+            except Exception as e: error = f"Error: {e}"
             
     return render(request, "index.html", {
         "activos": Contacto.objects.filter(activo=True).order_by('-fecha_registro'),
@@ -128,16 +134,30 @@ def editar_contacto(request, id_contacto):
     error = ""
     if request.method == "POST":
         p.documento_nit = request.POST.get("documento_nit")
-        p.nombre = request.POST.get("nombre")
-        p.apellido = request.POST.get("apellido")
-        p.razon_social = request.POST.get("razon_social")
         p.correo = request.POST.get("correo")
         p.celular = request.POST.get("celular")
         p.ciudad = request.POST.get("ciudad")
         p.direccion = request.POST.get("direccion")
+        p.tipo_contacto_id = request.POST.get("tipo_contacto")
+        p.tipo_doc_id = request.POST.get("tipo_doc")
         
-        if not (p.nombre if p.nombre else p.razon_social): error = "Nombre obligatorio."
-        elif not p.correo and not p.celular: error = "Contacto obligatorio."
+        # Si es Jurídica, borramos campos de Natural y viceversa
+        es_natural = TipoContacto.objects.get(id=p.tipo_contacto_id).nombre_tipo == "Persona Natural"
+        if es_natural:
+            p.nombre = request.POST.get("nombre")
+            p.apellido = request.POST.get("apellido")
+            p.razon_social = None
+            p.nombre_rep_legal = None
+        else:
+            p.nombre = None
+            p.apellido = None
+            p.razon_social = request.POST.get("razon_social")
+            p.nombre_rep_legal = request.POST.get("nombre_rep_legal")
+
+        if not (p.nombre if p.nombre else p.razon_social): error = "Nombre o Razón Social es obligatorio."
+        elif Contacto.objects.filter(documento_nit=p.documento_nit).exclude(id=p.id).exists():
+            error = f"El documento/NIT '{p.documento_nit}' ya está registrado en otro contacto."
+        elif not p.correo and not p.celular: error = "Email o Celular obligatorio."
         else:
             p.save()
             return redirect('/')
@@ -191,3 +211,18 @@ def eliminar_interaccion(request, id_inter):
     if not request.session.get('user_id'): return redirect('/login/')
     get_object_or_404(Interaccion, id=id_inter).delete()
     return redirect('/interacciones/')
+
+def usuarios_view(request):
+    id_sesion = request.session.get('user_id')
+    if not id_sesion or request.session.get('rol_name') != "Administrador":
+        return redirect('/')
+    
+    usuario_logueado = Usuario.objects.get(id=id_sesion)
+    usuarios = Usuario.objects.all().order_by('nombre_usuario')
+    
+    return render(request, "usuarios.html", {
+        "usuarios": usuarios,
+        "usuario_logueado": usuario_logueado,
+        "tipos_contacto": TipoContacto.objects.all(),
+        "tipos_doc": TipoIdentificacion.objects.all(),
+    })

@@ -15,10 +15,10 @@
 }
 
 :root {
-    --primary: #7c5c44;
-    --primary-dark: #4e3220;
-    --primary-light: rgba(199, 178, 153, 0.15);
-    --primary-glow: rgba(199, 178, 153, 0.40);
+    --primary: #E53935;
+    --primary-dark: #B71C1C;
+    --primary-light: rgba(229, 57, 53, 0.12);
+    --primary-glow: rgba(229, 57, 53, 0.35);
     --accent: #C7B299;
     --white: #FFFFFF;
     --text-main: #F0F0F0;
@@ -610,7 +610,7 @@ select.field-input option {
 }
 
 .btn-auth--register {
-    background: linear-gradient(135deg, #7c5c44 0%, #4e3220 100%);
+    background: linear-gradient(135deg, #E53935 0%, #B71C1C 100%);
     box-shadow: 0 4px 22px rgba(199, 178, 153, 0.28);
 }
 
