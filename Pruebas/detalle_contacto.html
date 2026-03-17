@@ -1,0 +1,1432 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ c.nombre|default:c.razon_social }} - Detalle CRM</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        :root {
+            --rojo-primario: #B71C1C;
+            --rojo-hover: #D32F2F;
+            --blanco: #FFFFFF;
+            --gris-fondo: #F8F9FA;
+            --gris-borde: #E0E0E0;
+            --texto-principal: #333333;
+            --texto-secundario: #64748b;
+            --transicion: all 0.2s ease;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f1f5f9;
+            color: var(--texto-principal);
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* --- SIDEBAR --- */
+        .barra-lateral {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100vh;
+            width: 80px;
+            background-color: white;
+            border-right: 1px solid var(--gris-borde);
+            display: flex;
+            flex-direction: column;
+            z-index: 1000;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            overflow: hidden;
+        }
+
+        .barra-lateral:hover {
+            width: 260px;
+            box-shadow: 5px 0 25px rgba(0, 0, 0, 0.05);
+        }
+
+        .logo-d {
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            height: 80px;
+        }
+
+        .logo-box {
+            min-width: 40px;
+            height: 40px;
+            background-color: var(--rojo-primario);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 12px;
+            font-weight: 800;
+            font-size: 20px;
+        }
+
+        .logo-txt {
+            font-weight: 800;
+            font-size: 19px;
+            color: var(--rojo-primario);
+            white-space: nowrap;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            letter-spacing: -0.2px;
+        }
+
+        .barra-lateral:hover .logo-txt {
+            opacity: 1;
+        }
+
+        .user-section {
+            padding: 14px;
+            margin: 12px;
+            border-radius: 18px;
+            background: #fdf2f2;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            overflow: hidden;
+        }
+
+        .user-avatar {
+            min-width: 40px;
+            height: 40px;
+            background: white;
+            border: 1.5px solid var(--rojo-primario);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            color: var(--rojo-primario);
+            font-size: 16px;
+        }
+
+        .user-info {
+            white-space: nowrap;
+            overflow: hidden;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .user-n {
+            display: block;
+            font-weight: 600;
+            font-size: 14px;
+            color: var(--texto-principal);
+        }
+
+        .user-r {
+            display: block;
+            font-size: 11px;
+            color: var(--texto-secundario);
+            font-weight: 500;
+        }
+
+        .barra-lateral:hover .user-info {
+            opacity: 1;
+        }
+
+        .nav-sidebar {
+            flex: 1;
+            padding: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .nav-icon {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 12px 14px;
+            text-decoration: none;
+            color: #5f6368;
+            border-radius: 14px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            white-space: nowrap;
+            font-weight: 500;
+            width: 100%;
+        }
+
+        .nav-icon:hover {
+            background-color: #fdf2f2;
+            color: var(--rojo-primario);
+        }
+
+        .nav-icon.active {
+            background-color: var(--rojo-primario);
+            color: white;
+        }
+
+        .nav-text { 
+            font-size: 14px; font-weight: 600; white-space: nowrap; 
+            opacity: 0; transition: opacity 0.2s ease; 
+        }
+
+        .barra-lateral:hover .nav-text { opacity: 1; }
+
+        /* --- LAYOUT --- */
+        .main-wrapper {
+            flex: 1;
+            margin-left: 80px;
+            padding: 20px;
+            display: flex;
+            gap: 20px;
+            overflow: hidden;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .barra-lateral:hover ~ .main-wrapper {
+            margin-left: 260px;
+        }
+
+        /* --- PANEL IZQUIERDO --- */
+        .panel-izquierdo {
+            width: 340px;
+            background: white;
+            border-radius: 16px;
+            border: 1px solid var(--gris-borde);
+            display: flex;
+            flex-direction: column;
+            padding: 24px;
+            overflow-y: auto;
+        }
+        .link-atras {
+            color: #B71C1C;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 24px;
+        }
+        
+        .card-info-box {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 24px;
+        }
+        .info-box-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+        .label-responsable { font-size: 11px; font-weight: 700; color: #64748b; text-transform: uppercase; }
+        .badge-activo { font-size: 10px; font-weight: 800; color: #059669; background: #ecfdf5; padding: 2px 8px; border-radius: 4px; }
+        
+        .user-assigned { display: flex; align-items: center; gap: 10px; }
+        .user-assigned-circle { width: 32px; height: 32px; background: #B71C1C; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 14px; }
+        .user-assigned-name { font-weight: 700; color: #1e293b; font-size: 14px; }
+
+        .perfil-contacto {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 30px;
+        }
+        .avatar-contacto {
+            width: 56px; height: 56px;
+            background: #edc27e;
+            color: white;
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 24px; font-weight: 800;
+        }
+        .perfil-info-text h2 { font-size: 18px; font-weight: 800; color: #1e293b; }
+        .perfil-info-text p { font-size: 13px; color: #64748b; }
+
+        .botones-accion-grid {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 30px;
+            border-bottom: 1px solid #f1f5f9;
+            padding-bottom: 20px;
+        }
+        .btn-accion-circular {
+            display: flex;
+            flex-direction: column; align-items: center; gap: 8px;
+            background: none; border: none; cursor: pointer;
+            color: #64748b; font-size: 11px; font-weight: 600;
+        }
+        .btn-accion-circular .ico-circ {
+            width: 42px; height: 42px;
+            border: 1px solid #e2e8f0;
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            background: white;
+            transition: 0.2s;
+        }
+        .btn-accion-circular:hover .ico-circ { border-color: #B71C1C; color: #B71C1C; background: #fff1f2; }
+        .btn-accion-circular:hover { color: #B71C1C; }
+
+        .seccion-basica-titulo {
+            font-size: 13px; font-weight: 800; color: #64748b;
+            display: flex; align-items: center; gap: 10px;
+            margin-bottom: 20px; text-transform: uppercase; letter-spacing: 0.5px;
+        }
+        .basic-info-item { margin-bottom: 16px; }
+        .basic-info-lbl { font-size: 11px; color: #94a3b8; margin-bottom: 4px; }
+        .basic-info-val { font-size: 14px; color: #1e293b; font-weight: 600; word-break: break-all; }
+
+        /* --- PANEL DERECHO --- */
+        .panel-derecho {
+            flex: 1;
+            background: white;
+            border-radius: 16px;
+            border: 1px solid var(--gris-borde);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .tabs-header-top {
+            display: flex;
+            border-bottom: 1px solid var(--gris-borde);
+            padding: 0 30px;
+            background: #fafafa;
+        }
+        .tab-top {
+            padding: 16px 24px;
+            border: none;
+            background: none;
+            font-size: 14px; font-weight: 700; color: #64748b;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+        }
+        .tab-top.active { color: #B71C1C; border-bottom-color: #B71C1C; }
+
+        .tabs-sub-nav {
+            display: flex;
+            gap: 25px;
+            padding: 15px 30px;
+            border-bottom: 1px solid #f1f5f9;
+        }
+        .tab-sub {
+            padding-bottom: 8px;
+            border: none; background: none; cursor: pointer;
+            font-size: 13px; font-weight: 600; color: #94a3b8;
+            border-bottom: 2px solid transparent;
+        }
+        .tab-sub.active { color: #1e293b; border-bottom-color: #1e293b; }
+
+        .interaccion-form-box {
+            padding: 24px 30px;
+            border-bottom: 1px solid #f1f5f9;
+        }
+        .interaccion-form-box select { margin-bottom: 12px; }
+        .interaccion-form-box textarea { min-height: 80px; margin-bottom: 16px; resize: none; }
+        .btn-rojo-guardar {
+            background: #B71C1C; color: white;
+            padding: 10px 24px; border-radius: 8px;
+            border: none; font-weight: 700; cursor: pointer;
+            float: right;
+        }
+        .btn-rojo-guardar:hover { background: #D32F2F; }
+
+        .timeline-scroll {
+            flex: 1;
+            overflow-y: auto;
+            padding: 30px;
+            background: #fdfdfd;
+        }
+        .timeline-title { font-size: 14px; font-weight: 700; color: #64748b; margin-bottom: 24px; }
+        .timeline-vertical {
+            border-left: 2px solid #e2e8f0;
+            padding-left: 30px;
+            margin-left: 10px;
+        }
+        .tm-card {
+            background: white; border: 1px solid #e2e8f0;
+            border-radius: 12px; padding: 16px 20px;
+            margin-bottom: 20px; position: relative;
+        }
+        .tm-card::before {
+            content: ''; position: absolute; left: -37px; top: 18px;
+            width: 12px; height: 12px; background: #cbd5e0;
+            border: 2px solid white; border-radius: 50%;
+        }
+        .tm-header {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 10px;
+        }
+        .tm-type-user { font-size: 14px; font-weight: 700; color: #1e293b; }
+        .tm-date { font-size: 12px; color: #94a3b8; }
+        .tm-body { font-size: 13px; color: #444; line-height: 1.6; white-space: pre-wrap; }
+
+        .tm-actions { margin-top: 12px; display: flex; gap: 15px; }
+        .btn-tm-link {
+            background: none; border: none; cursor: pointer;
+            padding: 0; font-size: 11px; font-weight: 700;
+            color: #0d9488; text-transform: uppercase;
+        }
+        .btn-tm-link.red { color: #B71C1C; }
+
+        /* --- GRID DE NOTAS --- */
+        .grid-notas-container {
+            display: none;
+            flex: 1;
+            overflow-y: auto;
+            padding: 30px;
+            background: #fdfdfd;
+        }
+        .grid-notas-layout {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+        }
+        .nota-box {
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+            transition: var(--transicion);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        .nota-box:hover {
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            transform: translateY(-2px);
+        }
+        .nota-box-content {
+            font-size: 13px;
+            color: #334155;
+            line-height: 1.5;
+            margin-bottom: 15px;
+            white-space: pre-wrap;
+        }
+        .nota-box-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-top: 1px solid #f1f5f9;
+            padding-top: 12px;
+            font-size: 11px;
+            color: #94a3b8;
+        }
+
+        /* --- CORREOS ESTILO GMAIL --- */
+        .correos-container {
+            display: none;
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px 30px;
+            background: #f8fafc;
+        }
+        .correos-header-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+        .btn-mail-outline {
+            border: 1px solid #e2e8f0; background: white; color: #64748b;
+            padding: 8px 16px; border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer;
+        }
+        .btn-mail-filled {
+            background: #B71C1C; color: white; border: none;
+            padding: 8px 16px; border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer;
+        }
+        .email-card {
+            background: white; border: 1px solid #e2e8f0; border-radius: 12px;
+            margin-bottom: 15px; overflow: hidden;
+        }
+        .email-card-header {
+            padding: 12px 20px; display: flex; justify-content: space-between; align-items: center;
+            cursor: pointer; background: #fcfcfc; transition: 0.2s;
+        }
+        .email-card-header:hover { background: #f1f5f9; }
+        .email-subject-row { display: flex; align-items: center; gap: 12px; font-size: 14px; font-weight: 700; color: #1e293b; }
+        .email-date-row { font-size: 12px; color: #94a3b8; }
+        
+        .email-card-body {
+            display: none; padding: 25px; border-top: 1px solid #f1f5f9;
+        }
+        .email-sender-info { display: flex; gap: 15px; margin-bottom: 20px; position: relative; }
+        .email-avatar-v2 {
+            width: 44px; height: 44px; background: #fff1f2; color: #B71C1C;
+            border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            font-weight: 700; font-size: 18px;
+        }
+        .email-names { flex: 1; }
+        .email-sender-name { font-weight: 700; font-size: 14px; color: #1e293b; margin-bottom: 2px; }
+        .email-to-list { font-size: 12px; color: #64748b; }
+        .email-status-badge { color: #10b981; font-size: 11px; font-weight: 600; margin-top: 8px; display: flex; align-items: center; gap: 4px; }
+        
+        .email-actions-inline { position: absolute; top: 0; right: 0; display: flex; gap: 15px; }
+        .email-actions-inline button {
+            background: none; border: none; cursor: pointer; font-size: 13px; font-weight: 700; color: #0d9488;
+        }
+        .email-actions-inline button.red { color: #B71C1C; }
+
+        .email-text-content { 
+            font-size: 14px; color: #334155; line-height: 1.6; margin-left: 59px; white-space: pre-wrap;
+        }
+        .email-inner-subject { font-weight: 700; color: #1e293b; margin-bottom: 15px; }
+
+        .btn-star {
+            background: none; border: none; cursor: pointer; color: #cbd5e0;
+            font-size: 18px; transition: 0.2s; padding: 0 5px;
+        }
+        .btn-star.active { color: #f59e0b; }
+
+        /* --- CSS HISTORIAL REUNIONES ESTILO CALENDARIO --- */
+        .reuniones-container {
+            display: none; flex-direction: column;
+            overflow-y: auto; padding: 20px 30px; background: #f8fafc;
+        }
+        .reuniones-header-actions { display: flex; justify-content: flex-end; gap: 12px; margin-bottom: 20px; }
+
+        /* Contadores */
+        .reuniones-stats-clean { display: flex; gap: 12px; margin-bottom: 20px; flex-wrap: wrap; }
+        .stat-badge {
+            background: white; border: 1px solid #e2e8f0; border-radius: 8px;
+            padding: 8px 16px; font-size: 13px; color: #475569; font-weight: 600;
+            display: flex; align-items: center; gap: 6px; flex-shrink: 0;
+        }
+        .stat-badge span { color: #1e293b; font-weight: 800; }
+        .stat-badge.fin { border-left: 3px solid #10b981; }
+        .stat-badge.prog { border-left: 3px solid #3b82f6; }
+        .stat-badge.canc { border-left: 3px solid #ef4444; }
+        .reunion-hist-title { font-size: 13px; font-weight: 700; color: #94a3b8; margin-bottom: 12px; text-transform: uppercase; letter-spacing: 0.8px; }
+
+        /* calendario */
+        .cal-card {
+            background: white; border: 1px solid #e2e8f0; border-radius: 12px;
+            margin-bottom: 12px; display: flex; overflow: hidden;
+        }
+        .cal-date-block {
+            min-width: 72px; background: #f1f5f9; display: flex; flex-direction: column;
+            align-items: center; justify-content: center; padding: 16px 12px;
+            border-right: 1px solid #e2e8f0; flex-shrink: 0;
+        }
+        .cal-day { font-size: 30px; font-weight: 800; color: #1e293b; line-height: 1; }
+        .cal-month { font-size: 12px; font-weight: 700; color: #64748b; text-transform: uppercase; margin-top: 2px; }
+        .cal-body {
+            flex: 1; display: flex; align-items: center;
+            padding: 14px 20px; gap: 0;
+        }
+        .cal-col-time { min-width: 70px; font-size: 14px; font-weight: 700; color: #475569; }
+        .cal-col-asunto { flex: 1; font-size: 14px; color: #1e293b; font-weight: 600; padding: 0 10px; }
+        .cal-col-asunto small { display: block; font-size: 12px; color: #94a3b8; font-weight: 400; margin-top: 2px; }
+        .cal-col-mod { min-width: 110px; text-align: right; }
+        .cal-badge {
+            display: inline-block; font-size: 11px; font-weight: 700; padding: 3px 10px;
+            border-radius: 20px; background: #e0f2fe; color: #0284c7;
+        }
+        .cal-badge.presencial { background: #dcfce7; color: #16a34a; }
+        .cal-badge.virtual { background: #ede9fe; color: #7c3aed; }
+        .cal-badge.programada { background: #fef9c3; color: #ca8a04; }
+        .cal-badge.finalizada { background: #dcfce7; color: #16a34a; }
+        .cal-actions { display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 12px 14px; justify-content: center; width: 100px; border-left: 1px solid #f1f5f9; }
+        .cal-btn-action { background: none; border: 1px solid #e2e8f0; border-radius: 6px; padding: 4px 8px; font-size: 11px; font-weight: 700; color: #64748b; cursor: pointer; white-space: nowrap; transition: 0.2s; width: 100%; text-align: center; }
+        .cal-btn-action:hover { background: #f8fafc; color: #334155; border-color: #cbd5e1; }
+        .cal-btn-cancel { background: none; border: 1px solid #fca5a5; border-radius: 6px; padding: 4px 8px; font-size: 11px; font-weight: 700; color: #ef4444; cursor: pointer; white-space: nowrap; transition: 0.2s; width: 100%; text-align: center; }
+        .cal-btn-cancel:hover { background: #fef2f2; }
+        .cal-btn-fin { background: none; border: 1px solid #6ee7b7; border-radius: 6px; padding: 4px 8px; font-size: 11px; font-weight: 700; color: #10b981; cursor: pointer; white-space: nowrap; transition: 0.2s; width: 100%; text-align: center; }
+        .cal-btn-fin:hover { background: #f0fdf4; }
+        
+        /* Modal Ver Detalle */
+        .ver-grid { display: grid; grid-template-columns: 120px 1fr; gap: 15px; margin-top: 15px; }
+        .ver-label { font-size: 12px; font-weight: 700; color: #64748b; text-transform: uppercase; }
+        .ver-value { font-size: 14px; color: #1e293b; }
+        .ver-audit-box { margin-top: 20px; padding: 12px; background: #f8fafc; border-radius: 8px; border: 1px solid #e2e8f0; font-size: 12px; color: #64748b; white-space: pre-line; }
+
+
+        /* --- MODALES --- */
+
+        /* --- MODALES PREMIUM --- */
+        .modal-overlay { 
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+            background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(4px);
+            display: none; align-items: center; justify-content: center; z-index: 2000; 
+        }
+        .modal-card { 
+            background: white; width: 100%; max-width: 500px; border-radius: 24px; 
+            padding: 32px; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            animation: modalFadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        @keyframes modalFadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
+        .modal-title { font-size: 20px; font-weight: 800; color: #1e293b; display: flex; align-items: center; gap: 10px; }
+        .btn-close-modal { background: none; border: none; font-size: 24px; color: #94a3b8; cursor: pointer; transition: 0.2s; }
+        .btn-close-modal:hover { color: #64748b; transform: rotate(90deg); }
+
+        .entrada-field { margin-bottom: 20px; position: relative; }
+        .entrada-lbl { display: block; font-size: 13px; font-weight: 700; color: #475569; margin-bottom: 8px; }
+        .input-with-icon { position: relative; display: flex; align-items: center; }
+        .input-icon { position: absolute; right: 16px; color: #94a3b8; pointer-events: none; }
+        .input-icon-left { position: absolute; left: 12px; color: #D32F2F; pointer-events: none; width: 16px; }
+        
+        .entrada-texto { 
+            width: 100%; padding: 12px 16px; border: 1.5px solid #e2e8f0; border-radius: 12px; 
+            font-size: 14px; color: #1e293b; transition: all 0.2s; outline: none; background: #f8fafc;
+        }
+        .entrada-texto:focus { border-color: #D32F2F; background: white; box-shadow: 0 0 0 4px rgba(211, 47, 47, 0.1); }
+        .entrada-texto.with-icon-left { padding-left: 36px; }
+        
+        textarea { 
+            width: 100%; padding: 12px 16px; border: 1.5px solid #e2e8f0; border-radius: 12px; 
+            font-size: 14px; min-height: 100px; transition: 0.2s; outline: none; background: #f8fafc; resize: none;
+        }
+        textarea:focus { border-color: #D32F2F; background: white; }
+
+        .btn-p-guardar { 
+            background: #B71C1C; color: white; border: none; padding: 12px 32px; 
+            border-radius: 12px; font-weight: 700; font-size: 15px; cursor: pointer; 
+            transition: all 0.2s; box-shadow: 0 4px 12px rgba(183, 28, 28, 0.2);
+        }
+        .btn-p-guardar:hover { background: #D32F2F; transform: translateY(-1px); box-shadow: 0 6px 15px rgba(183, 28, 28, 0.3); }
+        
+        .entrada-field { margin-bottom: 20px; }
+        .entrada-lbl { display: block; font-size: 12px; font-weight: 700; color: #64748b; margin-bottom: 8px; }
+
+        /* reuniones canceladas */
+        .cal-card-cancelada { opacity: 0.6; }
+        .cal-card-cancelada .cal-date-block { background: #f1f5f9; }
+        .cal-badge.cancelada-badge { background: #fee2e2; color: #ef4444; }
+        .stat-badge.active-filter { box-shadow: 0 0 0 2px currentColor; font-weight: 800; }
+    </style>
+</head>
+
+<body>
+    <!-- SIDEBAR -->
+    <aside class="barra-lateral" id="sidebar">
+        <div class="logo-d">
+            <div class="logo-box">D</div>
+            <div class="logo-txt">CONSTRUCTORA</div>
+        </div>
+
+        <div class="user-section">
+            <div class="user-avatar" title="{{ usuario_logueado.nombre_usuario }}">
+                {{ usuario_logueado.nombre_usuario|make_list|first|upper }}
+            </div>
+            <div class="user-info">
+                <span class="user-n">{{ usuario_logueado.nombre_usuario }}</span>
+                <span class="user-r">{{ usuario_logueado.rol.nombre_rol }}</span>
+            </div>
+        </div>
+
+        <div class="nav-sidebar">
+            <a href="{% url 'contactos' %}" class="nav-icon" title="Registro de Contactos">
+                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="12" cy="7" r="4"></circle>
+                    <rect x="3" y="2" width="18" height="20" rx="2" ry="2" stroke-width="1.5"></rect>
+                </svg>
+                <span class="nav-text">Registro de Contactos</span>
+            </a>
+            
+            <a href="{% url 'interacciones' %}" class="nav-icon" title="Interacciones">
+                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                    <circle cx="8" cy="11" r="0.5" fill="currentColor"></circle>
+                    <circle cx="12" cy="11" r="0.5" fill="currentColor"></circle>
+                    <circle cx="16" cy="11" r="0.5" fill="currentColor"></circle>
+                </svg>
+                <span class="nav-text">Interacciones</span>
+            </a>
+
+            {% if usuario_logueado.rol.nombre_rol == "Administrador" %}
+            <a href="{% url 'usuarios' %}" class="nav-icon" title="Gestión de Usuarios">
+                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="9" cy="7" r="4"></circle>
+                    <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                    <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                </svg>
+                <span class="nav-text">Gestión de Usuarios</span>
+            </a>
+            {% endif %}
+        </div>
+    </aside>
+
+    <main class="main-wrapper">
+        <!-- PANEL IZQUIERDO -->
+        <section class="panel-izquierdo">
+            <a href="/" class="link-atras">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+                Contactos
+            </a>
+
+            <div class="card-info-box">
+                <div class="info-box-header">
+                    <span class="label-responsable">Responsable</span>
+                    <span class="badge-activo">ACTIVO</span>
+                </div>
+                <div class="user-assigned">
+                    <div class="user-assigned-circle">J</div>
+                    <span class="user-assigned-name">{{ c.usuario_asignado.nombre_usuario|default:"Jary" }}</span>
+                </div>
+            </div>
+
+            <div class="perfil-contacto">
+                <div class="avatar-contacto">
+                    {{ c.nombre|default:c.razon_social|first|upper }}
+                </div>
+                <div class="perfil-info-text">
+                    <h2>{% if c.nombre %}{{ c.nombre }} {{ c.apellido }}{% else %}{{ c.razon_social }}{% endif %}</h2>
+                    <p>{% if c.nombre %}Persona Natural{% else %}Persona Jurídica{% endif %}</p>
+                </div>
+            </div>
+
+            <div class="botones-accion-grid">
+                <button class="btn-accion-circular" onclick="abrirModalNota()">
+                    <div class="ico-circ">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                    </div>
+                    Nota
+                </button>
+                <button class="btn-accion-circular" onclick="abrirModalCorreo()">
+                    <div class="ico-circ">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="14" rx="2" ry="2"/><polyline points="3 7 12 13 21 7"/></svg>
+                    </div>
+                    Correo
+                </button>
+                <button class="btn-accion-circular" onclick="abrirModalGenerico('Llamada')">
+                    <div class="ico-circ">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+                    </div>
+                    Llamar
+                </button>
+                <button class="btn-accion-circular" onclick="abrirModalGenerico('Tarea')">
+                    <div class="ico-circ">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                    </div>
+                    Tarea
+                </button>
+                <button class="btn-accion-circular" onclick="abrirModalReunion()">
+                    <div class="ico-circ">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                    </div>
+                    Reunión
+                </button>
+            </div>
+
+            <div class="seccion-info-basica">
+                <h3 class="seccion-basica-titulo">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                    Información Básica
+                </h3>
+                <div class="basic-info-item">
+                    <div class="basic-info-lbl">Correo</div>
+                    <div class="basic-info-val">{{ c.correo|default:"-" }}</div>
+                </div>
+                <div class="basic-info-item">
+                    <div class="basic-info-lbl">Número de teléfono / Celular</div>
+                    <div class="basic-info-val">{{ c.celular|default:"-" }}</div>
+                </div>
+                <div class="basic-info-item">
+                    <div class="basic-info-lbl">NIT / NIT</div>
+                    <div class="basic-info-val">{{ c.documento_nit }}</div>
+                </div>
+                <div class="basic-info-item">
+                    <div class="basic-info-lbl">Dirección</div>
+                    <div class="basic-info-val">{{ c.direccion|default:"-" }}</div>
+                </div>
+                <div class="basic-info-item">
+                    <div class="basic-info-lbl">Ciudad</div>
+                    <div class="basic-info-val">{{ c.ciudad|default:"-" }}</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- PANEL DERECHO -->
+        <section class="panel-derecho">
+            <div class="tabs-header-top">
+                <button class="tab-top">Descripción</button>
+                <button class="tab-top active">Actividades</button>
+            </div>
+            <div class="tabs-sub-nav">
+                <button class="tab-sub active" id="btn-tab-actividad" onclick="cambiarSubTab('actividad')">Actividad</button>
+                <button class="tab-sub" id="btn-tab-notas" onclick="cambiarSubTab('notas')">Notas</button>
+                <button class="tab-sub" id="btn-tab-correos" onclick="cambiarSubTab('correos')">Correos</button>
+                <button class="tab-sub" id="btn-tab-llamadas" onclick="cambiarSubTab('llamadas')">Llamadas</button>
+                <button class="tab-sub" id="btn-tab-tareas" onclick="cambiarSubTab('tareas')">Tareas</button>
+                <button class="tab-sub" id="btn-tab-reuniones" onclick="cambiarSubTab('reuniones')">Reuniones</button>
+            </div>
+
+            <div class="interaccion-form-box" id="interaccion-form-box">
+                <form method="POST">
+                    {% csrf_token %}
+                    <select name="tipo_interaccion" required>
+                        <option value="">Seleccione el medio...</option>
+                        {% for t in tipos %}<option value="{{ t.id }}">{{ t.nombre_tipo }}</option>{% endfor %}
+                    </select>
+                    <textarea name="detalle" placeholder="Registrar una actividad..." required></textarea>
+                    <button type="submit" class="btn-rojo-guardar">Guardar Actividad</button>
+                </form>
+            </div>
+
+            <div class="timeline-scroll" id="timeline-scroll">
+                <h4 class="timeline-title">Historial de Interacciones</h4>
+                <div class="timeline-vertical">
+                    {% for inter in interacciones %}
+                    <div class="tm-card interaction-row t-{{ inter.tipo_interaccion.nombre_tipo|lower }}" id="panel-{{ inter.id }}">
+                        <div class="tm-header">
+                            <span class="tm-type-user">{{ inter.tipo_interaccion.nombre_tipo }} - por {{ inter.usuario_responsable.nombre_usuario }}</span>
+                            <span class="tm-date">{{ inter.fecha_interaccion|date:"d M, Y - h:i a" }}</span>
+                        </div>
+                        <div class="tm-body" id="tm-body-{{ inter.id }}">{{ inter.detalle_actividad }}</div>
+                        
+                        <div class="tm-actions">
+                            {% if inter.tipo_interaccion.nombre_tipo == 'Correo' %}
+                            <button class="btn-tm-link" onclick="abrirEmailAction('Responder', {{ inter.id }})">Responder</button>
+                            <button class="btn-tm-link" onclick="abrirEmailAction('Reenviar', {{ inter.id }})">Reenviar</button>
+                            {% endif %}
+                            <button class="btn-tm-link red" onclick="eliminarInter({{ inter.id }}, '{{ inter.tipo_interaccion.nombre_tipo }}')">Eliminar</button>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- GRID DE NOTAS -->
+            <div class="grid-notas-container" id="grid-notas-container">
+                <h4 class="timeline-title">Galería de Notas</h4>
+                <div class="grid-notas-layout">
+                    {% for inter in interacciones %}
+                    {% if inter.tipo_interaccion.nombre_tipo == 'Nota' %}
+                    <div class="nota-box">
+                        <div class="nota-box-content">{{ inter.detalle_actividad }}</div>
+                        <div class="nota-box-footer">
+                            <span>{{ inter.usuario_responsable.nombre_usuario }}</span>
+                            <span>{{ inter.fecha_interaccion|date:"d M, Y" }}</span>
+                            <button class="btn-tm-link red" style="font-size: 10px;" onclick="eliminarInter({{ inter.id }}, 'Nota')">Eliminar</button>
+                        </div>
+                    </div>
+                    {% endif %}
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- SECCIÓN REUNIONES ESTILO CRM -->
+            <div class="reuniones-container" id="reuniones-container">
+                <div class="reuniones-header-actions">
+                    <button class="btn-mail-filled" onclick="abrirModalReunion()">Programar reunión</button>
+                </div>
+                
+                <div class="reuniones-stats-clean">
+                    <div class="stat-badge fin" id="badge-fin" onclick="filtrarReuniones('Finalizada')" style="cursor:pointer;">Finalizadas: <span id="count-finalizadas">0</span></div>
+                    <div class="stat-badge prog" id="badge-prog" onclick="filtrarReuniones('Programada')" style="cursor:pointer;">Programadas: <span id="count-programadas">0</span></div>
+                    <div class="stat-badge canc" id="badge-canc" onclick="filtrarReuniones('Cancelada')" style="cursor:pointer;">Canceladas: <span id="count-canceladas">0</span></div>
+                </div>
+
+                <div class="reunion-hist-title">Historial de reuniones</div>
+
+                <div class="reuniones-list" id="reuniones-list-container">
+                    {% for inter in interacciones %}
+                    {% if inter.tipo_interaccion.nombre_tipo == 'Reunión' %}
+                    <div class="cal-card {% if inter.estado == 'Cancelada' %}cal-card-cancelada{% endif %}" data-estado="{{ inter.estado }}">
+                        <div class="cal-date-block">
+                            <div class="cal-day">{% if inter.fecha_reunion %}{{ inter.fecha_reunion|date:"d" }}{% else %}{{ inter.fecha_interaccion|date:"d" }}{% endif %}</div>
+                            <div class="cal-month">{% if inter.fecha_reunion %}{{ inter.fecha_reunion|date:"M" }}{% else %}{{ inter.fecha_interaccion|date:"M" }}{% endif %}</div>
+                        </div>
+                        <div class="cal-body">
+                            <div class="cal-col-time">{% if inter.hora_reunion %}{{ inter.hora_reunion|time:"H:i" }}{% else %}-{% endif %}</div>
+                            <div class="cal-col-asunto">
+                                {{ inter.asunto|default:inter.detalle_actividad|truncatechars:50 }}
+                                <small>{% if inter.direccion %}📍 {{ inter.direccion }}{% elif inter.detalle_actividad %} {{ inter.detalle_actividad|truncatechars:60 }}{% endif %}</small>
+                            </div>
+                            <div class="cal-col-mod">
+                                <span class="cal-badge {% if inter.modalidad == 'Presencial' %}presencial{% elif inter.modalidad == 'Virtual' %}virtual{% endif %}">{{ inter.modalidad|default:"Presencial" }}</span><br>
+                                <span class="cal-badge {% if inter.estado == 'Finalizada' %}finalizada{% elif inter.estado == 'Cancelada' %}cancelada-badge{% else %}programada{% endif %}" style="margin-top:4px;">{{ inter.estado }}</span>
+                            </div>
+                        </div>
+                        <div class="cal-actions">
+                            <button class="cal-btn-action" onclick="abrirModalVer({{ inter.id }}, '{{ inter.asunto|escapejs }}', '{{ inter.fecha_reunion|date:'Y-m-d' }}', '{{ inter.hora_reunion|time:'H:i' }}', '{{ inter.modalidad }}', '{{ inter.direccion|default:''|escapejs }}', '{{ inter.detalle_actividad|escapejs }}', '{{ inter.historial_cambios|default:''|escapejs }}')">Ver</button>
+                            
+                            {% if inter.estado == 'Programada' %}
+                            <button class="cal-btn-action" onclick="abrirModalEditar({{ inter.id }}, '{{ inter.asunto|escapejs }}', '{{ inter.fecha_reunion|date:'Y-m-d' }}', '{{ inter.hora_reunion|time:'H:i' }}', '{{ inter.modalidad }}', '{{ inter.direccion|default:''|escapejs }}', '{{ inter.detalle_actividad|escapejs }}')">Editar</button>
+                            <button class="cal-btn-fin" onclick="finalizarReunion({{ inter.id }})">Finalizar</button>
+                            <button class="cal-btn-cancel" onclick="abrirCancelacion({{ inter.id }})">Cancelar</button>
+                            {% else %}
+                            <button class="cal-btn-cancel" onclick="eliminarInter({{ inter.id }}, 'Reunión')" style="border-color:#e2e8f0;color:#94a3b8;">Eliminar</button>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% endif %}
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- CORREOS ESTILO GMAIL -->
+            <div class="correos-container" id="correos-container">
+                <div class="correos-header-actions">
+                    <button class="btn-mail-outline" onclick="sincronizarCorreos()">Sincronizar correos</button>
+                    <button class="btn-mail-filled" onclick="abrirModalCorreo()">Crear correo</button>
+                </div>
+                <div class="correos-list">
+                    {% for inter in interacciones %}
+                    {% if inter.tipo_interaccion.nombre_tipo == 'Correo' %}
+                    <div class="email-card">
+                        <div class="email-card-header" onclick="toggleEmail({{ inter.id }})">
+                            <div class="email-subject-row">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="3" id="arrow-{{ inter.id }}"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                                Correo - {{ inter.detalle_actividad|truncatechars:40 }}
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 15px;">
+                                <button class="btn-star {% if inter.destacado %}active{% endif %}" onclick="toggleDestacar(event, {{ inter.id }})">
+                                    {% if inter.destacado %}★{% else %}☆{% endif %}
+                                </button>
+                                <div class="email-date-row">
+                                    {{ inter.fecha_interaccion|date:"d M \a \l\a\s h:i A" }}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="email-card-body" id="mail-body-{{ inter.id }}">
+                            <div class="email-sender-info">
+                                {% if inter.tipo_comunicacion == 'Entrante' %}
+                                <div class="email-avatar-v2" style="background: #eef2ff; color: #4338ca;">{{ c.nombre|default:c.razon_social|first|upper }}</div>
+                                <div class="email-names">
+                                    <div class="email-sender-name">{% if c.nombre %}{{ c.nombre }} {{ c.apellido }}{% else %}{{ c.razon_social }}{% endif %}</div>
+                                    <div class="email-to-list">a mí ({{ usuario_logueado.nombre_usuario }}) ▼</div>
+                                    <div class="email-status-badge" style="color: #6366f1;">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+                                        Recibidos
+                                    </div>
+                                </div>
+                                {% else %}
+                                <div class="email-avatar-v2">{{ inter.usuario_responsable.nombre_usuario|first|upper }}</div>
+                                <div class="email-names">
+                                    <div class="email-sender-name">{{ inter.usuario_responsable.nombre_usuario }}</div>
+                                    <div class="email-to-list">a {{ c.nombre|default:c.razon_social }} ▼</div>
+                                    <div class="email-status-badge">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                                        Enviados
+                                    </div>
+                                </div>
+                                {% endif %}
+                                <div class="email-actions-inline">
+                                    <button onclick="abrirEmailAction('Responder', {{ inter.id }})">Responder</button>
+                                    <button onclick="abrirEmailAction('Reenviar', {{ inter.id }})">Reenviar</button>
+                                    <button class="red" onclick="eliminarInter({{ inter.id }}, 'Correo')">Eliminar</button>
+                                </div>
+                            </div>
+                            <div class="email-text-content">
+                                <div class="email-inner-subject" id="tm-body-{{ inter.id }}">{{ inter.detalle_actividad }}</div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+                    {% endfor %}
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- MODAL NOTA -->
+    <div class="modal-overlay" id="modalNota">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h3 class="modal-title">Escribir Nota</h3>
+                <button class="btn-close-modal" onclick="cerrarModal('modalNota')">&times;</button>
+            </div>
+            <form method="POST">
+                {% csrf_token %}<input type="hidden" name="tipo_interaccion_nombre" value="Nota">
+                <div class="entrada-field">
+                    <textarea name="detalle" style="min-height: 180px;" placeholder="¿Qué quieres recordar?" required></textarea>
+                </div>
+                <div style="text-align: right;"><button type="submit" class="btn-rojo-guardar">Guardar Nota</button></div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL CORREO -->
+    <div class="modal-overlay" id="modalCorreo">
+        <div class="modal-card" style="width: 700px;">
+            <div class="modal-header">
+                <h3 class="modal-title" id="mailTitle">Enviar Correo</h3>
+                <button class="btn-close-modal" onclick="cerrarModal('modalCorreo')">&times;</button>
+            </div>
+            <form method="POST">
+                {% csrf_token %}<input type="hidden" name="tipo_interaccion_nombre" value="Correo">
+                <div class="entrada-field">
+                    <label class="entrada-lbl">Para:</label>
+                    <input type="text" value="{{ c.correo }}" class="entrada-texto" style="background:#f1f5f9;" readonly>
+                </div>
+                <div class="entrada-field">
+                    <label class="entrada-lbl">Asunto:</label>
+                    <input type="text" name="asunto" id="mailAsunto" class="entrada-texto" required>
+                </div>
+                <div class="entrada-field">
+                    <textarea name="detalle" id="mailDetalle" style="min-height: 250px;" required></textarea>
+                </div>
+                <div style="text-align: right;"><button type="submit" class="btn-rojo-guardar">Enviar Correo</button></div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL REUNIÓN DEDICADO (PREMIUM) -->
+    <div class="modal-overlay" id="modalReunion">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h3 class="modal-title">Programar Reunión</h3>
+                <button class="btn-close-modal" onclick="cerrarModal('modalReunion')">&times;</button>
+            </div>
+            <form method="POST">
+                {% csrf_token %}<input type="hidden" name="tipo_interaccion_nombre" value="Reunión">
+                
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                    <div class="entrada-field">
+                        <label class="entrada-lbl">Fecha de la reunión:</label>
+                        <div class="input-with-icon">
+                            <input type="date" name="fecha_reunion" class="entrada-texto" required>
+                            <svg class="input-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                        </div>
+                    </div>
+                    <div class="entrada-field">
+                        <label class="entrada-lbl">Hora de la reunión:</label>
+                        <div class="input-with-icon">
+                            <input type="time" name="hora_reunion" class="entrada-texto" required>
+                            <svg class="input-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="entrada-field">
+                    <label class="entrada-lbl">Modalidad:</label>
+                    <select name="modalidad" class="entrada-texto" id="reunModalidad" onchange="toggleDireccion()">
+                        <option value="Presencial">Presencial</option>
+                        <option value="Virtual">Virtual</option>
+                    </select>
+                </div>
+
+                <div class="entrada-field" id="fieldDireccion">
+                    <label class="entrada-lbl" style="display: flex; align-items: center; gap: 4px;">
+                        <span style="color: #D32F2F;">📍</span> Dirección (lugar de la reunión):
+                    </label>
+                    <input type="text" name="direccion" class="entrada-texto" placeholder="Ej: Calle 50 #12-34, Medellín">
+                </div>
+
+                <div class="entrada-field">
+                    <label class="entrada-lbl">Asunto:</label>
+                    <input type="text" name="asunto" class="entrada-texto" placeholder="Ej: Presentación de propuesta">
+                </div>
+
+                <div class="entrada-field">
+                    <label class="entrada-lbl">Descripción:</label>
+                    <textarea name="detalle" style="min-height: 100px;" placeholder="Breve descripción de la reunión..."></textarea>
+                </div>
+                <div style="text-align: right;">
+                    <button type="submit" class="btn-rojo-guardar">Guardar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL GENÉRICO -->
+    <div class="modal-overlay" id="modalGenerico">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h3 class="modal-title" id="genTitle">Nueva Actividad</h3>
+                <button class="btn-close-modal" onclick="cerrarModal('modalGenerico')">&times;</button>
+            </div>
+            <form method="POST">
+                {% csrf_token %}<input type="hidden" name="tipo_interaccion_nombre" id="genTypeName">
+                <div class="entrada-field" id="fieldModalidad" style="display: none;">
+                    <label class="entrada-lbl">Modalidad:</label>
+                    <select name="modalidad" class="entrada-texto">
+                        <option value="Presencial">Presencial</option>
+                        <option value="Virtual">Virtual</option>
+                        <option value="Llamada">Llamada</option>
+                    </select>
+                </div>
+                <div class="entrada-field">
+                    <label class="entrada-lbl">Descripción / Objetivo:</label>
+                    <textarea name="detalle" style="min-height: 100px;"></textarea>
+                </div>
+                <div style="text-align: right;"><button type="submit" class="btn-rojo-guardar">Programar Reunión</button></div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL VER DETALLE REUNIÓN -->
+    <div class="modal-overlay" id="modalVerReunion">
+        <div class="modal-card" style="max-width: 550px;">
+            <div class="modal-header" style="border-bottom: 1px solid #f1f5f9; padding-bottom: 12px;">
+                <h3 class="modal-title" id="verAsunto">Detalle de la Reunión</h3>
+                <button class="btn-close-modal" onclick="cerrarModal('modalVerReunion')">&times;</button>
+            </div>
+            
+            <div class="ver-grid">
+                <div class="ver-label">Fecha:</div>
+                <div class="ver-value" id="verFecha"></div>
+                
+                <div class="ver-label">Hora:</div>
+                <div class="ver-value" id="verHora"></div>
+                
+                <div class="ver-label">Modalidad:</div>
+                <div class="ver-value"><span id="verModalidad" class="cal-badge"></span></div>
+                
+                <div class="ver-label" id="verLblDireccion">Dirección:</div>
+                <div class="ver-value" id="verDireccion"></div>
+                
+                <div class="ver-label">Descripción:</div>
+                <div class="ver-value" id="verDetalle" style="white-space: pre-wrap;"></div>
+            </div>
+
+            <div class="ver-監査-title" style="margin-top:25px; font-size:12px; font-weight:700; color:#64748b; border-top:1px solid #f1f5f9; padding-top:15px;">AUDITORÍA Y CAMBIOS</div>
+            <div class="ver-audit-box" id="verAuditoria"></div>
+        </div>
+    </div>
+
+    <!-- MODAL EDITAR REUNIÓN -->
+    <div class="modal-overlay" id="modalEditarReunion">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h3 class="modal-title">Editar Reunión</h3>
+                <button class="btn-close-modal" onclick="cerrarModal('modalEditarReunion')">&times;</button>
+            </div>
+            <form method="POST">
+                {% csrf_token %}
+                <input type="hidden" name="accion" value="editar_reunion">
+                <input type="hidden" name="interaccion_id" id="editarReunId">
+                <div class="entrada-field">
+                    <label class="entrada-lbl">Asunto:</label>
+                    <input type="text" name="asunto" id="editarAsunto" class="entrada-texto" required>
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                    <div class="entrada-field">
+                        <label class="entrada-lbl">Fecha:</label>
+                        <input type="date" name="fecha_reunion" id="editarFecha" class="entrada-texto" required>
+                    </div>
+                    <div class="entrada-field">
+                        <label class="entrada-lbl">Hora:</label>
+                        <input type="time" name="hora_reunion" id="editarHora" class="entrada-texto" required>
+                    </div>
+                </div>
+                <div class="entrada-field">
+                    <label class="entrada-lbl">Modalidad:</label>
+                    <select name="modalidad" class="entrada-texto" id="editarModalidad" onchange="toggleDireccionEditar()">
+                        <option value="Presencial">Presencial</option>
+                        <option value="Virtual">Virtual</option>
+                    </select>
+                </div>
+                <div class="entrada-field" id="editarFieldDireccion">
+                    <label class="entrada-lbl">Dirección:</label>
+                    <input type="text" name="direccion" id="editarDireccion" class="entrada-texto" placeholder="Ingrese el lugar de la reunión">
+                </div>
+                <div class="entrada-field">
+                    <label class="entrada-lbl">Descripción / Objetivo:</label>
+                    <textarea name="detalle" id="editarDetalle" style="min-height: 100px;"></textarea>
+                </div>
+                <div style="text-align: right;"><button type="submit" class="btn-rojo-guardar">Guardar Cambios</button></div>
+            </form>
+        </div>
+    </div>
+
+    <form id="formDelete" method="POST" style="display:none;">{% csrf_token %}<input type="hidden" name="accion" value="eliminar_interaccion"><input type="hidden" name="interaccion_id" id="del_id"></form>
+    <form id="formSync" method="POST" style="display:none;">{% csrf_token %}<input type="hidden" name="accion" value="sincronizar_correos"></form>
+    <form id="formCancelar" method="POST" style="display:none;">{% csrf_token %}<input type="hidden" name="accion" value="cancelar_reunion"><input type="hidden" name="interaccion_id" id="cancel_id"><input type="hidden" name="motivo_cancelacion" id="cancel_motivo"></form>
+    <form id="formFinalizar" method="POST" style="display:none;">{% csrf_token %}<input type="hidden" name="accion" value="finalizar_reunion"><input type="hidden" name="interaccion_id" id="fin_id"></form>
+
+    <!-- MODAL CANCELACIÓN -->
+    <div class="modal-overlay" id="modalCancelacion">
+        <div class="modal-card" style="max-width:460px;">
+            <div class="modal-header">
+                <h3 class="modal-title">Cancelar reunión</h3>
+                <button class="btn-close-modal" onclick="cerrarModal('modalCancelacion')">&times;</button>
+            </div>
+            <div class="entrada-field">
+                <label class="entrada-lbl">Motivo de cancelación:</label>
+                <textarea id="inputMotivoCancelacion" style="min-height:110px;" placeholder="Escribe aquí el motivo por el que se cancela la reunión..."></textarea>
+            </div>
+            <div style="text-align:right; margin-top:8px;">
+                <button class="btn-rojo-guardar" onclick="confirmarCancelacion()">Confirmar cancelación</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function abrirModal(id) { document.getElementById(id).style.display = 'flex'; }
+        function cerrarModal(id) { document.getElementById(id).style.display = 'none'; }
+
+        function abrirModalNota() { abrirModal('modalNota'); }
+        function abrirModalCorreo(asunto='', detalle='') {
+            document.getElementById('mailAsunto').value = asunto;
+            document.getElementById('mailDetalle').value = detalle;
+            abrirModal('modalCorreo');
+        }
+        function abrirModalGenerico(tipo) {
+            document.getElementById('genTitle').innerText = 'Registrar ' + tipo;
+            document.getElementById('genTypeName').value = tipo;
+            
+            // Mostrar modalidad solo si es Reunión
+            document.getElementById('fieldModalidad').style.display = (tipo === 'Reunión') ? 'block' : 'none';
+            
+            abrirModal('modalGenerico');
+        }
+
+        function abrirEmailAction(accion, id) {
+            const body = document.getElementById('tm-body-' + id).innerText;
+            const lines = body.split('\n');
+            let asunto = lines[0].replace('Asunto: ', '').trim();
+            if(!asunto) asunto = "Sin asunto";
+            
+            const realMsg = lines.slice(1).join('\n').trim();
+            let nAsunto = (accion === 'Responder' ? 'Re: ' : 'Fwd: ') + asunto;
+            let nCuerpo = (accion === 'Responder' ? '\n\n---\nAsunto: ' : '\n\n---------- Forwarded message ----------\nAsunto: ') + asunto + '\n' + realMsg;
+            
+            abrirModalCorreo(nAsunto, nCuerpo);
+        }
+
+        function cambiarSubTab(tab) {
+            const containerScroll = document.getElementById('timeline-scroll');
+            const containerNotas = document.getElementById('grid-notas-container');
+            const containerCorreos = document.getElementById('correos-container');
+            const containerReuniones = document.getElementById('reuniones-container');
+            const formBox = document.getElementById('interaccion-form-box');
+
+            // Reset containers
+            [containerScroll, containerNotas, containerCorreos, containerReuniones].forEach(c => {
+                if(c) c.style.display = 'none';
+            });
+            
+            // Tab Logic
+            if (tab === 'notas') {
+                containerNotas.style.display = 'block';
+                formBox.style.display = 'none';
+            } else if (tab === 'correos') {
+                containerCorreos.style.display = 'block';
+                formBox.style.display = 'none';
+            } else if (tab === 'reuniones') {
+                containerReuniones.style.display = 'flex';
+                containerReuniones.style.flexDirection = 'column';
+                formBox.style.display = 'none';
+                actualizarContadoresReuniones();
+            } else {
+                containerScroll.style.display = 'block';
+                formBox.style.display = (tab === 'actividad' || tab === 'tareas') ? 'block' : 'none';
+                
+                const cards = document.querySelectorAll('.interaction-row');
+                cards.forEach(card => {
+                    const tipo = tab === 'actividad' || 
+                                 card.classList.contains('t-' + tab) || 
+                                 card.classList.contains('t-' + tab.slice(0, -1));
+                    card.style.display = tipo ? 'block' : 'none';
+                });
+            }
+
+            // Update Tab styles
+            document.querySelectorAll('.sub-tabs span').forEach(s => s.classList.remove('active'));
+            // Seleccionamos el span que tiene el onclick con el tab exacto
+            const activeTab = document.querySelector(`.sub-tabs span[onclick*="'${tab}'"]`);
+            if (activeTab) activeTab.classList.add('active');
+        }
+
+        function actualizarContadoresReuniones() {
+            try {
+            let prog = 0, fin = 0, canc = 0;
+            {% for inter in interacciones %}
+                {% if inter.tipo_interaccion.nombre_tipo == 'Reunión' %}
+                    {% if inter.estado == 'Programada' %} prog++;
+                    {% elif inter.estado == 'Finalizada' %} fin++;
+                    {% elif inter.estado == 'Cancelada' %} canc++;
+                    {% endif %}
+                {% endif %}
+            {% endfor %}
+            document.getElementById('count-programadas').innerText = prog;
+            document.getElementById('count-finalizadas').innerText = fin;
+            document.getElementById('count-canceladas').innerText = canc;
+        } catch(e) {}
+        }
+
+        function abrirModalReunion() {
+            abrirModal('modalReunion');
+            // Ensure address field is visible by default (Presencial selected)
+            document.getElementById('fieldDireccion').style.display = 'block';
+            document.getElementById('reunModalidad').value = 'Presencial';
+        }
+
+        function toggleDireccion() {
+            const mod = document.getElementById('reunModalidad').value;
+            document.getElementById('fieldDireccion').style.display = (mod === 'Presencial') ? 'block' : 'none';
+        }
+
+        function abrirCancelacion(id) {
+            document.getElementById('cancel_id').value = id;
+            document.getElementById('inputMotivoCancelacion').value = '';
+            abrirModal('modalCancelacion');
+        }
+
+        function confirmarCancelacion() {
+            const motivo = document.getElementById('inputMotivoCancelacion').value.trim();
+            if (!motivo) {
+                Swal.fire({ icon: 'warning', text: 'Por favor escribe el motivo de cancelación.', showConfirmButton: false, timer: 2000 });
+                return;
+            }
+            document.getElementById('cancel_motivo').value = motivo;
+            cerrarModal('modalCancelacion');
+            document.getElementById('formCancelar').submit();
+        }
+
+        function finalizarReunion(id) {
+            Swal.fire({
+                title: '¿Marcar como finalizada?',
+                text: 'Esta reunión se marcará como Finalizada.',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#10b981',
+                cancelButtonText: 'No',
+                confirmButtonText: 'Sí, finalizar'
+            }).then((val) => {
+                if (val.isConfirmed) {
+                    document.getElementById('fin_id').value = id;
+                    document.getElementById('formFinalizar').submit();
+                }
+            });
+        }
+
+        let filtroActivo = null;
+        function filtrarReuniones(estado) {
+            const cards = document.querySelectorAll('#reuniones-list-container .cal-card');
+            if (filtroActivo === estado) {
+                // Desactivar filtro: mostrar todo
+                filtroActivo = null;
+                cards.forEach(c => c.style.display = 'flex');
+                document.querySelectorAll('.stat-badge').forEach(b => b.classList.remove('active-filter'));
+                return;
+            }
+            filtroActivo = estado;
+            cards.forEach(c => {
+                c.style.display = (c.dataset.estado === estado) ? 'flex' : 'none';
+            });
+            // Highlight del badge activo
+            document.querySelectorAll('.stat-badge').forEach(b => b.classList.remove('active-filter'));
+            const badgeMap = { 'Finalizada': 'badge-fin', 'Programada': 'badge-prog', 'Cancelada': 'badge-canc' };
+            const el = document.getElementById(badgeMap[estado]);
+            if (el) el.classList.add('active-filter');
+        }
+
+        function abrirModalVer(id, asunto, fecha, hora, mod, dir, detalle, historial) {
+            document.getElementById('verAsunto').innerText = asunto || 'Detalle de la Reunión';
+            document.getElementById('verFecha').innerText = fecha || '-';
+            document.getElementById('verHora').innerText = hora || '-';
+            
+            const badge = document.getElementById('verModalidad');
+            badge.innerText = mod;
+            badge.className = 'cal-badge ' + (mod === 'Presencial' ? 'presencial' : 'virtual');
+            
+            const lblDir = document.getElementById('verLblDireccion');
+            const valDir = document.getElementById('verDireccion');
+            if (mod === 'Presencial') {
+                lblDir.style.display = 'block';
+                valDir.style.display = 'block';
+                valDir.innerText = dir || 'No especificada';
+            } else {
+                lblDir.style.display = 'none';
+                valDir.style.display = 'none';
+            }
+            
+            document.getElementById('verDetalle').innerText = detalle || '-';
+            document.getElementById('verAuditoria').innerText = historial || 'Sin registros de auditoría.';
+            
+            abrirModal('modalVerReunion');
+        }
+
+        function abrirModalEditar(id, asunto, fecha, hora, mod, dir, detalle) {
+            document.getElementById('editarReunId').value = id;
+            document.getElementById('editarAsunto').value = asunto;
+            document.getElementById('editarFecha').value = fecha;
+            document.getElementById('editarHora').value = hora;
+            document.getElementById('editarModalidad').value = mod;
+            document.getElementById('editarDireccion').value = dir;
+            document.getElementById('editarDetalle').value = detalle;
+            
+            toggleDireccionEditar();
+            abrirModal('modalEditarReunion');
+        }
+
+        function toggleDireccionEditar() {
+            const mod = document.getElementById('editarModalidad').value;
+            document.getElementById('editarFieldDireccion').style.display = (mod === 'Presencial') ? 'block' : 'none';
+        }
+
+        function toggleReunion(id) {
+            const body = document.getElementById('reu-body-' + id);
+            const arrow = document.getElementById('arrow-reu-' + id);
+            const isHidden = body.style.display === 'none' || body.style.display === '';
+            
+            body.style.display = isHidden ? 'block' : 'none';
+            arrow.style.transform = isHidden ? 'rotate(180deg)' : 'rotate(0deg)';
+        }
+
+        function toggleEmail(id) {
+            const body = document.getElementById('mail-body-' + id);
+            const arrow = document.getElementById('arrow-' + id);
+            const isHidden = body.style.display === 'none' || body.style.display === '';
+            
+            body.style.display = isHidden ? 'block' : 'none';
+            arrow.style.transform = isHidden ? 'rotate(0deg)' : 'rotate(-90deg)';
+        }
+
+        function sincronizarCorreos() {
+            Swal.fire({
+                title: 'Sincronizando...',
+                text: 'Buscando nuevos correos del contacto en tu bandeja de entrada.',
+                allowOutsideClick: false,
+                didOpen: () => { Swal.showLoading(); }
+            });
+            document.getElementById('formSync').submit();
+        }
+
+        function toggleDestacar(event, id) {
+            event.stopPropagation();
+            const btn = event.currentTarget;
+            fetch(`/contacto/{{ c.id }}/destacar/${id}/`, {
+                method: 'POST',
+                headers: { 'X-CSRFToken': '{{ csrf_token }}' }
+            }).then(response => {
+                if(response.ok) {
+                    const isActive = btn.classList.toggle('active');
+                    btn.innerText = isActive ? '★' : '☆';
+                }
+            });
+        }
+
+        function eliminarInter(id, tipo) {
+            Swal.fire({
+                title: '¿Eliminar registro?', text: 'Esta acción borrará esta ' + tipo + ' permanentemente.',
+                icon: 'warning', showCancelButton: true, confirmButtonColor: '#B71C1C', confirmButtonText: 'Eliminar'
+            }).then((val) => {
+                if(val.isConfirmed) {
+                    document.getElementById('del_id').value = id;
+                    document.getElementById('formDelete').submit();
+                }
+            });
+        }
+
+        {% if messages %}
+        {% for m in messages %}
+            Swal.fire({ icon: '{{ m.tags }}' === 'error' ? 'error' : 'success', text: '{{ m }}', showConfirmButton: false, timer: 3000 });
+        {% endfor %}
+        {% endif %}
+
+        // Al cargar, ver si hay tab en URL
+        window.addEventListener('load', () => {
+            const urlTab = new URLSearchParams(window.location.search).get('tab');
+            if(urlTab) cambiarSubTab(urlTab);
+        });
+    </script>
+</body>
+</html>

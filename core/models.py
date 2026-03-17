@@ -79,6 +79,17 @@ class Interaccion(models.Model):
     es_exitosa = models.BooleanField(default=False)
     procede_a_compromiso = models.BooleanField(default=False)
     fecha_interaccion = models.DateTimeField(auto_now_add=True)
+    fecha_actualizacion = models.DateTimeField(auto_now=True, null=True, blank=True)
+    tipo_comunicacion = models.CharField(max_length=10, default='Saliente', choices=[('Entrante', 'Entrante'), ('Saliente', 'Saliente')])
+    mensaje_id = models.CharField(max_length=255, null=True, blank=True, unique=True)
+    destacado = models.BooleanField(default=False)
+    estado = models.CharField(max_length=20, default='Finalizada', choices=[('Programada', 'Programada'), ('Finalizada', 'Finalizada'), ('Cancelada', 'Cancelada')])
+    modalidad = models.CharField(max_length=50, null=True, blank=True)
+    asunto = models.CharField(max_length=255, null=True, blank=True)
+    fecha_reunion = models.DateField(null=True, blank=True)
+    hora_reunion = models.TimeField(null=True, blank=True)
+    direccion = models.CharField(max_length=300, null=True, blank=True)
+    historial_cambios = models.TextField(null=True, blank=True)
     
     def __str__(self):
         return f"Interacción {self.id} - {self.contacto.nombre if self.contacto.nombre else self.contacto.razon_social}"

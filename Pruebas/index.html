@@ -5,155 +5,622 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Contactos - Constructora CRM</title>
-    <link rel="stylesheet" href="{% static 'style.css' %}">
-    <link
-        href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Inter:wght@400;500;600&display=swap"
-        rel="stylesheet">
+    <title>Dashboard - Constructora Dyco</title>
+    <!-- Fuente Inter (Moderna y Profesional) -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        /* CSS EMBEDDED FOR DIAGNOSTICS */
+        :root {
+            --rojo-primario: #D32F2F;
+            --rojo-hover: #B71C1C;
+            --blanco: #FFFFFF;
+            --gris-fondo: #F8F9FA;
+            --gris-borde: #E0E0E0;
+            --texto-principal: #333333;
+            --texto-secundario: #757575;
+            --ancho-sidebar-expandido: 260px;
+            --ancho-sidebar-contraido: 80px;
+            --sombra-suave: 0 4px 20px rgba(0, 0, 0, 0.05);
+            --transicion: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--gris-fondo);
+            color: var(--texto-principal);
+            overflow-x: hidden;
+            display: flex;
+        }
+
+        .barra-lateral {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100vh;
+            width: var(--ancho-sidebar-contraido);
+            background-color: var(--blanco);
+            border-right: 1px solid var(--gris-borde);
+            display: flex;
+            flex-direction: column;
+            z-index: 1000;
+            transition: var(--transicion);
+            overflow: hidden;
+        }
+
+        .barra-lateral:hover {
+            width: var(--ancho-sidebar-expandido);
+            box-shadow: 5px 0 25px rgba(0, 0, 0, 0.05);
+        }
+
+        .barra-cabecera {
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            height: 80px;
+        }
+
+        .logo-inicial {
+            min-width: 40px;
+            height: 40px;
+            background-color: var(--rojo-primario);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 12px;
+            font-weight: 800;
+            font-size: 20px;
+        }
+
+        .logo-texto {
+            font-weight: 800;
+            font-size: 19px;
+            color: var(--rojo-primario);
+            white-space: nowrap;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            letter-spacing: -0.2px;
+        }
+
+        .barra-lateral:hover .logo-texto {
+            opacity: 1;
+        }
+
+        .perfil-usuario {
+            padding: 14px;
+            margin: 12px;
+            border-radius: 18px;
+            background: #fdf2f2;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            transition: var(--transicion);
+            overflow: hidden;
+        }
+
+        .avatar-circular {
+            min-width: 40px;
+            height: 40px;
+            background: white;
+            border: 1.5px solid var(--rojo-primario);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            color: var(--rojo-primario);
+            font-size: 16px;
+        }
+
+        .perfil-info {
+            white-space: nowrap;
+            overflow: hidden;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .perfil-nombre {
+            display: block;
+            font-weight: 600;
+            font-size: 14px;
+            color: var(--texto-principal);
+        }
+
+        .perfil-rol {
+            display: block;
+            font-size: 11px;
+            color: var(--texto-secundario);
+            font-weight: 500;
+        }
+
+        .barra-lateral:hover .perfil-info {
+            opacity: 1;
+        }
+
+        .navegacion-sidebar {
+            flex: 1;
+            padding: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .nav-enlace {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 12px 14px;
+            text-decoration: none;
+            color: #5f6368;
+            border-radius: 14px;
+            transition: var(--transicion);
+            white-space: nowrap;
+            font-weight: 500;
+        }
+
+        .nav-enlace:hover {
+            background-color: #fdf2f2;
+            color: var(--rojo-primario);
+        }
+
+        .nav-enlace.activo {
+            background-color: var(--rojo-primario);
+            color: white;
+        }
+
+        .iconosvg {
+            min-width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .texto-enlace {
+            font-size: 14px;
+            font-weight: 600;
+            opacity: 0;
+            transition: opacity 0.2s ease;
+        }
+
+        .barra-lateral:hover .texto-enlace {
+            opacity: 1;
+        }
+
+        .barra-pie {
+            padding: 10px;
+            border-top: 1px solid var(--gris-borde);
+        }
+
+        .contenido-principal {
+            margin-left: var(--ancho-sidebar-contraido);
+            flex: 1;
+            padding: 40px;
+            transition: var(--transicion);
+            width: calc(100% - var(--ancho-sidebar-contraido));
+        }
+
+        .barra-lateral:hover~.contenido-principal {
+            margin-left: var(--ancho-sidebar-expandido);
+            width: calc(100% - var(--ancho-sidebar-expandido));
+        }
+
+        .cuadricula-dashboard {
+            display: grid;
+            grid-template-columns: 1fr 1.5fr;
+            gap: 30px;
+            align-items: start;
+        }
+
+        .tarjeta-blanca {
+            background: var(--blanco);
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: var(--sombra-suave);
+            margin-bottom: 20px;
+        }
+
+        .tarjeta-blanca h2 {
+            font-size: 18px;
+            margin-bottom: 25px;
+            color: var(--texto-principal);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .grupo-campo {
+            margin-bottom: 20px;
+        }
+
+        .grupo-campo label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--texto-secundario);
+        }
+
+        .entrada-texto,
+        select,
+        textarea {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1.5px solid var(--gris-borde);
+            border-radius: 12px;
+            font-size: 14px;
+            transition: var(--transicion);
+            outline: none;
+            font-family: inherit;
+        }
+
+        .entrada-texto:focus,
+        select:focus,
+        textarea:focus {
+            border-color: var(--rojo-primario);
+            background-color: #fff9f9;
+        }
+
+        .boton-principal {
+            width: 100%;
+            background-color: var(--rojo-primario);
+            color: white;
+            border: none;
+            padding: 15px;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 14px;
+            cursor: pointer;
+            transition: var(--transicion);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .boton-principal:hover {
+            background-color: var(--rojo-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(211, 47, 47, 0.2);
+        }
+
+        .tabla-contenedor {
+            width: 100%;
+            overflow-x: auto;
+        }
+
+        .tabla-directorio {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0 8px;
+        }
+
+        .tabla-directorio th {
+            padding: 15px;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--texto-secundario);
+            border-bottom: 1.5px solid var(--gris-borde);
+            text-align: left;
+        }
+
+        .tabla-directorio td {
+            padding: 15px;
+            background: white;
+            border-bottom: 1px solid #f1f1f1;
+            font-size: 14px;
+        }
+
+        .tabla-directorio tr:hover td {
+            background-color: #fafbfc;
+        }
+
+        .badge {
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 700;
+            display: inline-block;
+        }
+
+        .badge-natural {
+            background: #E3F2FD;
+            color: #1976D2;
+        }
+
+        .badge-juridica {
+            background: #F3E5F5;
+            color: #7B1FA2;
+        }
+
+        .alerta-error {
+            background: #FFEBEE;
+            color: #C62828;
+            padding: 15px;
+            border-radius: 12px;
+            margin-bottom: 25px;
+            font-weight: 500;
+            font-size: 14px;
+            border: 1px solid #FFCDD2;
+        }
+    </style>
     <script src="{% static 'js/validaciones.js' %}"></script>
 </head>
 
 <body>
-    <!-- Sidebar / Menú Lateral Premium -->
-    <aside class="sidebar">
-        <div class="sidebar-header">
-            <div class="logo-icon">C</div>
-            <div class="logo-text">CONSTRUCTORA CRM</div>
+    <!-- ═══════════════════════════════════════════
+         BARRA LATERAL (SIDEBAR)
+    ════════════════════════════════════════════ -->
+    <aside class="barra-lateral" id="sidebar">
+        <div class="barra-cabecera">
+            <div class="logo-inicial">D</div>
+            <div class="logo-texto">CONSTRUCTORA</div>
         </div>
 
-        <div class="user-profile">
-            <div class="user-info">
-                <span class="user-name">{{ usuario_logueado.nombre_usuario }}</span>
-                <span class="user-role">{{ usuario_logueado.rol.nombre_rol }}</span>
+        <!-- Perfil de Usuario (Paula - Administrador diferenciado) -->
+        <div class="perfil-usuario">
+            <div class="avatar-circular" title="{{ usuario_logueado.nombre_usuario }}">
+                {{ usuario_logueado.nombre_usuario|make_list|first|upper }}
+            </div>
+            <div class="perfil-info">
+                <span class="perfil-nombre">{{ usuario_logueado.nombre_usuario }}</span>
+                <span class="perfil-rol">{{ usuario_logueado.rol.nombre_rol }}</span>
             </div>
         </div>
 
-        <nav class="sidebar-nav">
-            <a href="/" class="nav-item active">
-                <span class="nav-icon">👤</span>
-                <span class="nav-text">Contactos</span>
+        <nav class="navegacion-sidebar">
+            <a href="{% url 'contactos' %}" class="nav-enlace activo" title="Registro de Contactos">
+                <span class="iconosvg">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="12" cy="7" r="4"></circle>
+                        <rect x="3" y="2" width="18" height="20" rx="2" ry="2" stroke-width="1.5"></rect>
+                    </svg>
+                </span>
+                <span class="texto-enlace">Registro de Contactos</span>
             </a>
-            <a href="/interacciones/" class="nav-item">
-                <span class="nav-icon">💬</span>
-                <span class="nav-text">Interacciones</span>
+
+            <a href="{% url 'interacciones' %}" class="nav-enlace" title="Interacciones">
+                <span class="iconosvg">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                        <circle cx="8" cy="11" r="0.5" fill="currentColor"></circle>
+                        <circle cx="12" cy="11" r="0.5" fill="currentColor"></circle>
+                        <circle cx="16" cy="11" r="0.5" fill="currentColor"></circle>
+                    </svg>
+                </span>
+                <span class="texto-enlace">Interacciones</span>
             </a>
+
+            {% if usuario_logueado.rol.nombre_rol == "Administrador" %}
+            <a href="{% url 'usuarios' %}" class="nav-enlace" title="Gestión de Usuarios">
+                <span class="iconosvg">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="9" cy="7" r="4"></circle>
+                        <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                        <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                    </svg>
+                </span>
+                <span class="texto-enlace">Gestión de Usuarios</span>
+            </a>
+            {% endif %}
         </nav>
 
-        <div class="sidebar-footer">
-            <a href="/logout/" class="btn-logout">
-                <span class="logout-icon">🚪</span>
-                <span>Cerrar Sesión</span>
+        <div class="barra-pie">
+            <!-- Cerrar Sesión -->
+            <a href="/logout/" class="nav-enlace" title="Cerrar Sesión">
+                <span class="iconosvg">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                        <polyline points="16 17 21 12 16 7"></polyline>
+                        <line x1="21" y1="12" x2="9" y2="12"></line>
+                    </svg>
+                </span>
+                <span class="texto-enlace">Cerrar Sesión</span>
             </a>
         </div>
     </aside>
 
-    <!-- Main Content Area -->
-    <main class="main-content">
-        <header class="page-header">
-            <h1 class="page-title">Datos de Contactos</h1>
-            <p class="page-subtitle">Gestión centralizada de clientes y prospectos</p>
+    <!-- ═══════════════════════════════════════════
+         CONTENIDO PRINCIPAL
+    ════════════════════════════════════════════ -->
+    <main class="contenido-principal">
+        <header style="margin-bottom: 40px;">
+            <h1 style="font-size: 28px; font-weight: 800; color: #1a1a1a;">Gestión Dyco</h1>
+            <p style="color: var(--texto-secundario); font-size: 15px; margin-top: 5px;">
+                Panel de control para el registro y seguimiento de clientes.
+            </p>
         </header>
 
         {% if error %}
-        <div class="error-message"
-            style="margin-bottom: 20px; padding: 15px; background: #FFEBEE; color: #D32F2F; border-radius: 12px; border-left: 5px solid #D32F2F; font-size: 14px;">
+        <div class="alerta-error">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"
+                style="margin-right: 8px; vertical-align: middle;">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="12" y1="8" x2="12" y2="12"></line>
+                <line x1="12" y1="16" x2="12.01" y2="16"></line>
+            </svg>
             {{ error }}
         </div>
         {% endif %}
-        <div id="mensajeJS" class="error-message"
-            style="display:none; margin-bottom: 20px; padding: 15px; background: #FFEBEE; color: #D32F2F; border-radius: 12px; border-left: 5px solid #D32F2F; font-size: 14px;">
-        </div>
 
-        <div class="dashboard-grid">
-            <!-- Formulario de Registro -->
-            <section class="caja">
-                <h2>Nuevo Registro</h2>
+        <div id="mensajeJS" class="alerta-error" style="display:none;"></div>
+
+        <!-- DASHBOARD GRID (UNIFICADO PARA ADMIN Y USUARIO) -->
+        <div class="cuadricula-dashboard">
+            {% if usuario_logueado.rol.nombre_rol == "Usuario" %}
+            <!-- BANNER ESPECIAL USUARIO -->
+            <section class="tarjeta-blanca"
+                style="background: var(--rojo-primario); color: white; grid-column: 1 / -1; margin-bottom: 20px;">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <h2 style="color: white; margin-bottom: 5px;">Bienvenido al CRM</h2>
+                        <p style="opacity: 0.9;">Ya puedes registrar y gestionar tus clientes desde aquí.</p>
+                    </div>
+                </div>
+            </section>
+            {% endif %}
+
+            <!-- SECCIÓN 1: FORMULARIO (AHORA PARA TODOS) -->
+            <section class="tarjeta-blanca">
+                <h2>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="8.5" cy="7" r="4"></circle>
+                        <line x1="20" y1="8" x2="20" y2="14"></line>
+                        <line x1="23" y1="11" x2="17" y2="11"></line>
+                    </svg>
+                    Nuevo Contacto
+                </h2>
+
                 <form method="POST" onsubmit="return validarRegistro()">
                     {% csrf_token %}
-                    <div class="form-grid">
-                        <div class="form-group">
-                            <label>Tipo de Persona</label>
-                            <select name="tipo_contacto" id="tipoSelect" onchange="cambiar()" required>
-                                {% for tc in tipos_contacto %}
-                                <option value="{{ tc.id }}">{{ tc.nombre_tipo }}</option>
-                                {% endfor %}
-                            </select>
+                    <div class="grupo-campo">
+                        <label>Tipo de Persona</label>
+                        <select name="tipo_contacto" id="tipoSelect" onchange="cambiar()" required>
+                            {% for tc in tipos_contacto %}
+                            <option value="{{ tc.id }}">{{ tc.nombre_tipo }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <!-- SECCIÓN PERSONA NATURAL -->
+                    <div id="sn">
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                            <div class="grupo-campo">
+                                <label>Identificación</label>
+                                <select name="tipo_doc" id="tipoDocNatural">
+                                    {% for td in tipos_doc %}
+                                    {% if td.nombre_tipo != "NIT" %}
+                                    <option value="{{ td.id }}">{{ td.nombre_tipo }}</option>
+                                    {% endif %}
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="grupo-campo">
+                                <label>Número</label>
+                                <input type="text" name="documento_nit" id="doc_nat" class="entrada-texto"
+                                    placeholder="1010..." style="max-width: 250px;">
+                            </div>
                         </div>
-                        <div class="form-group">
-                            <label>Identificación</label>
-                            <select name="tipo_doc" required>
-                                {% for td in tipos_doc %}
-                                <option value="{{ td.id }}">{{ td.nombre_tipo }}</option>
-                                {% endfor %}
-                            </select>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                            <div class="grupo-campo">
+                                <label>Nombres</label>
+                                <input type="text" name="nombre" id="n" class="entrada-texto" placeholder="Paula">
+                            </div>
+                            <div class="grupo-campo">
+                                <label>Apellidos</label>
+                                <input type="text" name="apellido" id="a" class="entrada-texto" placeholder="García">
+                            </div>
                         </div>
                     </div>
 
-                    <div class="form-group">
-                        <label>Número de Documento / NIT</label>
-                        <input type="text" name="documento_nit" id="doc_nit" placeholder="Ej: 1010..." required>
-                    </div>
-
-                    <div id="sn" class="form-grid">
-                        <div class="form-group">
-                            <label>Nombres</label>
-                            <input type="text" name="nombre" id="n" placeholder="Nombres">
+                    <!-- SECCIÓN PERSONA JURÍDICA -->
+                    <div id="sj" style="display:none;">
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                            <div class="grupo-campo">
+                                <label>Identificación</label>
+                                <select name="tipo_doc" id="tipoDocJuridica" class="entrada-texto">
+                                    {% for td in tipos_doc %}
+                                    <option value="{{ td.id }}" {% if td.nombre_tipo == "NIT" %}selected{% endif %}>{{
+                                        td.nombre_tipo }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="grupo-campo">
+                                <label>Número</label>
+                                <input type="text" name="documento_nit" id="doc_jur" class="entrada-texto"
+                                    placeholder="Número..." style="max-width: 250px;">
+                            </div>
                         </div>
-                        <div class="form-group">
-                            <label>Apellidos</label>
-                            <input type="text" name="apellido" id="a" placeholder="Apellidos">
+                        <div class="grupo-campo">
+                            <label>Razón Social</label>
+                            <input type="text" name="razon_social" id="rs" class="entrada-texto"
+                                placeholder="Nombre de la empresa">
+                        </div>
+                        <div class="grupo-campo">
+                            <label>Nombre del Representante</label>
+                            <input type="text" name="nombre_rep_legal" id="rep" class="entrada-texto"
+                                placeholder="Ej: Juan Pérez">
                         </div>
                     </div>
 
-                    <div id="sj" class="form-group" style="display:none;">
-                        <label>Razón Social</label>
-                        <input type="text" name="razon_social" id="rs" placeholder="Nombre de la empresa">
-                    </div>
-
-                    <div class="form-grid">
-                        <div class="form-group">
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                        <div class="grupo-campo">
                             <label>Correo Electrónico</label>
-                            <input type="email" name="correo" id="c" placeholder="ejemplo@correo.com">
+                            <input type="email" name="correo" id="c" class="entrada-texto"
+                                placeholder="ejemplo@correo.com">
                         </div>
-                        <div class="form-group">
-                            <label>Número Celular</label>
-                            <input type="text" name="celular" id="cel" placeholder="300...">
+                        <div class="grupo-campo">
+                            <label>Celular</label>
+                            <input type="text" name="celular" id="cel" class="entrada-texto" placeholder="300...">
                         </div>
                     </div>
 
-                    <div class="form-grid">
-                        <div class="form-group">
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                        <div class="grupo-campo">
                             <label>Ciudad</label>
-                            <input type="text" name="ciudad" placeholder="Ej: Bogotá">
+                            <input type="text" name="ciudad" class="entrada-texto" placeholder="Bogotá">
                         </div>
-                        <div class="form-group">
+                        <div class="grupo-campo">
                             <label>Dirección</label>
-                            <input type="text" name="direccion" placeholder="Calle 123...">
+                            <input type="text" name="direccion" class="entrada-texto" placeholder="Calle 123...">
                         </div>
                     </div>
 
-                    <button type="submit">GUARDAR NUEVO CONTACTO</button>
+                    <button type="submit" class="boton-principal">
+                        <span>REGISTRAR CONTACTO</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="20 6 9 17 4 12"></polyline>
+                        </svg>
+                    </button>
                 </form>
             </section>
 
-            <!-- Tabla de Activos -->
-            <section class="caja">
-                <h2>Contactos Activos</h2>
-                <div class="table-container">
-                    <table>
+            <!-- SECCIÓN 2: TABLA -->
+            <section class="tarjeta-blanca">
+                <h2>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                        <line x1="3" y1="10" x2="21" y2="10"></line>
+                        <line x1="9" y1="22" x2="9" y2="10"></line>
+                        <line x1="8" y1="4" x2="8" y2="2"></line>
+                        <line x1="16" y1="4" x2="16" y2="2"></line>
+                    </svg>
+                    Directorio de Contactos
+                </h2>
+
+                <div class="tabla-contenedor">
+                    <table class="tabla-directorio">
                         <thead>
                             <tr>
-                                <th>Doc / NIT</th>
+                                <th>Identificación</th>
                                 <th>Tipo</th>
-                                <th>Nombre Completo / Razón Social</th>
-                                <th>Contacto</th>
+                                <th>Nombre / Empresa</th>
                                 <th>Acciones</th>
                             </tr>
                         </thead>
                         <tbody>
                             {% for c in activos %}
                             <tr>
-                                <td style="font-weight: 600;">{{ c.documento_nit }}</td>
+                                <td style="font-weight: 700; color: var(--rojo-primario);">{{ c.documento_nit }}</td>
                                 <td>
                                     {% if c.nombre %}
                                     <span class="badge badge-natural">NATURAL</span>
@@ -162,25 +629,58 @@
                                     {% endif %}
                                 </td>
                                 <td>
-                                    {% if c.nombre %}
-                                    {{ c.nombre }} {{ c.apellido }}
-                                    {% else %}
-                                    {{ c.razon_social }}
-                                    {% endif %}
-                                </td>
-                                <td style="color: var(--text-secondary); font-size: 13px;">
-                                    {{ c.celular|default:c.correo|default:"Sin datos" }}
+                                    <div style="font-weight: 600;">
+                                        <a href="/contacto/{{ c.id }}/" style="color: inherit; text-decoration: none;">
+                                            {% if c.nombre %}
+                                            {{ c.nombre }} {{ c.apellido }}
+                                            {% else %}
+                                            {{ c.razon_social }}
+                                            {% endif %}
+                                        </a>
+                                    </div>
+                                    <div style="font-size: 11px; color: var(--texto-secundario);">
+                                        {{ c.correo|default:"Sin correo" }}
+                                    </div>
                                 </td>
                                 <td>
-                                    <a href="/edit/{{ c.id }}/" class="action-link edit-link">Editar</a>
-                                    <span style="color: var(--border);">|</span>
-                                    <a href="/status/{{ c.id }}/" class="action-link status-link">Inactivar</a>
+                                    <div style="display: flex; gap: 10px;">
+                                        <a href="/edit/{{ c.id }}/" title="Editar"
+                                            style="color: #666; text-decoration: none;">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18"
+                                                viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                                stroke-linecap="round" stroke-linejoin="round">
+                                                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7">
+                                                </path>
+                                                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z">
+                                                </path>
+                                            </svg>
+                                        </a>
+                                        <a href="/status/{{ c.id }}/" title="Desactivar"
+                                            style="color: var(--rojo-primario); text-decoration: none;">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18"
+                                                viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                                stroke-linecap="round" stroke-linejoin="round">
+                                                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                                                <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                                            </svg>
+                                        </a>
+                                    </div>
                                 </td>
                             </tr>
                             {% empty %}
                             <tr>
-                                <td colspan="5" style="text-align:center; padding: 40px; color: var(--text-secondary);">
-                                    No hay contactos registrados actualmente.
+                                <td colspan="4"
+                                    style="text-align:center; padding: 60px; color: var(--texto-secundario);">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24"
+                                        fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
+                                        stroke-linejoin="round"
+                                        style="opacity: 0.3; margin-bottom: 10px; display: block; margin-left: auto; margin-right: auto;">
+                                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                                        <circle cx="9" cy="7" r="4"></circle>
+                                        <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                                        <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                                    </svg>
+                                    No se encontraron contactos registrados.
                                 </td>
                             </tr>
                             {% endfor %}
@@ -188,22 +688,100 @@
                     </table>
                 </div>
             </section>
+
+            <!-- SECCIÓN 3: CONTACTOS INACTIVOS (SOLO ADMIN) -->
+            {% if usuario_logueado.rol.nombre_rol == "Administrador" %}
+            <section class="tarjeta-blanca" style="grid-column: 1 / -1; margin-top: 20px; opacity: 0.85;">
+                <h2 style="color: var(--texto-secundario);">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <path
+                            d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24">
+                        </path>
+                        <line x1="1" y1="1" x2="23" y2="23"></line>
+                    </svg>
+                    Contactos Inactivados
+                </h2>
+
+                <div class="tabla-contenedor">
+                    <table class="tabla-directorio">
+                        <thead>
+                            <tr>
+                                <th>Identificación</th>
+                                <th>Nombre / Empresa</th>
+                                <th>Acción</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for c in inactivos %}
+                            <tr>
+                                <td style="color: var(--texto-secundario); font-style: italic;">{{ c.documento_nit }}
+                                </td>
+                                <td style="color: var(--texto-secundario);">
+                                    {% if c.nombre %}
+                                    {{ c.nombre }} {{ c.apellido }}
+                                    {% else %}
+                                    {{ c.razon_social }}
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <a href="/status/{{ c.id }}/" title="Reactivar"
+                                        style="color: #2E7D32; text-decoration: none; font-weight: 700; font-size: 12px; display: flex; align-items: center; gap: 5px;">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                                            viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"
+                                            stroke-linecap="round" stroke-linejoin="round">
+                                            <polyline points="20 6 9 17 4 12"></polyline>
+                                        </svg>
+                                        REACTIVAR
+                                    </a>
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="3" style="text-align: center; padding: 30px; color: #ccc;">No hay contactos
+                                    inactivos.</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+            {% endif %}
         </div>
     </main>
 
     <script>
         function cambiar() {
             var s = document.getElementById("tipoSelect");
-            var t = s.options[s.selectedIndex].text;
-            document.getElementById("sn").style.display = t.includes("Jurídica") ? "none" : "grid";
-            document.getElementById("sj").style.display = t.includes("Jurídica") ? "block" : "none";
+            if (s) {
+                var t = s.options[s.selectedIndex].text;
+                var sn = document.getElementById("sn");
+                var sj = document.getElementById("sj");
+
+                const isJur = t.includes("Jurídica");
+
+                if (sn) sn.style.display = isJur ? "none" : "block";
+                if (sj) sj.style.display = isJur ? "block" : "none";
+
+                // Toggle disabled para que solo se envíen los campos visibles
+                document.getElementById("tipoDocNatural").disabled = isJur;
+                document.getElementById("doc_nat").disabled = isJur;
+
+                document.getElementById("tipoDocJuridica").disabled = !isJur;
+                document.getElementById("doc_jur").disabled = !isJur;
+            }
         }
+
         function validarRegistro() {
             const correo = document.getElementById("c").value;
             const celular = document.getElementById("cel").value;
             const msg = document.getElementById("mensajeJS");
 
-            if (!validarCampoRequerido(document.getElementById("doc_nit").value)) {
+            const isJur = document.getElementById("tipoSelect").options[document.getElementById("tipoSelect").selectedIndex].text.includes("Jurídica");
+            const docVal = isJur ? document.getElementById("doc_jur").value : document.getElementById("doc_nat").value;
+
+            // Simple check since validarCampoRequerido is in external JS
+            if (!docVal) {
                 msg.innerText = "La identificación es obligatoria.";
                 msg.style.display = "block"; return false;
             }
@@ -213,7 +791,10 @@
             }
             return true;
         }
-        window.onload = cambiar;
+
+        // Sidebar expand logic toggle if needed (currently hover based in CSS)
+        // window.onload = cambiar;
+        document.addEventListener('DOMContentLoaded', cambiar);
     </script>
 </body>
 
