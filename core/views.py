@@ -23,6 +23,11 @@ def registro_view(request):
         nombre = request.POST.get("usuario")
         email = request.POST.get("email")
         rol_id = request.POST.get("rol_id")
+        if not rol_id:
+            error = "Debes seleccionar un rol para registrarte."
+            roles = Rol.objects.all()
+            return render(request, "registro.html", {"roles": roles, "error": error})
+        
         passw = request.POST.get("password")
         
         # Validación de duplicados
@@ -81,6 +86,9 @@ def registro_view(request):
     return render(request, "registro.html", {"roles": roles, "error": error})
 
 def verificar_correo(request, token):
+    if not token:
+        return render(request, "login.html", {"error": "Token de verificación inválido.", "roles": Rol.objects.all()})
+        
     u = Usuario.objects.filter(token_verificacion=token).first()
     if u:
         u.activo = True
@@ -101,6 +109,11 @@ def login_view(request):
     
     if request.method == "POST":
         rol_id = request.POST.get("rol_id")
+        if not rol_id:
+            error = "Selecciona un rol."
+            roles = Rol.objects.all()
+            return render(request, "login.html", {"roles": roles, "error": error})
+            
         user_input = request.POST.get("usuario", "").strip()
         pass_input = request.POST.get("password", "")
         
@@ -136,8 +149,8 @@ def recuperar_contrasena_view(request):
             u.token_password = token
             u.save()
             
-            # Generar link absoluto de forma más robusta
-            link = request.build_absolute_uri(reverse('resetear_contrasena', args=[token]))
+            # link = request.build_absolute_uri(reverse('resetear_contrasena', args=[token]))
+            link = f"{settings.NGROK_URL}{reverse('resetear_contrasena', args=[token])}"
             
             try:
                 send_mail(
@@ -161,8 +174,14 @@ def resetear_contrasena_view(request, token):
     Rol.objects.get_or_create(nombre_rol="Administrador")
     Rol.objects.get_or_create(nombre_rol="Usuario")
     
+    if not token:
+        return render(request, "login.html", {
+            "error": "El enlace de recuperación es inválido.", 
+            "roles": Rol.objects.all()
+        })
+    
     u = Usuario.objects.filter(token_password=token).first()
-    if not u:
+    if not u or not token:
         return render(request, "login.html", {
             "error": "El enlace de recuperación es inválido o ha caducado por una nueva solicitud.", 
             "roles": Rol.objects.all()
@@ -182,7 +201,8 @@ def resetear_contrasena_view(request, token):
             u.save()
             return render(request, "login.html", {
                 "success": "Tu contraseña ha sido actualizada. Ya puedes entrar al sistema.", 
-                "roles": Rol.objects.all()
+                "roles": Rol.objects.all(),
+                "error": ""
             })
             
     return render(request, "resetear_contrasena.html", {"error": error, "token": token})

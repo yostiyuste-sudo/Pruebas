@@ -27,6 +27,7 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['127.0.0.1', 'localhost', '10.6.76.127', '.ngrok-free.dev']
 NGROK_URL = 'https://karly-nonwarrantable-letty.ngrok-free.dev'
+CSRF_TRUSTED_ORIGINS = [NGROK_URL, 'https://*.ngrok-free.dev']
 
 
 # Application definition
