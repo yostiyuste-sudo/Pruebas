@@ -14,6 +14,8 @@ class Usuario(models.Model):
     email = models.EmailField(unique=True)
     password_hash = models.CharField(max_length=255)
     activo = models.BooleanField(default=True)
+    token_verificacion = models.CharField(max_length=100, null=True, blank=True)
+    token_password = models.CharField(max_length=100, null=True, blank=True)
     
     def __str__(self):
         return self.nombre_usuario

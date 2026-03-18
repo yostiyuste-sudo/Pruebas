@@ -31,4 +31,7 @@ urlpatterns = [
     path('registro/', views.registro_view, name='registro'),
     path('usuarios/', views.usuarios_view, name='usuarios'),
     path('contacto/<int:id_contacto>/destacar/<int:id_interaccion>/', views.destacar_interaccion, name='destacar_interaccion'),
+    path('verificar/<str:token>/', views.verificar_correo, name='verificar_correo'),
+    path('recuperar-contrasena/', views.recuperar_contrasena_view, name='recuperar_contrasena'),
+    path('resetear-contrasena/<str:token>/', views.resetear_contrasena_view, name='resetear_contrasena'),
 ]

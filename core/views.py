@@ -4,10 +4,13 @@ from email.header import decode_header
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.core.mail import send_mail
+from django.urls import reverse
+import uuid
 from django.utils import timezone
 from django.conf import settings
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
+from django.db.models import Q
 from .models import Contacto, TipoContacto, TipoIdentificacion, Interaccion, TipoInteraccion, Usuario, Rol
 
 def registro_view(request):
@@ -23,25 +26,68 @@ def registro_view(request):
         passw = request.POST.get("password")
         
         # Validación de duplicados
-        if Usuario.objects.filter(nombre_usuario=nombre).exists():
+        usuario_sin_verificar = Usuario.objects.filter(email=email, activo=False).first()
+        if usuario_sin_verificar:
+            # Reenviar correo si la cuenta existe pero no está verificada
+            try:
+                token = str(uuid.uuid4())
+                usuario_sin_verificar.token_verificacion = token
+                usuario_sin_verificar.save()
+                
+                # link = request.build_absolute_uri(reverse('verificar_correo', args=[token]))
+                link = f"{settings.NGROK_URL}{reverse('verificar_correo', args=[token])}"
+                
+                send_mail(
+                    'Verifica tu cuenta en el CRM (reenvío)',
+                    f'Hola {usuario_sin_verificar.nombre_usuario},\n\nTe reenviamos el enlace de verificación:\n{link}\n\nSi no creaste esta cuenta, ignora este mensaje.',
+                    None,
+                    [email],
+                    fail_silently=False,
+                )
+                return render(request, "registro.html", {"success": "Ya te habíamos enviado un correo. Te hemos reenviado el enlace de verificación. Revisa tu bandeja de entrada o spam.", "roles": Rol.objects.all()})
+            except Exception as e:
+                error = f"Error al reenviar correo: {e}"
+        elif Usuario.objects.filter(nombre_usuario=nombre).exists():
             error = "Este nombre de usuario ya está ocupado."
-        elif Usuario.objects.filter(email=email).exists():
-            error = "Este correo electrónico ya está registrado."
+        elif Usuario.objects.filter(email=email, activo=True).exists():
+            error = "Este correo electrónico ya está registrado y verificado."
         else:
             try:
+                token = str(uuid.uuid4())
                 Usuario.objects.create(
                     nombre_usuario=nombre,
                     email=email,
                     rol_id=rol_id,
                     password_hash=passw,
-                    activo=True
+                    activo=False,
+                    token_verificacion=token
                 )
-                return redirect('/login/')
+                
+                # link = request.build_absolute_uri(reverse('verificar_correo', args=[token]))
+                link = f"{settings.NGROK_URL}{reverse('verificar_correo', args=[token])}"
+                
+                send_mail(
+                    'Verifica tu cuenta en el CRM',
+                    f'Hola {nombre},\n\nPor favor, verifica tu correo electrónico haciendo clic en el siguiente enlace:\n{link}\n\nSi no creaste esta cuenta, ignora este mensaje.',
+                    None,
+                    [email],
+                    fail_silently=False,
+                )
+                return render(request, "registro.html", {"success": "Registro exitoso. Revisa tu bandeja de entrada o spam para verificar tu correo.", "roles": Rol.objects.all()})
             except Exception as e:
                 error = f"Error al registrar: {e}"
                 
     roles = Rol.objects.all()
     return render(request, "registro.html", {"roles": roles, "error": error})
+
+def verificar_correo(request, token):
+    u = Usuario.objects.filter(token_verificacion=token).first()
+    if u:
+        u.activo = True
+        u.token_verificacion = ""
+        u.save()
+        return render(request, "login.html", {"success": "Cuenta verificada con éxito. Ya puedes iniciar sesión.", "roles": Rol.objects.all()})
+    return render(request, "login.html", {"error": "El enlace de verificación es inválido o ya expiró.", "roles": Rol.objects.all()})
 
 def login_view(request):
     error = ""
@@ -55,10 +101,15 @@ def login_view(request):
     
     if request.method == "POST":
         rol_id = request.POST.get("rol_id")
-        user_input = request.POST.get("usuario")
-        pass_input = request.POST.get("password")
+        user_input = request.POST.get("usuario", "").strip()
+        pass_input = request.POST.get("password", "")
         
-        u = Usuario.objects.filter(nombre_usuario=user_input, rol_id=rol_id, password_hash=pass_input, activo=True).first()
+        u = Usuario.objects.filter(
+            Q(nombre_usuario__iexact=user_input) | Q(email__iexact=user_input),
+            rol_id=rol_id,
+            password_hash=pass_input,
+            activo=True
+        ).first()
         if u:
             request.session['user_id'] = u.id
             request.session['user_name'] = u.nombre_usuario
@@ -73,6 +124,68 @@ def login_view(request):
 def logout_view(request):
     request.session.flush()
     return redirect('/login/')
+
+def recuperar_contrasena_view(request):
+    error = ""
+    success = ""
+    if request.method == "POST":
+        email = request.POST.get("email", "").strip()
+        u = Usuario.objects.filter(email__iexact=email).first()
+        if u:
+            token = str(uuid.uuid4())
+            u.token_password = token
+            u.save()
+            
+            # Generar link absoluto de forma más robusta
+            link = request.build_absolute_uri(reverse('resetear_contrasena', args=[token]))
+            
+            try:
+                send_mail(
+                    'Recuperar Contraseña - CRM Dyco',
+                    f'Hola {u.nombre_usuario},\n\nHemos recibido una solicitud para restablecer tu contraseña. Haz clic en el siguiente enlace para continuar:\n\n{link}\n\nSi no solicitaste este cambio, puedes ignorar este mensaje de forma segura.',
+                    None,
+                    [email],
+                    fail_silently=False,
+                )
+                success = "Te hemos enviado un correo con las instrucciones. Revisa tu bandeja de entrada o spam."
+            except Exception as e:
+                error = f"Error al enviar el correo: {e}"
+        else:
+            error = "No encontramos ningún usuario con ese correo electrónico."
+            
+    return render(request, "recuperar_contrasena.html", {"error": error, "success": success})
+
+def resetear_contrasena_view(request, token):
+    error = ""
+    # Asegurar roles para que el login.html no falle al renderizar
+    Rol.objects.get_or_create(nombre_rol="Administrador")
+    Rol.objects.get_or_create(nombre_rol="Usuario")
+    
+    u = Usuario.objects.filter(token_password=token).first()
+    if not u:
+        return render(request, "login.html", {
+            "error": "El enlace de recuperación es inválido o ha caducado por una nueva solicitud.", 
+            "roles": Rol.objects.all()
+        })
+    
+    if request.method == "POST":
+        passw = request.POST.get("password")
+        confirm_passw = request.POST.get("confirm_password")
+        
+        if not passw or len(passw) < 4:
+            error = "La contraseña debe tener al menos 4 caracteres."
+        elif passw != confirm_passw:
+            error = "Las contraseñas no coinciden."
+        else:
+            u.password_hash = passw
+            u.token_password = "" 
+            u.save()
+            return render(request, "login.html", {
+                "success": "Tu contraseña ha sido actualizada. Ya puedes entrar al sistema.", 
+                "roles": Rol.objects.all()
+            })
+            
+    return render(request, "resetear_contrasena.html", {"error": error, "token": token})
 
 def contactos(request):
     # Verificación de sesión
@@ -183,6 +296,11 @@ def cambiar_estado(request, id_contacto):
     c = get_object_or_404(Contacto, id=id_contacto)
     c.activo = not c.activo
     c.save()
+    
+    # Redirigir de vuelta a la página de origen para una mejor experiencia
+    referer = request.META.get('HTTP_REFERER')
+    if referer:
+        return redirect(referer)
     return redirect('/')
 
 def sincronizar_correos_imap(request, contacto, usuario_logueado):

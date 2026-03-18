@@ -306,22 +306,53 @@
             font-size: 14px; font-weight: 700; color: #64748b;
             cursor: pointer;
             border-bottom: 3px solid transparent;
+            transition: all 0.3s ease;
         }
         .tab-top.active { color: #B71C1C; border-bottom-color: #B71C1C; }
+
+        .tab-content-container {
+            display: none;
+            flex: 1;
+            overflow-y: auto;
+        }
+        .tab-content-container.active {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .desc-section { padding: 40px; }
+        .desc-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 30px; }
+        .desc-item { margin-bottom: 20px; }
+        .desc-label { font-size: 12px; font-weight: 800; color: #94a3b8; text-transform: uppercase; margin-bottom: 8px; }
+        .desc-value { font-size: 15px; font-weight: 600; color: #1e293b; }
 
         .tabs-sub-nav {
             display: flex;
             gap: 25px;
             padding: 15px 30px;
             border-bottom: 1px solid #f1f5f9;
+            position: relative;
         }
         .tab-sub {
-            padding-bottom: 8px;
+            padding-bottom: 12px;
             border: none; background: none; cursor: pointer;
             font-size: 13px; font-weight: 600; color: #94a3b8;
-            border-bottom: 2px solid transparent;
+            transition: color 0.3s ease;
+            position: relative;
+            z-index: 1;
         }
-        .tab-sub.active { color: #1e293b; border-bottom-color: #1e293b; }
+        .tab-sub.active { color: #1e293b; }
+        
+        /* Indicador animado */
+        .tab-indicator {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            height: 3px;
+            background: #1e293b;
+            transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+            border-radius: 3px 3px 0 0;
+        }
 
         .interaccion-form-box {
             padding: 24px 30px;
@@ -753,16 +784,76 @@
         <!-- PANEL DERECHO -->
         <section class="panel-derecho">
             <div class="tabs-header-top">
-                <button class="tab-top">Descripción</button>
-                <button class="tab-top active">Actividades</button>
+                <button class="tab-top" id="btn-top-desc" onclick="cambiarTabPrincipal('descripcion')">Descripción</button>
+                <button class="tab-top active" id="btn-top-activ" onclick="cambiarTabPrincipal('actividades')">Actividades</button>
             </div>
-            <div class="tabs-sub-nav">
+
+            <!-- CONTENIDO DESCRIPCIÓN -->
+            <div id="cnt-principal-descripcion" class="tab-content-container">
+                <div class="desc-section">
+                    <h2 style="margin-bottom: 30px; color: #1e293b;">Detalles del Contacto</h2>
+                    <div class="desc-grid">
+                        <div class="desc-item">
+                            <div class="desc-label">Tipo de identificación</div>
+                            <div class="desc-value">{{ c.tipo_doc.nombre_tipo }}</div>
+                        </div>
+                        <div class="desc-item">
+                            <div class="desc-label">Número de identificación</div>
+                            <div class="desc-value">{{ c.documento_nit }}</div>
+                        </div>
+                        {% if c.nombre %}
+                        <div class="desc-item">
+                            <div class="desc-label">Nombres</div>
+                            <div class="desc-value">{{ c.nombre }}</div>
+                        </div>
+                        <div class="desc-item">
+                            <div class="desc-label">Apellidos</div>
+                            <div class="desc-value">{{ c.apellido }}</div>
+                        </div>
+                        <div class="desc-item">
+                            <div class="desc-label">Fecha de Expedición</div>
+                            <div class="desc-value">{{ c.fecha_expedicion|default:"No registrada" }}</div>
+                        </div>
+                        <div class="desc-item">
+                            <div class="desc-label">Estado Civil</div>
+                            <div class="desc-value">{{ c.estado_civil|default:"No registrado" }}</div>
+                        </div>
+                        {% else %}
+                        <div class="desc-item">
+                            <div class="desc-label">Razón Social</div>
+                            <div class="desc-value">{{ c.razon_social }}</div>
+                        </div>
+                        <div class="desc-item">
+                            <div class="desc-label">Representante Legal</div>
+                            <div class="desc-value">{{ c.nombre_rep_legal|default:"No registrado" }}</div>
+                        </div>
+                        <div class="desc-item">
+                            <div class="desc-label">ID Representante</div>
+                            <div class="desc-value">{{ c.id_rep_legal|default:"No registrado" }}</div>
+                        </div>
+                        {% endif %}
+                        <div class="desc-item">
+                            <div class="desc-label">Fecha de Registro</div>
+                            <div class="desc-value">{{ c.fecha_registro|date:"d \d\e F, Y" }}</div>
+                        </div>
+                        <div class="desc-item">
+                            <div class="desc-label">Responsable Asignado</div>
+                            <div class="desc-value">{{ c.usuario_asignado.nombre_usuario }}</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CONTENIDO ACTIVIDADES (Envuelve todo lo anterior) -->
+            <div id="cnt-principal-actividades" class="tab-content-container active">
+            <div class="tabs-sub-nav" id="tabs-sub-nav">
                 <button class="tab-sub active" id="btn-tab-actividad" onclick="cambiarSubTab('actividad')">Actividad</button>
                 <button class="tab-sub" id="btn-tab-notas" onclick="cambiarSubTab('notas')">Notas</button>
                 <button class="tab-sub" id="btn-tab-correos" onclick="cambiarSubTab('correos')">Correos</button>
                 <button class="tab-sub" id="btn-tab-llamadas" onclick="cambiarSubTab('llamadas')">Llamadas</button>
                 <button class="tab-sub" id="btn-tab-tareas" onclick="cambiarSubTab('tareas')">Tareas</button>
                 <button class="tab-sub" id="btn-tab-reuniones" onclick="cambiarSubTab('reuniones')">Reuniones</button>
+                <div class="tab-indicator" id="tab-indicator"></div>
             </div>
 
             <div class="interaccion-form-box" id="interaccion-form-box">
@@ -1177,6 +1268,37 @@
             abrirModal('modalGenerico');
         }
 
+        function cambiarTabPrincipal(tab) {
+            const btnDesc = document.getElementById('btn-top-desc');
+            const btnActiv = document.getElementById('btn-top-activ');
+            const cntDesc = document.getElementById('cnt-principal-descripcion');
+            const cntActiv = document.getElementById('cnt-principal-actividades');
+
+            if (tab === 'descripcion') {
+                btnDesc.classList.add('active');
+                btnActiv.classList.remove('active');
+                cntDesc.classList.add('active');
+                cntActiv.classList.remove('active');
+            } else {
+                btnDesc.classList.remove('active');
+                btnActiv.classList.add('active');
+                cntDesc.classList.remove('active');
+                cntActiv.classList.add('active');
+                // Re-inicializar indicador por si se movió algo
+                const activeSubTab = document.querySelector('.tab-sub.active');
+                if (activeSubTab) {
+                   setTimeout(() => {
+                        const nav = document.getElementById('tabs-sub-nav');
+                        const indicator = document.getElementById('tab-indicator');
+                        const navRect = nav.getBoundingClientRect();
+                        const tabRect = activeSubTab.getBoundingClientRect();
+                        indicator.style.width = tabRect.width + 'px';
+                        indicator.style.left = (tabRect.left - navRect.left) + 'px';
+                   }, 50);
+                }
+            }
+        }
+
         function abrirEmailAction(accion, id) {
             const body = document.getElementById('tm-body-' + id).innerText;
             const lines = body.split('\n');
@@ -1227,11 +1349,24 @@
                 });
             }
 
-            // Update Tab styles
-            document.querySelectorAll('.sub-tabs span').forEach(s => s.classList.remove('active'));
-            // Seleccionamos el span que tiene el onclick con el tab exacto
-            const activeTab = document.querySelector(`.sub-tabs span[onclick*="'${tab}'"]`);
-            if (activeTab) activeTab.classList.add('active');
+            // Update Tab styles & Indicator
+            const tabs = document.querySelectorAll('.tab-sub');
+            const indicator = document.getElementById('tab-indicator');
+            
+            tabs.forEach(t => t.classList.remove('active'));
+            
+            const activeTab = document.getElementById('btn-tab-' + tab) || document.querySelector(`.tab-sub[onclick*="'${tab}'"]`);
+            if (activeTab) {
+                activeTab.classList.add('active');
+                
+                // Mover el indicador
+                const nav = document.getElementById('tabs-sub-nav');
+                const navRect = nav.getBoundingClientRect();
+                const tabRect = activeTab.getBoundingClientRect();
+                
+                indicator.style.width = tabRect.width + 'px';
+                indicator.style.left = (tabRect.left - navRect.left) + 'px';
+            }
         }
 
         function actualizarContadoresReuniones() {
@@ -1422,10 +1557,22 @@
         {% endfor %}
         {% endif %}
 
-        // Al cargar, ver si hay tab en URL
+        // Al cargar, ver si hay tab en URL y manejar redimensión
         window.addEventListener('load', () => {
             const urlTab = new URLSearchParams(window.location.search).get('tab');
-            if(urlTab) cambiarSubTab(urlTab);
+            cambiarSubTab(urlTab || 'actividad');
+        });
+
+        window.addEventListener('resize', () => {
+            const activeTab = document.querySelector('.tab-sub.active');
+            if (activeTab) {
+                const nav = document.getElementById('tabs-sub-nav');
+                const indicator = document.getElementById('tab-indicator');
+                const navRect = nav.getBoundingClientRect();
+                const tabRect = activeTab.getBoundingClientRect();
+                indicator.style.width = tabRect.width + 'px';
+                indicator.style.left = (tabRect.left - navRect.left) + 'px';
+            }
         });
     </script>
 </body>

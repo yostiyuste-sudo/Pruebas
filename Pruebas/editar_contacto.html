@@ -417,8 +417,7 @@
                         <label>Tipo de Persona</label>
                         <select name="tipo_contacto" id="tipoSelect" onchange="cambiar()">
                             {% for tc in tipos_contacto %}
-                            <option value="{{ tc.id }}" {% if tc.id == c.tipo_contacto_id %}selected{% endif %}>{{
-                                tc.nombre_tipo }}</option>
+                            <option value="{{ tc.id }}" {% if tc.id == c.tipo_contacto_id %}selected{% endif %}>{{ tc.nombre_tipo }}</option>
                             {% endfor %}
                         </select>
                     </div>
@@ -427,8 +426,7 @@
                         <label>Tipo de Identificación</label>
                         <select name="tipo_doc" id="tipoDoc">
                             {% for td in tipos_doc %}
-                            <option value="{{ td.id }}" {% if td.id == c.tipo_doc_id %}selected{% endif %}>{{
-                                td.nombre_tipo }}</option>
+                            <option value="{{ td.id }}" {% if td.id == c.tipo_doc_id %}selected{% endif %}>{{ td.nombre_tipo }}</option>
                             {% endfor %}
                         </select>
                     </div>
