@@ -1,50 +1,42 @@
 from django.db import models
 
-# === TABLA: Roles ===
 class Rol(models.Model):
     nombre_rol = models.CharField(max_length=50)
-    
+
     def __str__(self):
         return self.nombre_rol
 
-# === TABLA: Usuarios ===
 class Usuario(models.Model):
-    rol = models.ForeignKey(Rol, on_delete=models.SET_NULL, null=True, blank=True)
+    id_rol = models.ForeignKey(Rol, on_delete=models.CASCADE)
     nombre_usuario = models.CharField(max_length=100)
     email = models.EmailField(unique=True)
     password_hash = models.CharField(max_length=255)
     activo = models.BooleanField(default=True)
-    token_verificacion = models.CharField(max_length=100, null=True, blank=True)
-    token_password = models.CharField(max_length=100, null=True, blank=True)
-    
+
     def __str__(self):
         return self.nombre_usuario
 
-# === TABLA: Tipos de Identificación ===
 class TipoIdentificacion(models.Model):
     nombre_tipo = models.CharField(max_length=50)
-    
+
     def __str__(self):
         return self.nombre_tipo
 
-# === TABLA: Tipos de Contacto (Persona Natural / Jurídica) ===
 class TipoContacto(models.Model):
-    nombre_tipo = models.CharField(max_length=50)
-    
+    nombre_tipo = models.CharField(max_length=50) # Ej: 'Persona Natural', 'Persona Juridica'
+
     def __str__(self):
         return self.nombre_tipo
 
-# === TABLA: Tipos de Interacción ===
 class TipoInteraccion(models.Model):
-    nombre_tipo = models.CharField(max_length=50)
-    
+    nombre_tipo = models.CharField(max_length=50) # Ejemplo: 'Llamada', 'Correo'
+
     def __str__(self):
         return self.nombre_tipo
 
-# === TABLA: Contactos ===
 class Contacto(models.Model):
-    tipo_contacto = models.ForeignKey(TipoContacto, on_delete=models.CASCADE)
-    tipo_doc = models.ForeignKey(TipoIdentificacion, on_delete=models.CASCADE)
+    id_tipo_contacto = models.ForeignKey(TipoContacto, on_delete=models.CASCADE)
+    id_tipo_doc = models.ForeignKey(TipoIdentificacion, on_delete=models.CASCADE)
     documento_nit = models.CharField(max_length=25)
     
     # Atributos Compartidos
@@ -53,61 +45,42 @@ class Contacto(models.Model):
     direccion = models.CharField(max_length=255, blank=True, null=True)
     ciudad = models.CharField(max_length=100, blank=True, null=True)
     correo = models.EmailField(max_length=150, blank=True, null=True)
-    usuario_asignado = models.ForeignKey(Usuario, on_delete=models.SET_NULL, null=True, blank=True)
+    id_usuario_asignado = models.ForeignKey(Usuario, on_delete=models.SET_NULL, null=True)
     
-    # Atributos Persona Natural
+    # Atributos de Persona Natural
     nombre = models.CharField(max_length=100, blank=True, null=True)
     apellido = models.CharField(max_length=100, blank=True, null=True)
     fecha_expedicion = models.DateField(blank=True, null=True)
     estado_civil = models.CharField(max_length=50, blank=True, null=True)
     
-    # Atributos Persona Jurídica
+    # Atributos de Persona Jurídica
     razon_social = models.CharField(max_length=200, blank=True, null=True)
     nombre_rep_legal = models.CharField(max_length=150, blank=True, null=True)
     id_rep_legal = models.CharField(max_length=25, blank=True, null=True)
     
     fecha_registro = models.DateTimeField(auto_now_add=True)
-    activo = models.BooleanField(default=True) # Subtarea 3: Campo de estado (ACTIVO/INACTIVO)
 
     def __str__(self):
-        return self.nombre if self.nombre else self.razon_social
+        return self.razon_social if self.razon_social else f"{self.nombre} {self.apellido}"
 
-# === TABLA: Interacciones ===
 class Interaccion(models.Model):
-    contacto = models.ForeignKey(Contacto, on_delete=models.CASCADE)
-    usuario_responsable = models.ForeignKey(Usuario, on_delete=models.CASCADE, null=True, blank=True)
-    tipo_interaccion = models.ForeignKey(TipoInteraccion, on_delete=models.CASCADE)
+    id_contacto = models.ForeignKey(Contacto, on_delete=models.CASCADE)
+    id_usuario_responsable = models.ForeignKey(Usuario, on_delete=models.CASCADE)
+    id_tipo_interaccion = models.ForeignKey(TipoInteraccion, on_delete=models.CASCADE)
     detalle_actividad = models.TextField()
     es_exitosa = models.BooleanField(default=False)
     procede_a_compromiso = models.BooleanField(default=False)
     fecha_interaccion = models.DateTimeField(auto_now_add=True)
-    fecha_actualizacion = models.DateTimeField(auto_now=True, null=True, blank=True)
-    tipo_comunicacion = models.CharField(max_length=10, default='Saliente', choices=[('Entrante', 'Entrante'), ('Saliente', 'Saliente')])
-    mensaje_id = models.CharField(max_length=255, null=True, blank=True, unique=True)
-    destacado = models.BooleanField(default=False)
-    estado = models.CharField(max_length=20, default='Finalizada', choices=[('Programada', 'Programada'), ('Finalizada', 'Finalizada'), ('Cancelada', 'Cancelada')])
-    modalidad = models.CharField(max_length=50, null=True, blank=True)
-    asunto = models.CharField(max_length=255, null=True, blank=True)
-    fecha_reunion = models.DateField(null=True, blank=True)
-    hora_reunion = models.TimeField(null=True, blank=True)
-    direccion = models.CharField(max_length=300, null=True, blank=True)
-    historial_cambios = models.TextField(null=True, blank=True)
-    
-    def __str__(self):
-        return f"Interacción {self.id} - {self.contacto.nombre if self.contacto.nombre else self.contacto.razon_social}"
 
-# === TABLA: Compromisos ===
 class Compromiso(models.Model):
-    ESTADOS = [
+    ESTADO_CHOICES = [
         ('Pendiente', 'Pendiente'),
         ('En Proceso', 'En Proceso'),
         ('Completado', 'Completado'),
         ('Cancelado', 'Cancelado'),
     ]
-    interaccion = models.ForeignKey(Interaccion, on_delete=models.CASCADE)
-    descripcion_compromiso = models.TextField()
-    estado = models.CharField(max_length=20, choices=ESTADOS, default='Pendiente')
-    fecha_limite = models.DateField()
     
-    def __str__(self):
-        return f"Compromiso {self.id} de Interacción {self.interaccion.id}"
+    id_actividad = models.ForeignKey(Interaccion, on_delete=models.CASCADE)
+    descripcion_compromiso = models.TextField()
+    estado = models.CharField(max_length=20, choices=ESTADO_CHOICES, default='Pendiente')
+    fecha_limite = models.DateField()
