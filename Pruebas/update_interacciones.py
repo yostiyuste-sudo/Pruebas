@@ -1,7 +1,4 @@
-import sys
-import re
-
-file_path = r'c:\Users\Jary\OneDrive\Documentos\Pruebas\Pruebas\interacciones.html'
+file_path = r'c:\Users\usuario\Documents\Pruebas\Pruebas\interacciones.html'
 
 with open(file_path, 'r', encoding='utf-8') as f:
     content = f.read()
@@ -123,7 +120,7 @@ crm_styles = '''
         .estado-inactivo { background: #FFEBEE; color: #C62828; }
 '''
 
-content = content.replace('</style>', crm_styles + '\\n    </style>')
+content = content.replace('</style>', crm_styles + '\n    </style>')
 
 new_main = '''
     <main class="contenido-principal" style="padding: 20px 40px; height: 100vh; overflow-y: auto;">
@@ -149,7 +146,7 @@ new_main = '''
                 <div class="grupo-campo" style="margin-bottom: 25px;">
                     <label style="font-size: 13px; font-weight: 700; color: var(--rojo-primario);">SELECCIONAR CLIENTE</label>
                     <select id="selectContacto" onchange="seleccionarContacto()" class="entrada-texto" style="border: 2px solid var(--rojo-primario); font-weight: 600; box-shadow: 0 2px 10px rgba(211,47,47,0.1);">
-                        <option value="">-- Buscar o seleccionar contacto --</option>
+                        <option value="">Buscar o seleccionar contacto</option>
                         {% for c in contactos %}
                         <option value="{{ c.id }}">
                             {% if c.nombre %}{{ c.nombre }} {{ c.apellido }}{% else %}{{ c.razon_social }}{% endif %}
@@ -158,12 +155,16 @@ new_main = '''
                     </select>
                 </div>
 
-                <div id="instruccionContacto" style="text-align: center; padding: 40px 20px; color: var(--texto-secundario);">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="opacity: 0.5; margin-bottom: 10px;">
-                        <circle cx="11" cy="11" r="8"></circle>
-                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-                    </svg>
-                    <p>Selecciona un cliente de la lista para ver su perfil y registrar nuevas interacciones o historial.</p>
+                <div id="instruccionContacto" style="text-align: center; padding: 60px 20px; color: var(--texto-secundario);">
+                    <div style="background: #fdf2f2; width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; color: var(--rojo-primario);">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                            <circle cx="8.5" cy="7" r="4"></circle>
+                            <polyline points="17 11 19 13 23 9"></polyline>
+                        </svg>
+                    </div>
+                    <p style="font-weight: 600; font-size: 14px; margin-bottom: 5px;">Panel de Cliente</p>
+                    <p style="font-size: 12px; line-height: 1.4;">Selecciona un cliente de la lista derecha o del buscador para ver su perfil detallado.</p>
                 </div>
 
                 <div id="panelDetallesContacto" style="display: none;">
@@ -240,81 +241,130 @@ new_main = '''
 
             <!-- PANEL DERECHO -->
             <div class="panel-derecho">
-                <div class="tabs-primarias">
-                    <button class="tab-btn">Descripción</button>
-                    <button class="tab-btn activa">Actividades</button>
-                </div>
-                
-                <div class="tabs-secundarias">
-                    <button class="subtab-btn activa">Actividad</button>
-                    <button class="subtab-btn">Notas</button>
-                    <button class="subtab-btn">Correos</button>
-                    <button class="subtab-btn">Llamadas</button>
-                    <button class="subtab-btn">Tareas</button>
-                    <button class="subtab-btn">Reuniones</button>
-                </div>
-
-                <div class="crear-interaccion-form" id="areaForm" style="display:none;">
-                    <form method="POST" onsubmit="return validarInter()">
-                        {% csrf_token %}
-                        <input type="hidden" name="contacto" id="contacto_hidden">
-                        <div style="display: flex; gap: 10px; margin-bottom: 10px;">
-                            <select id="tipoInterId" name="tipo_interaccion" style="flex: 1;" class="entrada-texto" required>
-                                <option value="">Seleccione el medio...</option>
-                                {% for t in tipos %}
-                                <option value="{{ t.id }}">{{ t.nombre_tipo }}</option>
-                                {% endfor %}
-                            </select>
-                            <div style="display:flex; align-items:center; gap:5px;">
-                                <input type="checkbox" id="exito" name="es_exitosa">
-                                <label for="exito" style="font-size:12px; font-weight:500;">Exitosa</label>
-                            </div>
+                <!-- VISTA GLOBAL (Cuando no hay contacto seleccionado) -->
+                <div id="vistaGlobal" style="padding: 30px; height: 100%; overflow-y: auto;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;">
+                        <div>
+                            <h2 style="font-size: 20px; font-weight: 800; color: var(--texto-principal);">Directorio de Clientes</h2>
+                            <p style="color: var(--texto-secundario); font-size: 13px;">Gestiona tus contactos comerciales y sus actividades.</p>
                         </div>
-                        <textarea id="detId" name="detalle" placeholder="Registrar una nueva actividad..." required></textarea>
-                        <div style="text-align: right;">
-                            <button type="submit" class="btn-guardar">Guardar Actividad</button>
+                        <div style="background: white; border: 1px solid var(--gris-borde); padding: 5px 15px; border-radius: 8px; font-size: 12px; font-weight: 600; color: var(--texto-secundario);">
+                            {{ contactos|length }} Contactos Registrados
                         </div>
-                    </form>
-                </div>
+                    </div>
 
-                <div class="timeline-container">
-                    <div style="border-left: 2px solid var(--gris-borde); padding-left: 20px; position: relative;">
-                        <div class="timeline-mes">Historial de Interacciones</div>
-                        
-                        <div id="noInteracciones" style="display:none; text-align: center; color: var(--texto-secundario); padding: 40px; font-size: 14px;">
-                            No hay interacciones para mostrar o no se ha seleccionado contacto.
-                        </div>
-
-                        {% for inter in interacciones %}
-                        <div class="interaccion-item inter-card" data-contacto-id="{{ inter.contacto.id }}">
-                            <div class="interaccion-header">
-                                <span class="interaccion-titulo">
-                                    {{ inter.tipo_interaccion.nombre_tipo }} - por {{ inter.usuario_responsable.nombre_usuario }} - <span style="color: var(--rojo-primario); font-weight:700;">{% if inter.contacto.nombre %}{{ inter.contacto.nombre }}{% else %}{{ inter.contacto.razon_social }}{% endif %}</span>
-                                </span>
-                                <span class="interaccion-fecha">{{ inter.fecha_interaccion|date:"d M, Y - h:i a" }}</span>
-                            </div>
-                            
-                            {% if inter.es_exitosa %}
-                                <div class="badge-estado estado-verde">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                                    Exitosa
+                    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px;">
+                        {% for c in contactos %}
+                        <div onclick="document.getElementById('selectContacto').value='{{ c.id }}'; seleccionarContacto();" 
+                             style="background: white; border: 1px solid var(--gris-borde); padding: 20px; border-radius: 16px; cursor: pointer; transition: 0.3s; box-shadow: 0 2px 4px rgba(0,0,0,0.02);"
+                             onmouseover="this.style.borderColor='var(--rojo-primario)'; this.style.transform='translateY(-3px)'; this.style.boxShadow='0 10px 20px rgba(211,47,47,0.05)';" 
+                             onmouseout="this.style.borderColor='var(--gris-borde)'; this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 4px rgba(0,0,0,0.02)';" 
+                        >
+                            <div style="display: flex; gap: 15px; align-items: center; margin-bottom: 15px;">
+                                <div style="width: 50px; height: 50px; background: {% if c.nombre %}#E3F2FD{% else %}#F3E5F5{% endif %}; color: {% if c.nombre %}#4391df{% else %}#b641ab{% endif %}; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 18px;">
+                                    {% if c.nombre %}{{ c.nombre|make_list|first|upper }}{% else %}{{ c.razon_social|make_list|first|upper }}{% endif %}
                                 </div>
-                            {% else %}
-                                <div class="badge-estado estado-naranja">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
-                                    Pendiente / No confirmada
+                                <div>
+                                    <div style="font-weight: 700; color: var(--texto-principal); font-size: 14px;">
+                                        {% if c.nombre %}{{ c.nombre }} {{ c.apellido }}{% else %}{{ c.razon_social }}{% endif %}
+                                    </div>
+                                    <div style="font-size: 11px; color: var(--texto-secundario); margin-top: 2px;">{{ c.documento_nit }}</div>
                                 </div>
-                            {% endif %}
-                            
-                            <div class="interaccion-detalle">
-                                {{ inter.detalle_actividad|linebreaksbr }}
                             </div>
                             
-                            <div style="margin-top: 10px; text-align: right;">
-                                <a href="/inter_del/{{ inter.id }}/" onclick="return confirm('¿Deseas eliminar este registro de actividad?')" style="color: var(--texto-secundario); transition: 0.2s; font-size: 11px; text-decoration: none;">Eliminar</a>
+                            <div style="display: flex; flex-direction: column; gap: 8px; border-top: 1px dashed var(--gris-borde); padding-top: 15px;">
+                                <div style="display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--texto-principal);">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+                                    {{ c.correo|default:"-" }}
+                                </div>
+                                <div style="display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--texto-principal);">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
+                                    {{ c.celular|default:"-" }}
+                                </div>
                             </div>
                         </div>
                         {% endfor %}
+                    </div>
+                </div>
+
+                <!-- VISTA DETALLE (Cuando se selecciona un contacto) -->
+                <div id="vistaDetalle" style="display: none; height: 100%; flex-direction: column;">
+                    <div class="tabs-primarias">
+                        <button class="tab-btn">Descripción</button>
+                        <button class="tab-btn activa">Actividades</button>
+                    </div>
+                    
+                    <div class="tabs-secundarias">
+                        <button class="subtab-btn activa">Actividad</button>
+                        <button class="subtab-btn">Notas</button>
+                        <button class="subtab-btn">Correos</button>
+                        <button class="subtab-btn">Llamadas</button>
+                        <button class="subtab-btn">Tareas</button>
+                        <button class="subtab-btn">Reuniones</button>
+                    </div>
+
+                    <div class="crear-interaccion-form" id="areaForm">
+                        <form method="POST" onsubmit="return validarInter()">
+                            {% csrf_token %}
+                            <input type="hidden" name="contacto" id="contacto_hidden">
+                            <div style="display: flex; gap: 10px; margin-bottom: 10px;">
+                                <select id="tipoInterId" name="tipo_interaccion" style="flex: 1;" class="entrada-texto" required>
+                                    <option value="">Seleccione el medio...</option>
+                                    {% for t in tipos %}
+                                    <option value="{{ t.id }}">{{ t.nombre_tipo }}</option>
+                                    {% endfor %}
+                                </select>
+                                <div style="display:flex; align-items:center; gap:5px;">
+                                    <input type="checkbox" id="exito" name="es_exitosa">
+                                    <label for="exito" style="font-size:12px; font-weight:500;">Exitosa</label>
+                                </div>
+                            </div>
+                            <textarea id="detId" name="detalle" placeholder="Registrar una nueva actividad..." required></textarea>
+                            <div style="text-align: right;">
+                                <button type="submit" class="btn-guardar">Guardar Actividad</button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <div class="timeline-container">
+                        <div style="border-left: 2px solid var(--gris-borde); padding-left: 20px; position: relative;">
+                            <div class="timeline-mes">Historial de Interacciones</div>
+                            
+                            <div id="noInteracciones" style="display:none; text-align: center; color: var(--texto-secundario); padding: 40px; font-size: 14px;">
+                                No hay interacciones para mostrar para este contacto.
+                            </div>
+
+                            {% for inter in interacciones %}
+                            <div class="interaccion-item inter-card" data-contacto-id="{{ inter.contacto.id }}">
+                                <div class="interaccion-header">
+                                    <span class="interaccion-titulo">
+                                        {{ inter.tipo_interaccion.nombre_tipo }} - por {{ inter.usuario_responsable.nombre_usuario }} - <span style="color: var(--rojo-primario); font-weight:700;">{% if inter.contacto.nombre %}{{ inter.contacto.nombre }}{% else %}{{ inter.contacto.razon_social }}{% endif %}</span>
+                                    </span>
+                                    <span class="interaccion-fecha">{{ inter.fecha_interaccion|date:"d M, Y - h:i a" }}</span>
+                                </div>
+                                
+                                {% if inter.es_exitosa %}
+                                    <div class="badge-estado estado-verde">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                                        Exitosa
+                                    </div>
+                                {% else %}
+                                    <div class="badge-estado estado-naranja">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+                                        Pendiente / No confirmada
+                                    </div>
+                                {% endif %}
+                                
+                                <div class="interaccion-detalle">
+                                    {{ inter.detalle_actividad|linebreaksbr }}
+                                </div>
+                                
+                                <div style="margin-top: 10px; text-align: right;">
+                                    <a href="/inter_del/{{ inter.id }}/" onclick="return confirm('¿Deseas eliminar este registro de actividad?')" style="color: var(--texto-secundario); transition: 0.2s; font-size: 11px; text-decoration: none;">Eliminar</a>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
                     </div>
                 </div>
             </div>
@@ -352,54 +402,59 @@ new_main = '''
             const instruccion = document.getElementById("instruccionContacto");
             const areaForm = document.getElementById("areaForm");
             
+            const vistaGlobal = document.getElementById("vistaGlobal");
+            const vistaDetalle = document.getElementById("vistaDetalle");
+            
             const tarjetas = document.querySelectorAll(".inter-card");
             let countVisible = 0;
 
             if (!id) {
                 panelDetalles.style.display = "none";
-                areaForm.style.display = "none";
                 instruccion.style.display = "block";
                 
-                // Mostrar todas las interacciones si no hay nada seleccionado (visión global)
-                tarjetas.forEach(el => {
-                    el.style.display = "block";
-                    countVisible++;
-                });
+                // Mostrar vista global (Directorio)
+                vistaGlobal.style.display = "block";
+                vistaDetalle.style.display = "none";
             } else {
                 panelDetalles.style.display = "block";
-                areaForm.style.display = "block";
                 instruccion.style.display = "none";
                 
+                // Mostrar vista detalle (Timeline/Tabs)
+                vistaGlobal.style.display = "none";
+                vistaDetalle.style.display = "flex";
+
                 const d = contactosData[id];
 
-                document.getElementById("info_nombre").innerText = d.nombre;
-                document.getElementById("info_avatar").innerText = d.nombre.charAt(0).toUpperCase();
-                document.getElementById("info_tipo").innerText = d.tipo_persona;
-                document.getElementById("info_responsable").innerText = d.responsable;
-                document.getElementById("info_responsable_inicial").innerText = d.responsable_inicial;
-                
-                const badge = document.getElementById("info_estado");
-                if (d.activo) {
-                    badge.className = "estado-contacto-badge";
-                    badge.innerText = "ACTIVO";
-                } else {
-                    badge.className = "estado-contacto-badge estado-inactivo";
-                    badge.innerText = "INACTIVO";
-                }
+                if(d) {
+                    document.getElementById("info_nombre").innerText = d.nombre;
+                    document.getElementById("info_avatar").innerText = d.nombre.charAt(0).toUpperCase();
+                    document.getElementById("info_tipo").innerText = d.tipo_persona;
+                    document.getElementById("info_responsable").innerText = d.responsable;
+                    document.getElementById("info_responsable_inicial").innerText = d.responsable_inicial;
+                    
+                    const badge = document.getElementById("info_estado");
+                    if (d.activo) {
+                        badge.className = "estado-contacto-badge";
+                        badge.innerText = "ACTIVO";
+                    } else {
+                        badge.className = "estado-contacto-badge estado-inactivo";
+                        badge.innerText = "INACTIVO";
+                    }
 
-                document.getElementById("info_correo").innerText = d.correo;
-                document.getElementById("info_telefono").innerText = d.celular + (d.telefono && d.telefono !== "-" ? " / " + d.telefono : "");
-                document.getElementById("info_doc").innerText = d.documento_nit;
-                document.getElementById("info_tipo_doc").innerText = d.tipo_doc + " / NIT";
-                document.getElementById("info_direccion").innerText = d.direccion;
-                document.getElementById("info_ciudad").innerText = d.ciudad;
+                    document.getElementById("info_correo").innerText = d.correo;
+                    document.getElementById("info_telefono").innerText = d.celular + (d.telefono && d.telefono !== "-" ? " / " + d.telefono : "");
+                    document.getElementById("info_doc").innerText = d.documento_nit;
+                    document.getElementById("info_tipo_doc").innerText = d.tipo_doc + " / NIT";
+                    document.getElementById("info_direccion").innerText = d.direccion;
+                    document.getElementById("info_ciudad").innerText = d.ciudad;
 
-                const repContainer = document.getElementById("info_rep_container");
-                if (d.es_natural) {
-                    repContainer.style.display = "none";
-                } else {
-                    repContainer.style.display = "block";
-                    document.getElementById("info_rep_legal").innerText = d.rep_legal;
+                    const repContainer = document.getElementById("info_rep_container");
+                    if (d.es_natural) {
+                        repContainer.style.display = "none";
+                    } else {
+                        repContainer.style.display = "block";
+                        document.getElementById("info_rep_legal").innerText = d.rep_legal;
+                    }
                 }
 
                 // Filtrar línea de tiempo
@@ -436,9 +491,12 @@ new_main = '''
 </html>
 '''
 
-start_main = content.find('<main class="contenido-principal">')
+import sys
+import os
+
+start_main = content.find('<main class="contenido-principal"')
 if start_main == -1:
-    print("Could not find <main class=\\"contenido-principal\\">")
+    print("Could not find <main class=\"contenido-principal\"")
     sys.exit(1)
 
 final_content = content[:start_main] + new_main

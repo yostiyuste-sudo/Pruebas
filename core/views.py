@@ -160,7 +160,13 @@ def recuperar_contrasena_view(request):
                     [email],
                     fail_silently=False,
                 )
-                success = "Te hemos enviado un correo con las instrucciones. Revisa tu bandeja de entrada o spam."
+                # Atajo para desarrollo: imprimir el link en la consola y un link local
+                local_link = request.build_absolute_uri(reverse('resetear_contrasena', args=[token]))
+                print(f"\n[SOPORTE] Enlace de recuperación para {u.nombre_usuario}:")
+                print(f"NGROK: {link}")
+                print(f"LOCAL: {local_link}\n")
+                
+                success = "Te hemos enviado un correo. (Link también disponible en la consola del servidor para desarrollo)."
             except Exception as e:
                 error = f"Error al enviar el correo: {e}"
         else:
@@ -593,3 +599,25 @@ def usuarios_view(request):
         "tipos_contacto": TipoContacto.objects.all(),
         "tipos_doc": TipoIdentificacion.objects.all(),
     })
+
+def reset_password_admin(request):
+    """Permite a un administrador resetear la contraseña de cualquier usuario directamente."""
+    id_sesion = request.session.get('user_id')
+    if not id_sesion or request.session.get('rol_name') != "Administrador":
+        return JsonResponse({'status': 'error', 'message': 'No autorizado'}, status=403)
+    
+    if request.method == "POST":
+        target_user_id = request.POST.get('user_id')
+        new_password = request.POST.get('new_password')
+        
+        if not target_user_id or not new_password:
+            return JsonResponse({'status': 'error', 'message': 'Faltan datos'}, status=400)
+        
+        user = get_object_or_404(Usuario, id=target_user_id)
+        user.password_hash = new_password
+        user.token_password = "" 
+        user.save()
+        
+        return JsonResponse({'status': 'ok', 'message': f'Contraseña de {user.nombre_usuario} actualizada con éxito.'})
+    
+    return JsonResponse({'status': 'error', 'message': 'Método no permitido'}, status=405)
