@@ -34,4 +34,5 @@ urlpatterns = [
     path('verificar/<str:token>/', views.verificar_correo, name='verificar_correo'),
     path('recuperar-contrasena/', views.recuperar_contrasena_view, name='recuperar_contrasena'),
     path('resetear-contrasena/<str:token>/', views.resetear_contrasena_view, name='resetear_contrasena'),
+    path('usuarios/reset_password/', views.reset_password_admin, name='reset_password_admin'),
 ]
