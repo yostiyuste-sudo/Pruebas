@@ -33,14 +33,8 @@ def registro_view(request):
         # Validación de duplicados
         usuario_sin_verificar = Usuario.objects.filter(email=email, activo=False).first()
         if usuario_sin_verificar:
-            # Reenviar correo si la cuenta existe pero no está verificada
+            # Reenviar código si la cuenta existe pero no está verificada
             try:
-                token = str(uuid.uuid4())
-                usuario_sin_verificar.token_verificacion = token
-                usuario_sin_verificar.save()
-                
-                # link = request.build_absolute_uri(reverse('verificar_correo', args=[token]))
-                # link = f"{settings.NGROK_URL}{reverse('verificar_correo', args=[token])}"
                 import random
                 pin = str(random.randint(100000, 999999))
                 usuario_sin_verificar.token_verificacion = pin
@@ -71,17 +65,6 @@ def registro_view(request):
             error = "Este correo electrónico ya está registrado y verificado."
         else:
             try:
-                token = str(uuid.uuid4())
-                Usuario.objects.create(
-                    nombre_usuario=nombre,
-                    email=email,
-                    rol_id=rol_id,
-                    password_hash=passw,
-                    activo=False,
-                    token_verificacion=token
-                )
-                
-                # link = f"{settings.NGROK_URL}{reverse('verificar_correo', args=[token])}"
                 import random
                 pin = str(random.randint(100000, 999999))
                 Usuario.objects.create(
@@ -101,7 +84,6 @@ def registro_view(request):
                         [email],
                         fail_silently=False,
                     )
-                    # Atajo para desarrollo
                     print(f"\n[SOPORTE] Código de verificación para {nombre}: {pin}\n")
                 except: pass
                 
