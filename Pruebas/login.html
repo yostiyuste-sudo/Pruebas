@@ -86,7 +86,7 @@
                 </div>
                 {% endif %}
 
-                <form method="POST" class="auth-form" id="loginForm">
+                <form method="POST" action="{% url 'login' %}" class="auth-form" id="loginForm">
                     {% csrf_token %}
 
                     <!-- Rol -->
@@ -253,7 +253,7 @@
         // ═══════════════════════════════════════════════
         document.getElementById('loginForm').addEventListener('submit', function () {
             const btn = document.getElementById('btnLogin');
-            btn.classList.add('loading');           
+            btn.classList.add('loading');
             btn.querySelector('span').textContent = 'Verificando...';
         });
     </script>

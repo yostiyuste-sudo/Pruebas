@@ -567,7 +567,7 @@
                                 <label>Identificación</label>
                                 <select name="tipo_doc" id="tipoDocJuridica" class="entrada-texto">
                                     {% for td in tipos_doc %}
-                                    <option value="{{ td.id }}" {% if td.nombre_tipo=="NIT" %}selected{% endif %}>{{
+                                    <option value="{{ td.id }}" {% if td.nombre_tipo == "NIT" %}selected{% endif %}>{{
                                         td.nombre_tipo }}</option>
                                     {% endfor %}
                                 </select>

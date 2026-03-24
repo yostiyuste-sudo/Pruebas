@@ -147,14 +147,17 @@ def login_view(request):
         u = Usuario.objects.filter(
             Q(nombre_usuario__iexact=user_input) | Q(email__iexact=user_input),
             rol_id=rol_id,
-            password_hash=pass_input,
-            activo=True
+            password_hash=pass_input
         ).first()
+        
         if u:
-            request.session['user_id'] = u.id
-            request.session['user_name'] = u.nombre_usuario
-            request.session['rol_name'] = u.rol.nombre_rol
-            return redirect('/')
+            if u.activo:
+                request.session['user_id'] = u.id
+                request.session['user_name'] = u.nombre_usuario
+                request.session['rol_name'] = u.rol.nombre_rol
+                return redirect('/')
+            else:
+                error = "Tu cuenta se encuentra inactiva o sin verificar. Revisa tu correo o contacta al administrador."
         else:
             error = "Cuidado! Datos o rol incorrectos."
 
