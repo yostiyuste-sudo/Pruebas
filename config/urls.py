@@ -21,6 +21,7 @@ from core import views
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', views.contactos, name='contactos'),
+    path('contacto/<int:id_contacto>/', views.detalle_contacto, name='detalle_contacto'),
     path('interacciones/', views.interacciones, name='interacciones'),
     path('edit/<int:id_contacto>/', views.editar_contacto, name='editar_contacto'),
     path('status/<int:id_contacto>/', views.cambiar_estado, name='cambiar_estado'),
@@ -29,4 +30,9 @@ urlpatterns = [
     path('logout/', views.logout_view, name='logout'),
     path('registro/', views.registro_view, name='registro'),
     path('usuarios/', views.usuarios_view, name='usuarios'),
+    path('contacto/<int:id_contacto>/destacar/<int:id_interaccion>/', views.destacar_interaccion, name='destacar_interaccion'),
+    path('verificar/', views.verificar_correo, name='verificar_correo'),
+    path('recuperar-contrasena/', views.recuperar_contrasena_view, name='recuperar_contrasena'),
+    path('resetear-contrasena/<str:token>/', views.resetear_contrasena_view, name='resetear_contrasena'),
+    path('usuarios/reset_password/', views.reset_password_admin, name='reset_password_admin'),
 ]

@@ -1,0 +1,16 @@
+# Django
+*.log
+*.pyc
+__pycache__/
+db.sqlite3
+.env
+.venv
+env/
+venv/
+ENV/
+media/
+static/admin/
+static/staticfiles.json
+.vscode/
+.idea/
+.DS_Store

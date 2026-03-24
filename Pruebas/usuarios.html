@@ -201,7 +201,7 @@
 
         .cuadricula-usuarios {
             display: grid;
-            grid-template-columns: 1.5fr 1fr;
+            grid-template-columns: 1fr;
             gap: 30px;
             align-items: start;
         }
@@ -395,15 +395,18 @@
 
     <main class="contenido-principal">
         <header style="margin-bottom: 30px;">
-            <h1 style="font-size: 26px; font-weight: 800;">Gestión de Usuarios (Equipo)</h1>
-            <p style="color: var(--texto-secundario);">Administra el acceso del personal y registra contactos nuevos.
+            <h1 style="font-size: 26px; font-weight: 800;">Gestión de Usuarios</h1>
+            <p style="color: var(--texto-secundario);">Administra el acceso y roles del personal de la constructora.
             </p>
         </header>
 
         <div class="cuadricula-usuarios">
-            <!-- LISTA DE USUARIOS -->
+            <!-- SECCIÓN DE ADMINISTRADORES -->
             <section class="tarjeta-blanca">
-                <h2>Equipo de Trabajo</h2>
+                <h2>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#E65100" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 8px;"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg>
+                    Administradores
+                </h2>
                 <table class="tabla-usuarios">
                     <thead>
                         <tr>
@@ -411,16 +414,17 @@
                             <th>Email</th>
                             <th>Rol</th>
                             <th>Estado</th>
+                            <th>Acciones</th>
                         </tr>
                     </thead>
                     <tbody>
                         {% for u in usuarios %}
+                        {% if u.rol.nombre_rol == 'Administrador' %}
                         <tr>
                             <td style="font-weight: 600;">{{ u.nombre_usuario }}</td>
                             <td style="color: var(--texto-secundario);">{{ u.email }}</td>
                             <td>
-                                <span
-                                    class="badge-rol {% if u.rol.nombre_rol == 'Administrador' %}rol-admin{% else %}rol-usuario{% endif %}">
+                                <span class="badge-rol rol-admin">
                                     {{ u.rol.nombre_rol }}
                                 </span>
                             </td>
@@ -429,92 +433,97 @@
                                     {% if u.activo %}ACTIVO{% else %}INACTIVO{% endif %}
                                 </span>
                             </td>
+                            <td>
+                                <button onclick="resetarPassword('{{ u.id }}', '{{ u.nombre_usuario }}')" style="background:none; border:none; cursor:pointer; color:var(--rojo-primario); display:flex; align-items:center; gap:5px; font-size:12px; font-weight:600;">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                                    Resetear
+                                </button>
+                            </td>
                         </tr>
+                        {% endif %}
                         {% endfor %}
                     </tbody>
                 </table>
             </section>
 
-            <!-- REGISTRO DE CONTACTOS (LO QUE PIDIÓ EL USUARIO) -->
+            <!-- SECCIÓN DE EQUIPO -->
             <section class="tarjeta-blanca">
-                <h2><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
-                        stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
-                        <circle cx="8.5" cy="7" r="4" />
-                        <line x1="20" y1="8" x2="20" y2="14" />
-                        <line x1="23" y1="11" x2="17" y2="11" />
-                    </svg> Nuevo Contacto</h2>
-
-                <form action="{% url 'contactos' %}" method="POST" id="formContacto">
-                    {% csrf_token %}
-                    <div class="grupo-campo">
-                        <label>Tipo de Persona</label>
-                        <select name="tipo_contacto" id="tipoSelect" onchange="cambiar()">
-                            {% for tc in tipos_contacto %}
-                            <option value="{{ tc.id }}">{{ tc.nombre_tipo }}</option>
-                            {% endfor %}
-                        </select>
-                    </div>
-
-                    <div id="sn">
-                        <div class="grupo-campo">
-                            <label>Identificación</label>
-                            <select name="tipo_doc">
-                                {% for td in tipos_doc %}{% if td.nombre_tipo != "NIT" %}<option value="{{ td.id }}">{{
-                                    td.nombre_tipo }}</option>{% endif %}{% endfor %}
-                            </select>
-                        </div>
-                        <div class="grupo-campo">
-                            <label>Número</label>
-                            <input type="text" name="documento_nit" class="entrada-texto" placeholder="Número de doc">
-                        </div>
-                        <div class="grupo-campo">
-                            <label>Nombre Completo</label>
-                            <input type="text" name="nombre" class="entrada-texto" placeholder="Nombres">
-                        </div>
-                    </div>
-
-                    <div id="sj" style="display:none;">
-                        <div class="grupo-campo">
-                            <label>Identificación</label>
-                            <select name="tipo_doc" id="tipoDocJuridica">
-                                {% for td in tipos_doc %}
-                                <option value="{{ td.id }}" {% if td.nombre_tipo=="NIT" %}selected{% endif %}>{{
-                                    td.nombre_tipo }}</option>
-                                {% endfor %}
-                            </select>
-                        </div>
-                        <div class="grupo-campo">
-                            <label>Número</label>
-                            <input type="text" name="documento_nit_jur" class="entrada-texto"
-                                placeholder="Número de NIT">
-                        </div>
-                        <div class="grupo-campo">
-                            <label>Razón Social</label>
-                            <input type="text" name="razon_social" class="entrada-texto" placeholder="Empresa S.A.S">
-                        </div>
-                    </div>
-
-                    <div class="grupo-campo">
-                        <label>Medio de Contacto (Celular)</label>
-                        <input type="text" name="celular" class="entrada-texto" placeholder="300 123...">
-                    </div>
-
-                    <button type="submit" class="boton-principal">REGISTRAR CONTACTO</button>
-                </form>
+                <h2>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#2E7D32" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 8px;"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                    Usuarios
+                </h2>
+                <table class="tabla-usuarios">
+                    <thead>
+                        <tr>
+                            <th>Usuario</th>
+                            <th>Email</th>
+                            <th>Rol</th>
+                            <th>Estado</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for u in usuarios %}
+                        {% if u.rol.nombre_rol != 'Administrador' %}
+                        <tr>
+                            <td style="font-weight: 600;">{{ u.nombre_usuario }}</td>
+                            <td style="color: var(--texto-secundario);">{{ u.email }}</td>
+                            <td>
+                                <span class="badge-rol rol-usuario">
+                                    {{ u.rol.nombre_rol }}
+                                </span>
+                            </td>
+                            <td>
+                                <span class="{% if u.activo %}estado-activo{% else %}estado-inactivo{% endif %}">
+                                    {% if u.activo %}ACTIVO{% else %}INACTIVO{% endif %}
+                                </span>
+                            </td>
+                            <td>
+                                <button onclick="resetarPassword('{{ u.id }}', '{{ u.nombre_usuario }}')" style="background:none; border:none; cursor:pointer; color:var(--rojo-primario); display:flex; align-items:center; gap:5px; font-size:12px; font-weight:600;">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                                    Resetear
+                                </button>
+                            </td>
+                        </tr>
+                        {% endif %}
+                        {% endfor %}
+                    </tbody>
+                </table>
             </section>
         </div>
     </main>
 
+
     <script>
-        function cambiar() {
-            var s = document.getElementById("tipoSelect");
-            var t = s.options[s.selectedIndex].text;
-            var sn = document.getElementById("sn");
-            var sj = document.getElementById("sj");
-            const isJur = t.includes("Jurídica");
-            sn.style.display = isJur ? "none" : "block";
-            sj.style.display = isJur ? "block" : "none";
+        function resetarPassword(userId, userName) {
+            const newPassword = prompt(`Introduce la nueva contraseña para "${userName}":`);
+            if (!newPassword) return;
+            if (newPassword.length < 4) {
+                alert("La contraseña debe tener al menos 4 caracteres.");
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('user_id', userId);
+            formData.append('new_password', newPassword);
+            formData.append('csrfmiddlewaretoken', '{{ csrf_token }}');
+
+            fetch('/usuarios/reset_password/', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'ok') {
+                    alert(data.message);
+                } else {
+                    alert("Error: " + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert("Hubo un error al procesar el cambio.");
+            });
         }
     </script>
 </body>

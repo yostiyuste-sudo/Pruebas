@@ -74,18 +74,19 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            border-radius: 10px;
+            border-radius: 12px;
             font-weight: 800;
             font-size: 20px;
         }
 
         .logo-texto {
             font-weight: 800;
-            font-size: 18px;
+            font-size: 19px;
             color: var(--rojo-primario);
             white-space: nowrap;
             opacity: 0;
-            transition: opacity 0.2s ease;
+            transition: opacity 0.3s ease;
+            letter-spacing: -0.2px;
         }
 
         .barra-lateral:hover .logo-texto {
@@ -93,9 +94,9 @@
         }
 
         .perfil-usuario {
-            padding: 15px;
-            margin: 10px;
-            border-radius: 15px;
+            padding: 14px;
+            margin: 12px;
+            border-radius: 18px;
             background: #fdf2f2;
             display: flex;
             align-items: center;
@@ -108,34 +109,35 @@
             min-width: 40px;
             height: 40px;
             background: white;
-            border: 2px solid var(--rojo-primario);
+            border: 1.5px solid var(--rojo-primario);
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
             font-weight: 700;
             color: var(--rojo-primario);
+            font-size: 16px;
         }
 
         .perfil-info {
             white-space: nowrap;
             overflow: hidden;
             opacity: 0;
-            transition: opacity 0.2s ease;
+            transition: opacity 0.3s ease;
         }
 
         .perfil-nombre {
             display: block;
             font-weight: 600;
             font-size: 14px;
+            color: var(--texto-principal);
         }
 
         .perfil-rol {
             display: block;
             font-size: 11px;
-            color: var(--rojo-primario);
-            font-weight: 700;
-            text-transform: uppercase;
+            color: var(--texto-secundario);
+            font-weight: 500;
         }
 
         .barra-lateral:hover .perfil-info {
@@ -144,24 +146,27 @@
 
         .navegacion-sidebar {
             flex: 1;
-            padding: 10px;
+            padding: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
         }
 
         .nav-enlace {
             display: flex;
             align-items: center;
             gap: 15px;
-            padding: 14px;
+            padding: 12px 14px;
             text-decoration: none;
-            color: var(--texto-secundario);
-            border-radius: 12px;
-            margin-bottom: 5px;
+            color: #5f6368;
+            border-radius: 14px;
             transition: var(--transicion);
             white-space: nowrap;
+            font-weight: 500;
         }
 
         .nav-enlace:hover {
-            background-color: #FEEBEB;
+            background-color: #fdf2f2;
             color: var(--rojo-primario);
         }
 
@@ -180,7 +185,7 @@
 
         .texto-enlace {
             font-size: 14px;
-            font-weight: 500;
+            font-weight: 600;
             opacity: 0;
             transition: opacity 0.2s ease;
         }
@@ -346,6 +351,53 @@
             font-size: 14px;
             border: 1px solid #FFCDD2;
         }
+
+        /* Toggle Switch Premium */
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 34px;
+            height: 18px;
+            vertical-align: middle;
+        }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 20px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 14px;
+            width: 14px;
+            left: 2px;
+            bottom: 2px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked+.slider {
+            background-color: #2E7D32;
+        }
+
+        input:checked+.slider:before {
+            transform: translateX(16px);
+        }
     </style>
     <script src="{% static 'js/validaciones.js' %}"></script>
 </head>
@@ -372,42 +424,36 @@
         </div>
 
         <nav class="navegacion-sidebar">
-            <!-- Registro de Contactos (Icono de Libreta/Agenda) -->
-            <a href="/" class="nav-enlace activo" title="Registro de Contactos">
+            <a href="{% url 'contactos' %}" class="nav-enlace activo" title="Registro de Contactos">
                 <span class="iconosvg">
-                    <!-- Icono de Libreta con Separadores -->
                     <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none"
-                        stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                        <rect x="3" y="2" width="16" height="20" rx="2" />
-                        <circle cx="11" cy="11" r="3" />
-                        <path d="M8 15h6" />
-                        <path d="M19 6h3" />
-                        <path d="M19 11h3" />
-                        <path d="M19 16h3" />
-                        <path d="M3 6h2m-2 4h2m-2 4h2m-2 4h2" />
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="12" cy="7" r="4"></circle>
+                        <rect x="3" y="2" width="18" height="20" rx="2" ry="2" stroke-width="1.5"></rect>
                     </svg>
                 </span>
                 <span class="texto-enlace">Registro de Contactos</span>
             </a>
 
-            <a href="/interacciones/" class="nav-enlace" title="Interacciones">
+            <a href="{% url 'interacciones' %}" class="nav-enlace" title="Interacciones">
                 <span class="iconosvg">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-                        stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"></path>
-                        <path d="M8 12h.01"></path>
-                        <path d="M12 12h.01"></path>
-                        <path d="M16 12h.01"></path>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                        <circle cx="8" cy="11" r="0.5" fill="currentColor"></circle>
+                        <circle cx="12" cy="11" r="0.5" fill="currentColor"></circle>
+                        <circle cx="16" cy="11" r="0.5" fill="currentColor"></circle>
                     </svg>
                 </span>
                 <span class="texto-enlace">Interacciones</span>
             </a>
 
             {% if usuario_logueado.rol.nombre_rol == "Administrador" %}
-            <a href="/usuarios/" class="nav-enlace" title="Gestión de Usuarios">
+            <a href="{% url 'usuarios' %}" class="nav-enlace" title="Gestión de Usuarios">
                 <span class="iconosvg">
                     <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none"
-                        stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
                         <circle cx="9" cy="7" r="4"></circle>
                         <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
@@ -458,22 +504,8 @@
 
         <div id="mensajeJS" class="alerta-error" style="display:none;"></div>
 
-        <!-- DASHBOARD GRID (UNIFICADO PARA ADMIN Y USUARIO) -->
+        <!-- DASHBOARD GRID -->
         <div class="cuadricula-dashboard">
-            {% if usuario_logueado.rol.nombre_rol == "Usuario" %}
-            <!-- BANNER ESPECIAL USUARIO -->
-            <section class="tarjeta-blanca"
-                style="background: var(--rojo-primario); color: white; grid-column: 1 / -1; margin-bottom: 20px;">
-                <div style="display: flex; justify-content: space-between; align-items: center;">
-                    <div>
-                        <h2 style="color: white; margin-bottom: 5px;">Bienvenido al CRM</h2>
-                        <p style="opacity: 0.9;">Ya puedes registrar y gestionar tus clientes desde aquí.</p>
-                    </div>
-                </div>
-            </section>
-            {% endif %}
-
-            <!-- SECCIÓN 1: FORMULARIO (AHORA PARA TODOS) -->
             <section class="tarjeta-blanca">
                 <h2>
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
@@ -535,7 +567,8 @@
                                 <label>Identificación</label>
                                 <select name="tipo_doc" id="tipoDocJuridica" class="entrada-texto">
                                     {% for td in tipos_doc %}
-                                    <option value="{{ td.id }}" {% if td.nombre_tipo == "NIT" %}selected{% endif %}>{{ td.nombre_tipo }}</option>
+                                    <option value="{{ td.id }}" {% if td.nombre_tipo=="NIT" %}selected{% endif %}>{{
+                                        td.nombre_tipo }}</option>
                                     {% endfor %}
                                 </select>
                             </div>
@@ -627,11 +660,13 @@
                                 </td>
                                 <td>
                                     <div style="font-weight: 600;">
-                                        {% if c.nombre %}
-                                        {{ c.nombre }} {{ c.apellido }}
-                                        {% else %}
-                                        {{ c.razon_social }}
-                                        {% endif %}
+                                        <a href="/contacto/{{ c.id }}/" style="color: inherit; text-decoration: none;">
+                                            {% if c.nombre %}
+                                            {{ c.nombre }} {{ c.apellido }}
+                                            {% else %}
+                                            {{ c.razon_social }}
+                                            {% endif %}
+                                        </a>
                                     </div>
                                     <div style="font-size: 11px; color: var(--texto-secundario);">
                                         {{ c.correo|default:"Sin correo" }}
@@ -794,4 +829,3 @@
 </body>
 
 </html>
-

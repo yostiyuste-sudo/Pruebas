@@ -1,0 +1,142 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nueva Contraseña - Constructora Dyco</title>
+    <link rel="stylesheet" href="{% static 'auth.css' %}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body class="auth-page">
+
+    <div class="auth-bg">
+        <div class="auth-bg-image" id="bgImage"></div>
+        <div class="auth-bg-overlay"></div>
+    </div>
+
+    <div class="auth-center">
+        <div class="glass-card">
+            <div class="glass-panel-left">
+                <div class="carousel-track">
+                    <div class="carousel-slide active" style="background-image: url('{% static 'img/slide1.png' %}')"></div>
+                </div>
+                <div class="carousel-overlay">
+                    <div class="carousel-brand">
+                        <img src="{% static 'img/logo_dyco.png' %}" alt="Logo Dyco" class="carousel-logo">
+                        <h2 class="carousel-title">Constructora Dyco</h2>
+                    </div>
+                </div>
+            </div>
+
+            <div class="glass-panel-right">
+                <div class="form-header">
+                    <div class="form-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"></path>
+                        </svg>
+                    </div>
+                    <h1 class="form-title">Nueva Contraseña</h1>
+                    <p class="form-subtitle">Elige una contraseña segura</p>
+                </div>
+
+                {% if error %}
+                <div class="auth-alert auth-alert-error">
+                    {{ error }}
+                </div>
+                {% endif %}
+
+                <form method="POST" class="auth-form" id="resetForm">
+                    {% csrf_token %}
+                    <div class="field-group">
+                        <label class="field-label" for="password">Nueva Contraseña</label>
+                        <div class="field-wrap">
+                            <input type="password" name="password" id="password" class="field-input"
+                                placeholder="••••••••" required autocomplete="new-password">
+                            <button type="button" class="field-eye" id="togglePwd">
+                                <svg id="eyeIcon" xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                                    viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                    stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                    <circle cx="12" cy="12" r="3"></circle>
+                                </svg>
+                            </button>
+                        </div>
+                        <div class="pwd-strength">
+                            <div class="pwd-bar" id="pwdBar"></div>
+                        </div>
+                        <p class="pwd-hint" id="pwdHint"></p>
+                    </div>
+
+                    <div class="field-group">
+                        <label class="field-label" for="confirm_password">Confirmar Contraseña</label>
+                        <div class="field-wrap">
+                            <input type="password" name="confirm_password" id="confirm_password" class="field-input"
+                                placeholder="••••••••" required autocomplete="new-password">
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn-auth" id="btnReset">
+                        <span>Actualizar Contraseña</span>
+                    </button>
+                </form>
+
+                <div class="form-footer">
+                    <p><a href="/login/" class="form-link">Volver al inicio de sesión</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const bgImage = document.getElementById('bgImage');
+        bgImage.style.backgroundImage = "url('{% static 'img/slide1.png' %}')";
+
+        const togglePwd = document.getElementById('togglePwd');
+        const pwdInput = document.getElementById('password');
+        const eyeIcon = document.getElementById('eyeIcon');
+        const EYE_OPEN = `<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle>`;
+        const EYE_CLOSED = `<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line>`;
+
+        togglePwd.addEventListener('click', () => {
+            const visible = pwdInput.type === 'text';
+            pwdInput.type = visible ? 'password' : 'text';
+            eyeIcon.innerHTML = visible ? EYE_OPEN : EYE_CLOSED;
+        });
+
+        const pwdBar = document.getElementById('pwdBar');
+        const pwdHint = document.getElementById('pwdHint');
+
+        pwdInput.addEventListener('input', () => {
+            const val = pwdInput.value;
+            if (!val) { pwdBar.style.width = '0'; pwdHint.textContent = ''; return; }
+            let score = 0;
+            if (val.length >= 8) score++;
+            if (/[A-Z]/.test(val)) score++;
+            if (/[0-9]/.test(val)) score++;
+            if (/[^A-Za-z0-9]/.test(val)) score++;
+            const levels = [
+                { pct: '25%', color: '#ef4444', text: 'Muy débil' },
+                { pct: '50%', color: '#f97316', text: 'Débil' },
+                { pct: '75%', color: '#eab308', text: 'Aceptable' },
+                { pct: '100%', color: '#22c55e', text: 'Segura' },
+            ];
+            const lvl = levels[Math.max(0, score - 1)];
+            pwdBar.style.width = lvl.pct;
+            pwdBar.style.background = lvl.color;
+            pwdHint.textContent = lvl.text;
+            pwdHint.style.color = lvl.color;
+        });
+
+        document.getElementById('resetForm').addEventListener('submit', function () {
+            const btn = document.getElementById('btnReset');
+            btn.style.opacity = '0.7';
+            btn.querySelector('span').textContent = 'Procesando...';
+        });
+    </script>
+</body>
+
+</html>

@@ -76,6 +76,16 @@
                 </div>
                 {% endif %}
 
+                {% if success %}
+                <div class="auth-alert auth-alert-success">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="20 6 9 17 4 12"></polyline>
+                    </svg>
+                    {{ success }}
+                </div>
+                {% endif %}
+
                 <form method="POST" class="auth-form" id="loginForm">
                     {% csrf_token %}
 
@@ -243,7 +253,7 @@
         // ═══════════════════════════════════════════════
         document.getElementById('loginForm').addEventListener('submit', function () {
             const btn = document.getElementById('btnLogin');
-            btn.classList.add('loading');
+            btn.classList.add('loading');           
             btn.querySelector('span').textContent = 'Verificando...';
         });
     </script>

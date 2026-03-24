@@ -25,7 +25,9 @@ SECRET_KEY = 'django-insecure-9nqyhnj14&rheqfwrhkt#7*&d#o3oqm$^!-c)cn3i+ky=c60n-
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost', '10.6.76.127', '.ngrok-free.dev']
+NGROK_URL = 'https://karly-nonwarrantable-letty.ngrok-free.dev'
+CSRF_TRUSTED_ORIGINS = [NGROK_URL, 'https://*.ngrok-free.dev']
 
 
 # Application definition
@@ -101,12 +103,9 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/6.0/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
-
-TIME_ZONE = 'UTC'
-
+LANGUAGE_CODE = 'es-co'
+TIME_ZONE = 'America/Bogota'
 USE_I18N = True
-
 USE_TZ = True
 
 
@@ -115,4 +114,18 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [BASE_DIR / 'static']
+
+# Configuración de Envío de Correos (Real)
+# Para usar un servidor real, cambia el BACKEND y completa los datos.
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend' 
+EMAIL_HOST = 'smtp.gmail.com'  # O tu servidor SMTP
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'lunavale601@gmail.com'
+EMAIL_HOST_PASSWORD = 'kytatiwqqvckczml'
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+
+# Configuración IMAP (Recibir Correos)
+IMAP_HOST = 'imap.gmail.com'
+IMAP_PORT = 993
 

@@ -1,0 +1,507 @@
+file_path = r'c:\Users\usuario\Documents\Pruebas\Pruebas\interacciones.html'
+
+with open(file_path, 'r', encoding='utf-8') as f:
+    content = f.read()
+
+crm_styles = '''
+        /* --- LAYOUT DETALLE (CRM STYLE) --- */
+        .crm-layout {
+            display: grid;
+            grid-template-columns: 350px 1fr;
+            gap: 20px;
+            flex: 1;
+            align-items: start;
+            height: calc(100vh - 40px);
+        }
+
+        .panel-izquierdo {
+            background: var(--blanco);
+            border-radius: 12px;
+            box-shadow: var(--sombra-suave);
+            padding: 20px;
+            height: 100%;
+            overflow-y: auto;
+            border: 1px solid var(--gris-borde);
+        }
+
+        .perfil-cabecera {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+        .avatar-grande {
+            width: 60px; height: 60px;
+            background: linear-gradient(135deg, #f6d365 0%, #fda085 100%);
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 24px; font-weight: bold; color: white;
+            flex-shrink: 0;
+        }
+        .perfil-datos h2 { font-size: 18px; color: var(--texto-principal); margin-bottom: 3px; }
+        .perfil-datos p { font-size: 13px; color: var(--texto-secundario); margin-bottom: 2px; }
+        
+        .acciones-circulares {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--gris-borde);
+        }
+        .accion-btn {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+            color: var(--texto-secundario);
+            font-size: 11px;
+            font-weight: 500;
+            cursor: pointer;
+            border: none;
+            background: none;
+        }
+        .accion-btn .circulo {
+            width: 40px; height: 40px;
+            border-radius: 50%;
+            border: 1px solid var(--gris-borde);
+            display: flex; align-items: center; justify-content: center;
+            background: white;
+            color: #555;
+            transition: 0.2s;
+        }
+        .accion-btn:hover .circulo {
+            background: #FEEBEB;
+            border-color: var(--rojo-primario);
+            color: var(--rojo-primario);
+        }
+        .accion-btn:hover { color: var(--rojo-primario); }
+
+        .seccion-info { margin-bottom: 20px; }
+        .seccion-titulo {
+            font-size: 14px; font-weight: 600; margin-bottom: 15px; display: flex; align-items: center; gap: 10px; cursor: pointer;
+        }
+        .info-item { margin-bottom: 15px; }
+        .info-label { font-size: 12px; color: var(--texto-secundario); margin-bottom: 3px; }
+        .info-valor { font-size: 14px; color: var(--texto-principal); font-weight: 500; }
+
+        .panel-derecho {
+            background: var(--blanco); border-radius: 12px; box-shadow: var(--sombra-suave); height: 100%; display: flex; flex-direction: column; border: 1px solid var(--gris-borde); overflow: hidden;
+        }
+        .tabs-primarias { display: flex; border-bottom: 1px solid var(--gris-borde); background: #fdfdfd; }
+        .tab-btn { padding: 15px 30px; border: none; background: transparent; font-size: 14px; font-weight: 600; color: var(--texto-secundario); cursor: pointer; border-bottom: 2px solid transparent; transition: 0.2s; }
+        .tab-btn.activa { color: var(--rojo-primario); border-bottom-color: var(--rojo-primario); background: white; }
+        .tab-btn:hover:not(.activa) { background: #f5f5f5; }
+
+        .tabs-secundarias { display: flex; gap: 20px; padding: 15px 20px 0 20px; border-bottom: 1px solid var(--gris-borde); font-size: 13px; }
+        .subtab-btn { padding-bottom: 10px; border: none; background: transparent; font-weight: 500; color: var(--texto-secundario); cursor: pointer; border-bottom: 2px solid transparent; }
+        .subtab-btn.activa { color: var(--texto-principal); border-bottom-color: var(--texto-principal); }
+
+        .crear-interaccion-form { padding: 20px; background: #fafafa; border-bottom: 1px solid var(--gris-borde); }
+        .crear-interaccion-form textarea { width: 100%; border: 1px solid var(--gris-borde); border-radius: 8px; padding: 12px; font-family: inherit; font-size: 13px; margin-bottom: 10px; resize: vertical; min-height: 80px; }
+        
+        .timeline-container { padding: 20px; flex: 1; overflow-y: auto; background: #fdfdfd; }
+        .timeline-mes { font-size: 14px; font-weight: 600; color: var(--texto-secundario); margin-bottom: 15px; margin-top: 10px; }
+        .interaccion-item { background: white; border: 1px solid var(--gris-borde); border-radius: 8px; padding: 15px; margin-bottom: 15px; position: relative; }
+        .interaccion-item::before { content: ''; position: absolute; left: -20px; top: 20px; width: 10px; height: 10px; background: #ccc; border-radius: 50%; }
+        .interaccion-header { display: flex; justify-content: space-between; margin-bottom: 8px; align-items: center; }
+        .interaccion-titulo { font-size: 14px; font-weight: 600; color: var(--texto-principal); }
+        .interaccion-fecha { font-size: 12px; color: var(--texto-secundario); }
+        
+        .badge-estado { display: inline-flex; align-items: center; gap: 5px; font-size: 11px; font-weight: 600; padding: 3px 8px; border-radius: 10px; margin-bottom: 10px; }
+        .estado-verde { background: #E8F5E9; color: #2E7D32; }
+        .estado-naranja { background: #FFF3E0; color: #EF6C00; }
+        .interaccion-detalle { font-size: 13px; color: #444; line-height: 1.5; }
+
+        .btn-guardar { background: var(--rojo-primario); color: white; border: none; padding: 8px 16px; border-radius: 6px; font-weight: 600; font-size: 13px; cursor: pointer; }
+        .btn-guardar:hover { background: var(--rojo-hover); }
+        
+        .estado-contacto-badge { display: inline-block; padding: 4px 8px; border-radius: 4px; font-size: 11px; font-weight: 700; background: #E8F5E9; color: #2E7D32; }
+        .estado-inactivo { background: #FFEBEE; color: #C62828; }
+'''
+
+content = content.replace('</style>', crm_styles + '\n    </style>')
+
+new_main = '''
+    <main class="contenido-principal" style="padding: 20px 40px; height: 100vh; overflow-y: auto;">
+        <header style="margin-bottom: 20px;">
+            <h1 style="font-size: 28px; font-weight: 800; color: #1a1a1a;">Gestión de Interacciones</h1>
+            <p style="color: var(--texto-secundario); font-size: 15px; margin-top: 5px;">
+                Seguimiento detallado de la comunicación con tus clientes comerciales.
+            </p>
+        </header>
+
+        {% if error %}
+        <div class="alerta-error">
+            {{ error }}
+        </div>
+        {% endif %}
+
+        <div id="msgJS" class="alerta-error" style="display:none;"></div>
+
+        <div class="crm-layout">
+            <!-- PANEL IZQUIERDO -->
+            <div class="panel-izquierdo" style="padding-top: 10px;">
+                <!-- Buscador / Dropdown de cliente -->
+                <div class="grupo-campo" style="margin-bottom: 25px;">
+                    <label style="font-size: 13px; font-weight: 700; color: var(--rojo-primario);">SELECCIONAR CLIENTE</label>
+                    <select id="selectContacto" onchange="seleccionarContacto()" class="entrada-texto" style="border: 2px solid var(--rojo-primario); font-weight: 600; box-shadow: 0 2px 10px rgba(211,47,47,0.1);">
+                        <option value="">Buscar o seleccionar contacto</option>
+                        {% for c in contactos %}
+                        <option value="{{ c.id }}">
+                            {% if c.nombre %}{{ c.nombre }} {{ c.apellido }}{% else %}{{ c.razon_social }}{% endif %}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div id="instruccionContacto" style="text-align: center; padding: 60px 20px; color: var(--texto-secundario);">
+                    <div style="background: #fdf2f2; width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; color: var(--rojo-primario);">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                            <circle cx="8.5" cy="7" r="4"></circle>
+                            <polyline points="17 11 19 13 23 9"></polyline>
+                        </svg>
+                    </div>
+                    <p style="font-weight: 600; font-size: 14px; margin-bottom: 5px;">Panel de Cliente</p>
+                    <p style="font-size: 12px; line-height: 1.4;">Selecciona un cliente de la lista derecha o del buscador para ver su perfil detallado.</p>
+                </div>
+
+                <div id="panelDetallesContacto" style="display: none;">
+                    <!-- Responsable y Estado (Top) -->
+                    <div style="background: var(--gris-fondo); padding: 15px; border-radius: 10px; margin-bottom: 20px; border: 1px solid var(--gris-borde);">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                            <span style="font-size: 13px; color: var(--texto-secundario); font-weight: 600;">Responsable</span>
+                            <span id="info_estado" class="estado-contacto-badge">ACTIVO</span>
+                        </div>
+                        <div style="display:flex; align-items:center; gap:10px; color: var(--texto-principal); font-weight: 700; font-size: 15px;">
+                            <div id="info_responsable_inicial" style="width: 30px; height: 30px; background: var(--rojo-primario); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 14px; text-transform: uppercase;">
+                                -
+                            </div>
+                            <span id="info_responsable">Sin asignar</span>
+                        </div>
+                    </div>
+
+                    <div class="perfil-cabecera" style="margin-bottom: 15px;">
+                        <div class="avatar-grande" id="info_avatar" style="width: 50px; height: 50px; font-size: 20px;">
+                            B
+                        </div>
+                        <div class="perfil-datos">
+                            <h2 id="info_nombre" style="font-size: 16px;">Nombre Cliente</h2>
+                            <p id="info_tipo" style="font-size: 12px; margin-bottom: 0;">Tipo Cliente</p>
+                        </div>
+                    </div>
+
+                    <div class="acciones-circulares">
+                        <button class="accion-btn"><div class="circulo"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg></div>Nota</button>
+                        <button class="accion-btn"><div class="circulo"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="14" rx="2" ry="2"></rect><polyline points="3 7 12 13 21 7"></polyline></svg></div>Correo</button>
+                        <button class="accion-btn"><div class="circulo"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg></div>Llamar</button>
+                        <button class="accion-btn"><div class="circulo"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg></div>Tarea</button>
+                        <button class="accion-btn"><div class="circulo"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg></div>Reunión</button>
+                    </div>
+
+                    <div class="seccion-info" style="background: white; border: 1px solid var(--gris-borde); border-radius: 12px; padding: 20px;">
+                        <div class="seccion-titulo" style="font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px; color: var(--texto-secundario); margin-bottom: 20px;">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                            Información Básica
+                        </div>
+                        
+                        <div class="info-item">
+                            <div class="info-label">Correo</div>
+                            <div class="info-valor" id="info_correo">-</div>
+                        </div>
+                        
+                        <div class="info-item">
+                            <div class="info-label">Número de teléfono / Celular</div>
+                            <div class="info-valor" id="info_telefono">-</div>
+                        </div>
+
+                        <div class="info-item">
+                            <div class="info-label" id="info_tipo_doc">Documento / NIT</div>
+                            <div class="info-valor" id="info_doc">-</div>
+                        </div>
+
+                        <div class="info-item">
+                            <div class="info-label">Dirección</div>
+                            <div class="info-valor" id="info_direccion">-</div>
+                        </div>
+
+                        <div class="info-item">
+                            <div class="info-label">Ciudad</div>
+                            <div class="info-valor" id="info_ciudad">-</div>
+                        </div>
+                        
+                        <div class="info-item" id="info_rep_container" style="border-top: 1px dashed var(--gris-borde); padding-top: 15px; margin-top: 15px;">
+                            <div class="info-label">Representante Legal</div>
+                            <div class="info-valor" id="info_rep_legal" style="font-weight: 600;">-</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PANEL DERECHO -->
+            <div class="panel-derecho">
+                <!-- VISTA GLOBAL (Cuando no hay contacto seleccionado) -->
+                <div id="vistaGlobal" style="padding: 30px; height: 100%; overflow-y: auto;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;">
+                        <div>
+                            <h2 style="font-size: 20px; font-weight: 800; color: var(--texto-principal);">Directorio de Clientes</h2>
+                            <p style="color: var(--texto-secundario); font-size: 13px;">Gestiona tus contactos comerciales y sus actividades.</p>
+                        </div>
+                        <div style="background: white; border: 1px solid var(--gris-borde); padding: 5px 15px; border-radius: 8px; font-size: 12px; font-weight: 600; color: var(--texto-secundario);">
+                            {{ contactos|length }} Contactos Registrados
+                        </div>
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px;">
+                        {% for c in contactos %}
+                        <div onclick="document.getElementById('selectContacto').value='{{ c.id }}'; seleccionarContacto();" 
+                             style="background: white; border: 1px solid var(--gris-borde); padding: 20px; border-radius: 16px; cursor: pointer; transition: 0.3s; box-shadow: 0 2px 4px rgba(0,0,0,0.02);"
+                             onmouseover="this.style.borderColor='var(--rojo-primario)'; this.style.transform='translateY(-3px)'; this.style.boxShadow='0 10px 20px rgba(211,47,47,0.05)';" 
+                             onmouseout="this.style.borderColor='var(--gris-borde)'; this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 4px rgba(0,0,0,0.02)';" 
+                        >
+                            <div style="display: flex; gap: 15px; align-items: center; margin-bottom: 15px;">
+                                <div style="width: 50px; height: 50px; background: {% if c.nombre %}#E3F2FD{% else %}#F3E5F5{% endif %}; color: {% if c.nombre %}#4391df{% else %}#b641ab{% endif %}; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 18px;">
+                                    {% if c.nombre %}{{ c.nombre|make_list|first|upper }}{% else %}{{ c.razon_social|make_list|first|upper }}{% endif %}
+                                </div>
+                                <div>
+                                    <div style="font-weight: 700; color: var(--texto-principal); font-size: 14px;">
+                                        {% if c.nombre %}{{ c.nombre }} {{ c.apellido }}{% else %}{{ c.razon_social }}{% endif %}
+                                    </div>
+                                    <div style="font-size: 11px; color: var(--texto-secundario); margin-top: 2px;">{{ c.documento_nit }}</div>
+                                </div>
+                            </div>
+                            
+                            <div style="display: flex; flex-direction: column; gap: 8px; border-top: 1px dashed var(--gris-borde); padding-top: 15px;">
+                                <div style="display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--texto-principal);">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+                                    {{ c.correo|default:"-" }}
+                                </div>
+                                <div style="display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--texto-principal);">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
+                                    {{ c.celular|default:"-" }}
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <!-- VISTA DETALLE (Cuando se selecciona un contacto) -->
+                <div id="vistaDetalle" style="display: none; height: 100%; flex-direction: column;">
+                    <div class="tabs-primarias">
+                        <button class="tab-btn">Descripción</button>
+                        <button class="tab-btn activa">Actividades</button>
+                    </div>
+                    
+                    <div class="tabs-secundarias">
+                        <button class="subtab-btn activa">Actividad</button>
+                        <button class="subtab-btn">Notas</button>
+                        <button class="subtab-btn">Correos</button>
+                        <button class="subtab-btn">Llamadas</button>
+                        <button class="subtab-btn">Tareas</button>
+                        <button class="subtab-btn">Reuniones</button>
+                    </div>
+
+                    <div class="crear-interaccion-form" id="areaForm">
+                        <form method="POST" onsubmit="return validarInter()">
+                            {% csrf_token %}
+                            <input type="hidden" name="contacto" id="contacto_hidden">
+                            <div style="display: flex; gap: 10px; margin-bottom: 10px;">
+                                <select id="tipoInterId" name="tipo_interaccion" style="flex: 1;" class="entrada-texto" required>
+                                    <option value="">Seleccione el medio...</option>
+                                    {% for t in tipos %}
+                                    <option value="{{ t.id }}">{{ t.nombre_tipo }}</option>
+                                    {% endfor %}
+                                </select>
+                                <div style="display:flex; align-items:center; gap:5px;">
+                                    <input type="checkbox" id="exito" name="es_exitosa">
+                                    <label for="exito" style="font-size:12px; font-weight:500;">Exitosa</label>
+                                </div>
+                            </div>
+                            <textarea id="detId" name="detalle" placeholder="Registrar una nueva actividad..." required></textarea>
+                            <div style="text-align: right;">
+                                <button type="submit" class="btn-guardar">Guardar Actividad</button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <div class="timeline-container">
+                        <div style="border-left: 2px solid var(--gris-borde); padding-left: 20px; position: relative;">
+                            <div class="timeline-mes">Historial de Interacciones</div>
+                            
+                            <div id="noInteracciones" style="display:none; text-align: center; color: var(--texto-secundario); padding: 40px; font-size: 14px;">
+                                No hay interacciones para mostrar para este contacto.
+                            </div>
+
+                            {% for inter in interacciones %}
+                            <div class="interaccion-item inter-card" data-contacto-id="{{ inter.contacto.id }}">
+                                <div class="interaccion-header">
+                                    <span class="interaccion-titulo">
+                                        {{ inter.tipo_interaccion.nombre_tipo }} - por {{ inter.usuario_responsable.nombre_usuario }} - <span style="color: var(--rojo-primario); font-weight:700;">{% if inter.contacto.nombre %}{{ inter.contacto.nombre }}{% else %}{{ inter.contacto.razon_social }}{% endif %}</span>
+                                    </span>
+                                    <span class="interaccion-fecha">{{ inter.fecha_interaccion|date:"d M, Y - h:i a" }}</span>
+                                </div>
+                                
+                                {% if inter.es_exitosa %}
+                                    <div class="badge-estado estado-verde">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                                        Exitosa
+                                    </div>
+                                {% else %}
+                                    <div class="badge-estado estado-naranja">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+                                        Pendiente / No confirmada
+                                    </div>
+                                {% endif %}
+                                
+                                <div class="interaccion-detalle">
+                                    {{ inter.detalle_actividad|linebreaksbr }}
+                                </div>
+                                
+                                <div style="margin-top: 10px; text-align: right;">
+                                    <a href="/inter_del/{{ inter.id }}/" onclick="return confirm('¿Deseas eliminar este registro de actividad?')" style="color: var(--texto-secundario); transition: 0.2s; font-size: 11px; text-decoration: none;">Eliminar</a>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <script>
+        const contactosData = {
+            {% for c in contactos %}
+            "{{ c.id }}": {
+                nombre: "{% if c.nombre %}{{ c.nombre|escapejs }} {{ c.apellido|escapejs }}{% else %}{{ c.razon_social|escapejs }}{% endif %}",
+                tipo_persona: "{% if c.nombre %}Persona Natural{% else %}Persona Jurídica{% endif %}",
+                correo: "{{ c.correo|default:'-'|escapejs }}",
+                celular: "{{ c.celular|default:'-'|escapejs }}",
+                telefono: "{{ c.telefono|default:''|escapejs }}",
+                tipo_doc: "{{ c.tipo_doc.nombre_tipo|escapejs }}",
+                documento_nit: "{{ c.documento_nit|escapejs }}",
+                direccion: "{{ c.direccion|default:'-'|escapejs }}",
+                ciudad: "{{ c.ciudad|default:'-'|escapejs }}",
+                rep_legal: "{{ c.nombre_rep_legal|default:'-'|escapejs }}",
+                es_natural: {% if c.nombre %}true{% else %}false{% endif %},
+                activo: {% if c.activo %}true{% else %}false{% endif %},
+                responsable: "{{ c.usuario_asignado.nombre_usuario|default:'Sin asignar'|escapejs }}",
+                responsable_inicial: "{{ c.usuario_asignado.nombre_usuario|make_list|first|upper|default:'-'|escapejs }}"
+            }{% if not forloop.last %},{% endif %}
+            {% endfor %}
+        };
+
+        function seleccionarContacto() {
+            const id = document.getElementById("selectContacto").value;
+            document.getElementById("contacto_hidden").value = id;
+
+            const panelDetalles = document.getElementById("panelDetallesContacto");
+            const instruccion = document.getElementById("instruccionContacto");
+            const areaForm = document.getElementById("areaForm");
+            
+            const vistaGlobal = document.getElementById("vistaGlobal");
+            const vistaDetalle = document.getElementById("vistaDetalle");
+            
+            const tarjetas = document.querySelectorAll(".inter-card");
+            let countVisible = 0;
+
+            if (!id) {
+                panelDetalles.style.display = "none";
+                instruccion.style.display = "block";
+                
+                // Mostrar vista global (Directorio)
+                vistaGlobal.style.display = "block";
+                vistaDetalle.style.display = "none";
+            } else {
+                panelDetalles.style.display = "block";
+                instruccion.style.display = "none";
+                
+                // Mostrar vista detalle (Timeline/Tabs)
+                vistaGlobal.style.display = "none";
+                vistaDetalle.style.display = "flex";
+
+                const d = contactosData[id];
+
+                if(d) {
+                    document.getElementById("info_nombre").innerText = d.nombre;
+                    document.getElementById("info_avatar").innerText = d.nombre.charAt(0).toUpperCase();
+                    document.getElementById("info_tipo").innerText = d.tipo_persona;
+                    document.getElementById("info_responsable").innerText = d.responsable;
+                    document.getElementById("info_responsable_inicial").innerText = d.responsable_inicial;
+                    
+                    const badge = document.getElementById("info_estado");
+                    if (d.activo) {
+                        badge.className = "estado-contacto-badge";
+                        badge.innerText = "ACTIVO";
+                    } else {
+                        badge.className = "estado-contacto-badge estado-inactivo";
+                        badge.innerText = "INACTIVO";
+                    }
+
+                    document.getElementById("info_correo").innerText = d.correo;
+                    document.getElementById("info_telefono").innerText = d.celular + (d.telefono && d.telefono !== "-" ? " / " + d.telefono : "");
+                    document.getElementById("info_doc").innerText = d.documento_nit;
+                    document.getElementById("info_tipo_doc").innerText = d.tipo_doc + " / NIT";
+                    document.getElementById("info_direccion").innerText = d.direccion;
+                    document.getElementById("info_ciudad").innerText = d.ciudad;
+
+                    const repContainer = document.getElementById("info_rep_container");
+                    if (d.es_natural) {
+                        repContainer.style.display = "none";
+                    } else {
+                        repContainer.style.display = "block";
+                        document.getElementById("info_rep_legal").innerText = d.rep_legal;
+                    }
+                }
+
+                // Filtrar línea de tiempo
+                tarjetas.forEach(el => {
+                    if (el.getAttribute("data-contacto-id") === id) {
+                        el.style.display = "block";
+                        countVisible++;
+                    } else {
+                        el.style.display = "none";
+                    }
+                });
+            }
+
+            if(countVisible === 0) {
+                document.getElementById("noInteracciones").style.display = "block";
+            } else {
+                document.getElementById("noInteracciones").style.display = "none";
+            }
+        }
+
+        function validarInter() {
+            if (!document.getElementById("contacto_hidden").value || !document.getElementById("detId").value.trim() || !document.getElementById("tipoInterId").value) {
+                var m = document.getElementById("msgJS");
+                m.innerText = "Error: Por favor selecciona un contacto, un medio y redacta un resumen.";
+                m.style.display = "block";
+                return false;
+            }
+            return true;
+        }
+        
+        document.addEventListener("DOMContentLoaded", seleccionarContacto);
+    </script>
+</body>
+</html>
+'''
+
+import sys
+import os
+
+start_main = content.find('<main class="contenido-principal"')
+if start_main == -1:
+    print("Could not find <main class=\"contenido-principal\"")
+    sys.exit(1)
+
+final_content = content[:start_main] + new_main
+
+with open(file_path, 'w', encoding='utf-8') as f:
+    f.write(final_content)
+
+print("Updated successfully")
