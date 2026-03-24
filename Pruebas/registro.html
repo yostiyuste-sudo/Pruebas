@@ -89,6 +89,7 @@
                 </div>
                 {% endif %}
 
+                {% if not show_pin %}
                 <form method="POST" class="auth-form" id="registerForm">
                     {% csrf_token %}
 
@@ -195,6 +196,33 @@
                         </svg>
                     </button>
                 </form>
+                {% else %}
+                <!-- Formulario de verificación PIN -->
+                <form method="POST" action="{% url 'verificar_correo' %}" class="auth-form" id="verifyForm">
+                    {% csrf_token %}
+                    <input type="hidden" name="email" value="{{ email_reg }}">
+                    <div class="field-group">
+                        <label class="field-label" for="pin">
+                            Código de Verificación (6 dígitos)
+                        </label>
+                        <div class="field-wrap">
+                            <input type="text" name="pin" id="pin" class="field-input"
+                                placeholder="123456" required maxlength="6" pattern="\d{6}">
+                        </div>
+                        <p class="pwd-hint" style="color: var(--texto-secundario); font-size: 11px; margin-top: 8px;">
+                            Ingresa el código enviado a {{ email_reg }}
+                        </p>
+                    </div>
+
+                    <button type="submit" class="btn-auth btn-auth--register" id="btnVerify">
+                        <span>Verificar y Activar</span>
+                    </button>
+
+                    <p style="text-align: center; margin-top: 15px;">
+                        <a href="/registro/" class="form-link" style="font-size: 12px;">Volver al registro</a>
+                    </p>
+                </form>
+                {% endif %}
 
                 <div class="form-footer">
                     <p>¿Ya tienes cuenta? <a href="/login/" class="form-link">Inicia sesión aquí</a></p>

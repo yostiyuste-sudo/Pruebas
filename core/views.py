@@ -40,16 +40,29 @@ def registro_view(request):
                 usuario_sin_verificar.save()
                 
                 # link = request.build_absolute_uri(reverse('verificar_correo', args=[token]))
-                link = f"{settings.NGROK_URL}{reverse('verificar_correo', args=[token])}"
-                
-                send_mail(
-                    'Verifica tu cuenta en el CRM (reenvío)',
-                    f'Hola {usuario_sin_verificar.nombre_usuario},\n\nTe reenviamos el enlace de verificación:\n{link}\n\nSi no creaste esta cuenta, ignora este mensaje.',
-                    None,
-                    [email],
-                    fail_silently=False,
-                )
-                return render(request, "registro.html", {"success": "Ya te habíamos enviado un correo. Te hemos reenviado el enlace de verificación. Revisa tu bandeja de entrada o spam.", "roles": Rol.objects.all()})
+                # link = f"{settings.NGROK_URL}{reverse('verificar_correo', args=[token])}"
+                import random
+                pin = str(random.randint(100000, 999999))
+                usuario_sin_verificar.token_verificacion = pin
+                usuario_sin_verificar.save()
+
+                try:
+                    send_mail(
+                        'Verifica tu cuenta (reenvío) - CRM',
+                        f'Hola {usuario_sin_verificar.nombre_usuario},\n\nTu nuevo código de verificación es: {pin}\n\nIntroduce este código en la web para activar tu cuenta.',
+                        None,
+                        [email],
+                        fail_silently=False,
+                    )
+                    print(f"\n[SOPORTE] Código de verificación (reenvío) para {usuario_sin_verificar.nombre_usuario}: {pin}\n")
+                except: pass
+
+                return render(request, "registro.html", {
+                    "success": "Te hemos reenviado un nuevo código de verificación. Revisa tu correo o la consola.", 
+                    "roles": Rol.objects.all(),
+                    "show_pin": True,
+                    "email_reg": email
+                })
             except Exception as e:
                 error = f"Error al reenviar correo: {e}"
         elif Usuario.objects.filter(nombre_usuario=nombre).exists():
@@ -68,34 +81,66 @@ def registro_view(request):
                     token_verificacion=token
                 )
                 
-                # link = request.build_absolute_uri(reverse('verificar_correo', args=[token]))
-                link = f"{settings.NGROK_URL}{reverse('verificar_correo', args=[token])}"
-                
-                send_mail(
-                    'Verifica tu cuenta en el CRM',
-                    f'Hola {nombre},\n\nPor favor, verifica tu correo electrónico haciendo clic en el siguiente enlace:\n{link}\n\nSi no creaste esta cuenta, ignora este mensaje.',
-                    None,
-                    [email],
-                    fail_silently=False,
+                # link = f"{settings.NGROK_URL}{reverse('verificar_correo', args=[token])}"
+                import random
+                pin = str(random.randint(100000, 999999))
+                Usuario.objects.create(
+                    nombre_usuario=nombre,
+                    email=email,
+                    rol_id=rol_id,
+                    password_hash=passw,
+                    activo=False,
+                    token_verificacion=pin
                 )
-                return render(request, "registro.html", {"success": "Registro exitoso. Revisa tu bandeja de entrada o spam para verificar tu correo.", "roles": Rol.objects.all()})
+
+                try:
+                    send_mail(
+                        'Bienvenido al CRM - Código de Verificación',
+                        f'Hola {nombre},\n\nTu código para activar tu cuenta es: {pin}\n\nIntroduce este código en la web para terminar tu registro.',
+                        None,
+                        [email],
+                        fail_silently=False,
+                    )
+                    # Atajo para desarrollo
+                    print(f"\n[SOPORTE] Código de verificación para {nombre}: {pin}\n")
+                except: pass
+                
+                return render(request, "registro.html", {
+                    "success": "Registro exitoso. Introduce el código de 6 dígitos que enviamos a tu correo para activar tu cuenta.", 
+                    "roles": Rol.objects.all(),
+                    "show_pin": True,
+                    "email_reg": email
+                })
             except Exception as e:
                 error = f"Error al registrar: {e}"
                 
     roles = Rol.objects.all()
     return render(request, "registro.html", {"roles": roles, "error": error})
 
-def verificar_correo(request, token):
-    if not token:
-        return render(request, "login.html", {"error": "Token de verificación inválido.", "roles": Rol.objects.all()})
+def verificar_correo(request):
+    """Vista manejadora para verificar el código PIN de registro."""
+    if request.method == "POST":
+        pin = request.POST.get("pin", "").strip()
+        email = request.POST.get("email", "").strip()
         
-    u = Usuario.objects.filter(token_verificacion=token).first()
-    if u:
-        u.activo = True
-        u.token_verificacion = ""
-        u.save()
-        return render(request, "login.html", {"success": "Cuenta verificada con éxito. Ya puedes iniciar sesión.", "roles": Rol.objects.all()})
-    return render(request, "login.html", {"error": "El enlace de verificación es inválido o ya expiró.", "roles": Rol.objects.all()})
+        if not pin or not email:
+            return render(request, "login.html", {"error": "Faltan datos de verificación.", "roles": Rol.objects.all()})
+            
+        u = Usuario.objects.filter(email__iexact=email, token_verificacion=pin).first()
+        if u:
+            u.activo = True
+            u.token_verificacion = ""
+            u.save()
+            return render(request, "login.html", {"success": "Cuenta verificada con éxito. Ya puedes iniciar sesión.", "roles": Rol.objects.all()})
+        else:
+            return render(request, "registro.html", {
+                "error": "Código de verificación incorrecto.", 
+                "roles": Rol.objects.all(),
+                "show_pin": True,
+                "email_reg": email
+            })
+            
+    return redirect('/registro/')
 
 def login_view(request):
     error = ""
@@ -141,38 +186,59 @@ def logout_view(request):
 def recuperar_contrasena_view(request):
     error = ""
     success = ""
+    step = 1 # Paso 1: Pedir Email
+    
     if request.method == "POST":
-        email = request.POST.get("email", "").strip()
-        u = Usuario.objects.filter(email__iexact=email).first()
-        if u:
-            token = str(uuid.uuid4())
-            u.token_password = token
-            u.save()
-            
-            # link = request.build_absolute_uri(reverse('resetear_contrasena', args=[token]))
-            link = f"{settings.NGROK_URL}{reverse('resetear_contrasena', args=[token])}"
-            
-            try:
-                send_mail(
-                    'Recuperar Contraseña - CRM Dyco',
-                    f'Hola {u.nombre_usuario},\n\nHemos recibido una solicitud para restablecer tu contraseña. Haz clic en el siguiente enlace para continuar:\n\n{link}\n\nSi no solicitaste este cambio, puedes ignorar este mensaje de forma segura.',
-                    None,
-                    [email],
-                    fail_silently=False,
-                )
-                # Atajo para desarrollo: imprimir el link en la consola y un link local
-                local_link = request.build_absolute_uri(reverse('resetear_contrasena', args=[token]))
-                print(f"\n[SOPORTE] Enlace de recuperación para {u.nombre_usuario}:")
-                print(f"NGROK: {link}")
-                print(f"LOCAL: {local_link}\n")
+        if "email" in request.POST and "pin" not in request.POST:
+            # Paso 1: Verificar email y generar PIN
+            email = request.POST.get("email", "").strip()
+            u = Usuario.objects.filter(email__iexact=email).first()
+            if u:
+                import random
+                pin = str(random.randint(100000, 999999))
+                u.token_password = pin
+                u.save()
                 
-                success = "Te hemos enviado un correo. (Link también disponible en la consola del servidor para desarrollo)."
-            except Exception as e:
-                error = f"Error al enviar el correo: {e}"
-        else:
-            error = "No encontramos ningún usuario con ese correo electrónico."
+                # Enviar correo (simplificado, sin links de ngrok)
+                try:
+                    send_mail(
+                        'Código de Recuperación - CRM Dyco',
+                        f'Hola {u.nombre_usuario},\n\nTu código de recuperación de contraseña es: {pin}\n\nIntroduce este código en la ventana de recuperación para continuar.',
+                        None,
+                        [email],
+                        fail_silently=False,
+                    )
+                    # Atajo para desarrollo: imprimir el código en la consola
+                    print(f"\n[SOPORTE] Código de recuperación para {u.nombre_usuario}: {pin}\n")
+                    
+                    success = f"¡Código generado! Revisa tu correo (o la consola de este servidor). Introduce el código de 6 dígitos para continuar."
+                    step = 2 # Pasar al paso de introducir el PIN
+                    request.session['resetting_email'] = email
+                except Exception as e:
+                    error = f"Error al enviar el correo: {e}. (Revisa la consola del servidor para ver el código)."
+                    # Aun si falla el mail, mostramos el paso 2 por si el user mira la consola
+                    step = 2
+                    request.session['resetting_email'] = email
+            else:
+                error = "No encontramos ningún usuario con ese correo electrónico."
+        
+        elif "pin" in request.POST:
+            # Paso 2: Verificar el PIN
+            pin_input = request.POST.get("pin", "").strip()
+            email = request.session.get('resetting_email')
+            if not email:
+                return redirect('/recuperar-contrasena/')
+                
+            u = Usuario.objects.filter(email__iexact=email, token_password=pin_input).first()
+            if u:
+                # Éxito: Redirigir a la pantalla de cambio de clave usando el PIN como token
+                return redirect(reverse('resetear_contrasena', args=[pin_input]))
+            else:
+                error = "El código ingresado es incorrecto."
+                step = 2
+                success = "Introduce el código de 6 dígitos que recibiste."
             
-    return render(request, "recuperar_contrasena.html", {"error": error, "success": success})
+    return render(request, "recuperar_contrasena.html", {"error": error, "success": success, "step": step})
 
 def resetear_contrasena_view(request, token):
     error = ""
