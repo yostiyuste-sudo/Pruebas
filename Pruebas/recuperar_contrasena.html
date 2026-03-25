@@ -42,7 +42,9 @@
                         </svg>
                     </div>
                     <h1 class="form-title">Recuperar Acceso</h1>
-                    <p class="form-subtitle">Ingresa tu correo para recibir un enlace</p>
+                    <p class="form-subtitle">
+                        {% if step == 2 %}Introduce el código recibido{% else %}Ingresa tu correo para recibir un código{% endif %}
+                    </p>
                 </div>
 
                 {% if error %}
@@ -57,7 +59,7 @@
                 </div>
                 {% endif %}
 
-                {% if not success %}
+                {% if step == 1 %}
                 <form method="POST" class="auth-form" id="recoveryForm">
                     {% csrf_token %}
                     <div class="field-group">
@@ -71,8 +73,28 @@
                     </div>
 
                     <button type="submit" class="btn-auth" id="btnRecovery">
-                        <span>Enviar enlace</span>
+                        <span>Enviar código</span>
                     </button>
+                </form>
+                {% elif step == 2 %}
+                 <form method="POST" class="auth-form" id="pinForm">
+                    {% csrf_token %}
+                    <div class="field-group">
+                        <label class="field-label" for="pin">
+                            Código de 6 dígitos
+                        </label>
+                        <div class="field-wrap">
+                            <input type="text" name="pin" id="pin" class="field-input"
+                                placeholder="123456" required maxlength="6" pattern="\d{6}">
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn-auth" id="btnVerify">
+                        <span>Verificar Código</span>
+                    </button>
+                    <p style="text-align: center; margin-top: 15px;">
+                        <a href="/recuperar-contrasena/" class="form-link" style="font-size: 11px;">Reintentar con otro correo</a>
+                    </p>
                 </form>
                 {% endif %}
 

@@ -10,17 +10,20 @@ class Usuario(models.Model):
 
     # Relación con el modelo Rol
     rol = models.ForeignKey(Rol, on_delete=models.CASCADE) 
+
     rol = models.ForeignKey(Rol, on_delete=models.CASCADE)
     nombre_usuario = models.CharField(max_length=100)
     email = models.EmailField(unique=True)
     password_hash = models.CharField(max_length=255)
     activo = models.BooleanField(default=True)
 
+    
     # --- CAMPO AGREGADO AQUÍ ---
     token_verificacion = models.CharField(max_length=100, null=True, blank=True)
-
     token_verificacion = models.CharField(max_length=100, blank=True, null=True)
     token_password = models.CharField(max_length=100, blank=True, null=True)
+
+
     def __str__(self):
         return self.nombre_usuario
 
