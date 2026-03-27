@@ -71,6 +71,7 @@ class Contacto(models.Model):
     
     fecha_registro = models.DateTimeField(auto_now_add=True)
     activo = models.BooleanField(default=True)
+    historial_cambios = models.TextField(blank=True, null=True)
 
     def __str__(self):
         return self.razon_social if self.razon_social else f"{self.nombre} {self.apellido}"

@@ -840,6 +840,29 @@
                             <div class="desc-label">Responsable Asignado</div>
                             <div class="desc-value">{{ c.usuario_asignado.nombre_usuario }}</div>
                         </div>
+
+                        {% if c.historial_cambios %}
+                        <div class="audit-history-list" style="grid-column: 1 / -1; margin-top: 30px;">
+                            <h3 style="font-size: 12px; color: #94a3b8; font-weight: 700; text-transform: uppercase; margin-bottom: 15px; border-top: 1px solid #f1f5f9; padding-top: 20px; display: flex; align-items: center; gap: 8px;">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                                Historial de Auditoría
+                            </h3>
+                            {% with logs=c.historial_cambios.splitlines %}
+                                {% for log in logs reversed %}
+                                    {% if log.strip %}
+                                    <div class="alerta-auditoria" style="margin-bottom: 10px; background-color: #fffbfa; border: 1px dashed var(--rojo-primario); padding: 10px 14px; border-radius: 12px; display: flex; align-items: center; gap: 10px; color: #444; font-size: 13px;">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--rojo-primario)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                            <circle cx="12" cy="12" r="10"></circle>
+                                            <line x1="12" y1="8" x2="12" y2="12"></line>
+                                            <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                                        </svg>
+                                        <span>{{ log }}</span>
+                                    </div>
+                                    {% endif %}
+                                {% endfor %}
+                            {% endwith %}
+                        </div>
+                        {% endif %}
                     </div>
                 </div>
             </div>
@@ -853,6 +876,7 @@
                 <button class="tab-sub" id="btn-tab-llamadas" onclick="cambiarSubTab('llamadas')">Llamadas</button>
                 <button class="tab-sub" id="btn-tab-tareas" onclick="cambiarSubTab('tareas')">Tareas</button>
                 <button class="tab-sub" id="btn-tab-reuniones" onclick="cambiarSubTab('reuniones')">Reuniones</button>
+                <button class="tab-sub" id="btn-tab-historial" onclick="cambiarSubTab('historial')">Historial</button>
                 <div class="tab-indicator" id="tab-indicator"></div>
             </div>
 
@@ -960,6 +984,26 @@
                 </div>
             </div>
 
+            <!-- HISTORIAL DE CAMBIOS DEL CONTACTO -->
+            <div class="timeline-scroll" id="historial-container" style="display:none;">
+                <h4 class="timeline-title">Historial de Modificaciones del Contacto</h4>
+                <div class="timeline-vertical">
+                    {% if c.historial_cambios %}
+                        {% with logs=c.historial_cambios.splitlines %}
+                            {% for log in logs reversed %}
+                                {% if log.strip %}
+                                <div class="tm-card">
+                                    <div class="tm-body">{{ log }}</div>
+                                </div>
+                                {% endif %}
+                            {% endfor %}
+                        {% endwith %}
+                    {% else %}
+                        <p style="padding: 20px; color: #94a3b8; font-style: italic;">No hay registros de modificaciones para este contacto.</p>
+                    {% endif %}
+                </div>
+            </div>
+
             <!-- CORREOS ESTILO GMAIL -->
             <div class="correos-container" id="correos-container">
                 <div class="correos-header-actions">
@@ -999,28 +1043,26 @@
                                 {% else %}
                                 <div class="email-avatar-v2">{{ inter.usuario_responsable.nombre_usuario|first|upper }}</div>
                                 <div class="email-names">
-                                    <div class="email-sender-name">{{ inter.usuario_responsable.nombre_usuario }}</div>
-                                    <div class="email-to-list">a {{ c.nombre|default:c.razon_social }} ▼</div>
+                                    <div class="email-sender-name">Tú ({{ inter.usuario_responsable.nombre_usuario }})</div>
+                                    <div class="email-to-list">para: {% if c.nombre %}{{ c.nombre }} {{ c.apellido }}{% else %}{{ c.razon_social }}{% endif %} ▼</div>
                                     <div class="email-status-badge">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                                        Enviados
+                                        Enviado
                                     </div>
                                 </div>
                                 {% endif %}
                                 <div class="email-actions-inline">
-                                    <button onclick="abrirEmailAction('Responder', {{ inter.id }})">Responder</button>
-                                    <button onclick="abrirEmailAction('Reenviar', {{ inter.id }})">Reenviar</button>
-                                    <button class="red" onclick="eliminarInter({{ inter.id }}, 'Correo')">Eliminar</button>
+                                    <button onclick="cerrarEmail({{ inter.id }})">✖</button>
                                 </div>
                             </div>
-                            <div class="email-text-content">
-                                <div class="email-inner-subject" id="tm-body-{{ inter.id }}">{{ inter.detalle_actividad }}</div>
-                            </div>
+                            <div class="email-text-content">{{ inter.detalle_actividad }}</div>
                         </div>
                     </div>
                     {% endif %}
                     {% endfor %}
                 </div>
+            </div>
+
             </div>
         </section>
     </main>
@@ -1326,26 +1368,30 @@
             
             // Tab Logic
             if (tab === 'notas') {
-                containerNotas.style.display = 'block';
+                if(containerNotas) containerNotas.style.display = 'block';
                 formBox.style.display = 'none';
             } else if (tab === 'correos') {
-                containerCorreos.style.display = 'block';
+                if(containerCorreos) containerCorreos.style.display = 'block';
                 formBox.style.display = 'none';
             } else if (tab === 'reuniones') {
-                containerReuniones.style.display = 'flex';
-                containerReuniones.style.flexDirection = 'column';
+                if(containerReuniones) {
+                    containerReuniones.style.display = 'flex';
+                    containerReuniones.style.flexDirection = 'column';
+                }
                 formBox.style.display = 'none';
                 actualizarContadoresReuniones();
+            } else if (tab === 'historial') {
+                const hist = document.getElementById('historial-container');
+                if(hist) hist.style.display = 'block';
+                formBox.style.display = 'none';
             } else {
-                containerScroll.style.display = 'block';
+                if(containerScroll) containerScroll.style.display = 'block';
                 formBox.style.display = (tab === 'actividad' || tab === 'tareas') ? 'block' : 'none';
                 
                 const cards = document.querySelectorAll('.interaction-row');
                 cards.forEach(card => {
-                    const tipo = tab === 'actividad' || 
-                                 card.classList.contains('t-' + tab) || 
-                                 card.classList.contains('t-' + tab.slice(0, -1));
-                    card.style.display = tipo ? 'block' : 'none';
+                    const t_val = tab === 'actividad' ? true : (card.classList.contains('t-' + tab) || card.classList.contains('t-' + tab.slice(0, -1)));
+                    card.style.display = t_val ? 'block' : 'none';
                 });
             }
 
@@ -1474,7 +1520,28 @@
             }
             
             document.getElementById('verDetalle').innerText = detalle || '-';
-            document.getElementById('verAuditoria').innerText = historial || 'Sin registros de auditoría.';
+            
+            const auditBox = document.getElementById('verAuditoria');
+            auditBox.innerHTML = "";
+            if (historial && historial.trim() !== "" && historial !== 'None') {
+                const logs = historial.split('\n');
+                logs.reverse().forEach(log => {
+                    const div = document.createElement('div');
+                    div.className = "alerta-auditoria";
+                    div.style.marginBottom = "8px";
+                    div.innerHTML = `
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <line x1="12" y1="8" x2="12" y2="12"></line>
+                            <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                        </svg>
+                        <span>${log}</span>
+                    `;
+                    auditBox.appendChild(div);
+                });
+            } else {
+                auditBox.innerHTML = '<p style="font-size:12px; color:#94a3b8; font-style:italic;">Sin cambios registrados.</p>';
+            }
             
             abrirModal('modalVerReunion');
         }
