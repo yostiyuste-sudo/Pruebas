@@ -1,4 +1,4 @@
-{% load static %}
+﻿{% load static %}
 <!DOCTYPE html>
 <html lang="es">
 
@@ -699,11 +699,11 @@
                         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
                             <div class="grupo-campo">
                                 <label>Nombres</label>
-                                <input type="text" name="nombre" id="n" class="entrada-texto" placeholder="Paula">
+                                <input type="text" name="nombre" id="n" class="entrada-texto" placeholder="Juan">
                             </div>
                             <div class="grupo-campo">
                                 <label>Apellidos</label>
-                                <input type="text" name="apellido" id="a" class="entrada-texto" placeholder="García">
+                                <input type="text" name="apellido" id="a" class="entrada-texto" placeholder="Pérez">
                             </div>
                         </div>
                     </div>
@@ -715,8 +715,11 @@
                                 <label>Identificación</label>
                                 <select name="tipo_doc" id="tipoDocJuridica" class="entrada-texto">
                                     {% for td in tipos_doc %}
-                                    <option value="{{ td.id }}" {% if td.nombre_tipo == "NIT" %}selected{% endif %}>{{
-                                        td.nombre_tipo }}</option>
+                                    {% if td.nombre_tipo == "NIT" %}
+                                    <option value="{{ td.id }}" selected>{{ td.nombre_tipo }}</option>
+                                    {% else %}
+                                    <option value="{{ td.id }}">{{ td.nombre_tipo }}</option>
+                                    {% endif %}
                                     {% endfor %}
                                 </select>
                             </div>
@@ -797,7 +800,7 @@
                         </thead>
                         <tbody>
                             {% for c in activos %}
-                            <tr>
+                            <tr{% if not c.activo %} style="opacity: 0.6; filter: grayscale(100%);" {% endif %}>
                                 <td style="font-weight: 700; color: var(--rojo-primario);">{{ c.documento_nit }}</td>
                                 <td>
                                     {% if c.nombre %}
@@ -833,6 +836,7 @@
                                                 </path>
                                             </svg>
                                         </a>
+                                        {% if c.activo %}
                                         <a href="/status/{{ c.id }}/" title="Desactivar"
                                             style="color: var(--rojo-primario); text-decoration: none;">
                                             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18"
@@ -842,11 +846,27 @@
                                                 <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
                                             </svg>
                                         </a>
+                                        {% else %}
+                                        <a href="/status/{{ c.id }}/" title="Reactivar"
+                                            style="color: #2E7D32; text-decoration: none;">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18"
+                                                viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                                stroke-linecap="round" stroke-linejoin="round">
+                                                <path
+                                                    d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z">
+                                                </path>
+                                            </svg>
+                                        </a>
+                                        {% endif %}
                                         <a href="javascript:void(0)" title="Ver Historial"
                                             onclick="verHistorial('{% if c.nombre %}{{ c.nombre|escapejs }} {{ c.apellido|escapejs }}{% else %}{{ c.razon_social|escapejs }}{% endif %}', '{{ c.historial_cambios|escapejs }}', '{{ c.documento_nit|escapejs }}', '{% if c.razon_social %}{{ c.razon_social|escapejs }}{% else %}{{ c.nombre|escapejs }}{% endif %}', '{{ c.nombre_rep_legal|escapejs }}', '{{ c.correo|escapejs }}', '{{ c.celular|escapejs }}', '{{ c.ciudad|escapejs }}', '{{ c.direccion|escapejs }}', '{% if c.nombre %}Persona Natural{% else %}Persona Jurídica{% endif %}', '{{ c.tipo_doc.nombre_tipo|escapejs }}', '{{ c.fecha_registro|date:'d/m/Y H:i' }}', '{{ c.usuario_asignado.nombre_usuario|escapejs }}')"
                                             style="color: #000; text-decoration: none;">
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                                                <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18"
+                                                viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"
+                                                stroke-linecap="round" stroke-linejoin="round">
+                                                <path
+                                                    d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2">
+                                                </path>
                                                 <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
                                                 <path d="M9 12h6"></path>
                                                 <path d="M9 16h6"></path>
@@ -855,98 +875,30 @@
                                         </a>
                                     </div>
                                 </td>
-                            </tr>
-                            {% empty %}
-                            <tr>
-                                <td colspan="4"
-                                    style="text-align:center; padding: 60px; color: var(--texto-secundario);">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24"
-                                        fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
-                                        stroke-linejoin="round"
-                                        style="opacity: 0.3; margin-bottom: 10px; display: block; margin-left: auto; margin-right: auto;">
-                                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
-                                        <circle cx="9" cy="7" r="4"></circle>
-                                        <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
-                                        <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
-                                    </svg>
-                                    No se encontraron contactos registrados.
-                                </td>
-                            </tr>
-                            {% endfor %}
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="4"
+                                        style="text-align:center; padding: 60px; color: var(--texto-secundario);">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40"
+                                            viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"
+                                            stroke-linecap="round" stroke-linejoin="round"
+                                            style="opacity: 0.3; margin-bottom: 10px; display: block; margin-left: auto; margin-right: auto;">
+                                            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                                            <circle cx="9" cy="7" r="4"></circle>
+                                            <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                                            <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                                        </svg>
+                                        No se encontraron contactos registrados.
+                                    </td>
+                                </tr>
+                                {% endfor %}
                         </tbody>
                     </table>
                 </div>
             </section>
 
-            <!-- SECCIÓN 3: CONTACTOS INACTIVOS (SOLO ADMIN) -->
-            {% if usuario_logueado.rol.nombre_rol == "Administrador" %}
-            <section class="tarjeta-blanca" style="grid-column: 1 / -1; margin-top: 20px; opacity: 0.85;">
-                <h2 style="color: var(--texto-secundario);">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
-                        stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                        <path
-                            d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24">
-                        </path>
-                        <line x1="1" y1="1" x2="23" y2="23"></line>
-                    </svg>
-                    Contactos Inactivados
-                </h2>
 
-                <div class="tabla-contenedor">
-                    <table class="tabla-directorio">
-                        <thead>
-                            <tr>
-                                <th>Identificación</th>
-                                <th>Nombre / Empresa</th>
-                                <th>Acción</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for c in inactivos %}
-                            <tr>
-                                <td style="color: var(--texto-secundario); font-style: italic;">{{ c.documento_nit }}
-                                </td>
-                                <td style="color: var(--texto-secundario);">
-                                    {% if c.nombre %}
-                                    {{ c.nombre }} {{ c.apellido }}
-                                    {% else %}
-                                    {{ c.razon_social }}
-                                    {% endif %}
-                                </td>
-                                <td>
-                                    <a href="/status/{{ c.id }}/" title="Reactivar"
-                                        style="color: #2E7D32; text-decoration: none; font-weight: 700; font-size: 12px; display: flex; align-items: center; gap: 5px;">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
-                                            viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"
-                                            stroke-linecap="round" stroke-linejoin="round">
-                                            <polyline points="20 6 9 17 4 12"></polyline>
-                                        </svg>
-                                        REACTIVAR
-                                    </a>
-                                    <a href="javascript:void(0)" title="Ver Historial"
-                                        onclick="verHistorial('{% if c.nombre %}{{ c.nombre|escapejs }} {{ c.apellido|escapejs }}{% else %}{{ c.razon_social|escapejs }}{% endif %}', '{{ c.historial_cambios|escapejs }}', '{{ c.documento_nit|escapejs }}', '{% if c.razon_social %}{{ c.razon_social|escapejs }}{% else %}{{ c.nombre|escapejs }} {{ c.apellido|escapejs }}{% endif %}', '{{ c.nombre_rep_legal|escapejs }}', '{{ c.correo|escapejs }}', '{{ c.celular|escapejs }}', '{{ c.ciudad|escapejs }}', '{{ c.direccion|escapejs }}', '{% if c.nombre %}Persona Natural{% else %}Persona Jurídica{% endif %}', '{{ c.tipo_doc.nombre_tipo|escapejs }}', '{{ c.fecha_registro|date:"d/m/Y H:i" }}', '{{ c.usuario_asignado.nombre_usuario|escapejs }}')"
-                                        style="color: #666; text-decoration: none; font-size: 11px; display: flex; align-items: center; gap: 5px; margin-top: 5px;">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14"
-                                            viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
-                                            stroke-linecap="round" stroke-linejoin="round">
-                                            <circle cx="12" cy="12" r="10"></circle>
-                                            <polyline points="12 6 12 12 16 14"></polyline>
-                                        </svg>
-                                        HISTORIAL
-                                    </a>
-                                </td>
-                            </tr>
-                            {% empty %}
-                            <tr>
-                                <td colspan="3" style="text-align: center; padding: 30px; color: #ccc;">No hay contactos
-                                    inactivos.</td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
-            </section>
-            {% endif %}
         </div>
     </main>
 
@@ -1018,7 +970,7 @@
 
             if (historial && historial.trim() !== "" && historial !== 'None') {
                 const logs = historial.split('\n');
-                
+
                 // Buscar registro inicial para el subtítulo (Case Insensitive)
                 const regLog = logs.find(l => l.toLowerCase().includes("registrado por"));
                 if (regLog) {
@@ -1093,7 +1045,8 @@
                 <div style="display: flex; justify-content: space-between; width: 100%; align-items: center;">
                     <h3 style="margin: 0;">
                         <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none"
-                            stroke="var(--rojo-primario)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            stroke="var(--rojo-primario)" stroke-width="2.5" stroke-linecap="round"
+                            stroke-linejoin="round">
                             <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
                             <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
                             <path d="M9 12h6"></path>
@@ -1105,7 +1058,8 @@
                     <button onclick="cerrarHistorial(null)"
                         style="background:none; border:none; font-size:24px; color:#cbd5e1; cursor:pointer; padding: 5px;">&times;</button>
                 </div>
-                <p id="modal-audit-subtitle" style="font-size: 11px; color: #94a3b8; margin: 4px 0 0 32px; font-weight: 500; font-style: italic;">
+                <p id="modal-audit-subtitle"
+                    style="font-size: 11px; color: #94a3b8; margin: 4px 0 0 32px; font-weight: 500; font-style: italic;">
                     <!-- Se llena por JS -->
                 </p>
             </div>

@@ -320,7 +320,7 @@ def contactos(request):
             except Exception as e: error = f"Error: {e}"
             
     return render(request, "index.html", {
-        "activos": Contacto.objects.filter(activo=True).order_by('-fecha_registro'),
+        "activos": Contacto.objects.all().order_by('-fecha_registro'),
         "inactivos": Contacto.objects.filter(activo=False),
         "tipos_contacto": TipoContacto.objects.all(),
         "tipos_doc": TipoIdentificacion.objects.all(),
