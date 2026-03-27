@@ -313,7 +313,8 @@ def contactos(request):
                     direccion=direccion, ciudad=ciudad, correo=correo,
                     usuario_asignado=usuario_logueado, nombre=nombre,
                     apellido=apellido, razon_social=razon_social, 
-                    nombre_rep_legal=nombre_rep_legal, activo=True
+                    nombre_rep_legal=nombre_rep_legal, activo=True,
+                    historial_cambios=f"[{timezone.now().strftime('%d/%m/%Y %H:%M')}] Registrado por {usuario_logueado.nombre_usuario}"
                 )
                 return redirect('/')
             except Exception as e: error = f"Error: {e}"
@@ -328,8 +329,20 @@ def contactos(request):
     })
 
 def editar_contacto(request, id_contacto):
-    if not request.session.get('user_id'): return redirect('/login/')
+    id_sesion = request.session.get('user_id')
+    if not id_sesion: return redirect('/login/')
+    usuario_logueado = Usuario.objects.get(id=id_sesion)
+    
     p = get_object_or_404(Contacto, id=id_contacto)
+    
+    # Valores anteriores para auditoría
+    old = {
+        'documento_nit': p.documento_nit, 'correo': p.correo, 'celular': p.celular,
+        'ciudad': p.ciudad, 'direccion': p.direccion,
+        'nombre': p.nombre, 'apellido': p.apellido,
+        'razon_social': p.razon_social, 'nombre_rep_legal': p.nombre_rep_legal
+    }
+    
     error = ""
     if request.method == "POST":
         p.documento_nit = request.POST.get("documento_nit")
@@ -340,7 +353,6 @@ def editar_contacto(request, id_contacto):
         p.tipo_contacto_id = request.POST.get("tipo_contacto")
         p.tipo_doc_id = request.POST.get("tipo_doc")
         
-        # Si es Jurídica, borramos campos de Natural y viceversa
         es_natural = TipoContacto.objects.get(id=p.tipo_contacto_id).nombre_tipo == "Persona Natural"
         if es_natural:
             p.nombre = request.POST.get("nombre")
@@ -358,6 +370,29 @@ def editar_contacto(request, id_contacto):
             error = f"El documento/NIT '{p.documento_nit}' ya está registrado en otro contacto."
         elif not p.correo and not p.celular: error = "Email o Celular obligatorio."
         else:
+            # Comparar y loggear cambios
+            now_str = timezone.now().strftime('%d/%m/%Y %H:%M')
+            cambios_log = []
+            
+            # Mapeo de campos a nombres legibles
+            fields = {
+                'documento_nit': 'Número ID/NIT', 'correo': 'Email', 'celular': 'Celular',
+                'ciudad': 'Ciudad', 'direccion': 'Dirección', 'nombre': 'Nombre',
+                'apellido': 'Apellido', 'razon_social': 'Razón Social', 'nombre_rep_legal': 'Rep. Legal'
+            }
+            
+            for field, label in fields.items():
+                old_val = str(old.get(field) or "").strip()
+                new_val = str(getattr(p, field) or "").strip()
+                if old_val != new_val:
+                    cambios_log.append(f"[{now_str}] Modificó {label} por {usuario_logueado.nombre_usuario}")
+            
+            if not cambios_log: # Si no hubo cambios en campos, log genérico
+                cambios_log.append(f"[{now_str}] Editado por {usuario_logueado.nombre_usuario}")
+                
+            for log in cambios_log:
+                p.historial_cambios = (p.historial_cambios + "\n" + log) if p.historial_cambios else log
+            
             p.save()
             return redirect('/')
                 
@@ -365,13 +400,16 @@ def editar_contacto(request, id_contacto):
         "c": p, "error": error, 
         "tipos_contacto": TipoContacto.objects.all(),
         "tipos_doc": TipoIdentificacion.objects.all(),
-        "usuario_logueado": Usuario.objects.get(id=request.session.get('user_id'))
+        "usuario_logueado": usuario_logueado
     })
 
 def cambiar_estado(request, id_contacto):
     if not request.session.get('user_id'): return redirect('/login/')
     c = get_object_or_404(Contacto, id=id_contacto)
     c.activo = not c.activo
+    accion = "Reactivado" if c.activo else "Inactivado"
+    log = f"[{timezone.now().strftime('%d/%m/%Y %H:%M')}] {accion} por {Usuario.objects.get(id=request.session.get('user_id')).nombre_usuario}"
+    c.historial_cambios = (c.historial_cambios + "\n" + log) if c.historial_cambios else log
     c.save()
     
     # Redirigir de vuelta a la página de origen para una mejor experiencia

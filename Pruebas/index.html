@@ -398,6 +398,154 @@
         input:checked+.slider:before {
             transform: translateX(16px);
         }
+
+        /* Modal Historial Styles */
+        .modal-historial {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 9999;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(4px);
+        }
+
+        .modal-historial-contenido {
+            background: white;
+            border-radius: 20px;
+            width: 90%;
+            max-width: 500px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+            animation: slideUp 0.3s ease;
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translateY(20px);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .modal-historial-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        .modal-historial-header h3 {
+            font-size: 18px;
+            color: #1e293b;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .modal-client-info-card {
+            background: #f8fafc;
+            border-radius: 14px;
+            padding: 20px;
+            margin-bottom: 10px;
+            border: 1px solid #e2e8f0;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .m-info-item {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            position: relative;
+            padding: 5px;
+            border-radius: 8px;
+            transition: all 0.2s;
+        }
+
+        .m-info-item:hover {
+            background: #fff;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+        }
+
+        .m-info-label {
+            font-size: 11px;
+            color: #94a3b8;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .m-info-value {
+            font-size: 13px;
+            color: #334155;
+            font-weight: 600;
+        }
+
+        /* Efecto Hover para Advertencias */
+        .m-info-item .historial-item {
+            display: none !important;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            z-index: 100;
+            width: 200px;
+            margin-top: 0 !important;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            pointer-events: none;
+        }
+
+        .m-info-item:hover .historial-item {
+            display: flex !important;
+        }
+
+        .modal-historial-lista {
+            display: none;
+        }
+
+        .historial-item {
+            padding: 14px 18px;
+            border-radius: 12px;
+            background-color: #fffbfa;
+            border: 1px dashed var(--rojo-primario);
+            margin-bottom: 12px;
+            font-size: 13px;
+            color: #444;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            line-height: 1.4;
+            box-shadow: 0 4px 10px rgba(183, 28, 28, 0.03);
+            animation: fadeIn 0.3s ease;
+        }
+
+        .historial-item svg {
+            color: var(--rojo-primario);
+            flex-shrink: 0;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(5px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
     </style>
     <script src="{% static 'js/validaciones.js' %}"></script>
 </head>
@@ -694,6 +842,17 @@
                                                 <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
                                             </svg>
                                         </a>
+                                        <a href="javascript:void(0)" title="Ver Historial"
+                                            onclick="verHistorial('{% if c.nombre %}{{ c.nombre|escapejs }} {{ c.apellido|escapejs }}{% else %}{{ c.razon_social|escapejs }}{% endif %}', '{{ c.historial_cambios|escapejs }}', '{{ c.documento_nit|escapejs }}', '{% if c.razon_social %}{{ c.razon_social|escapejs }}{% else %}{{ c.nombre|escapejs }}{% endif %}', '{{ c.nombre_rep_legal|escapejs }}', '{{ c.correo|escapejs }}', '{{ c.celular|escapejs }}', '{{ c.ciudad|escapejs }}', '{{ c.direccion|escapejs }}', '{% if c.nombre %}Persona Natural{% else %}Persona Jurídica{% endif %}', '{{ c.tipo_doc.nombre_tipo|escapejs }}', '{{ c.fecha_registro|date:'d/m/Y H:i' }}', '{{ c.usuario_asignado.nombre_usuario|escapejs }}')"
+                                            style="color: #000; text-decoration: none;">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                                <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
+                                                <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
+                                                <path d="M9 12h6"></path>
+                                                <path d="M9 16h6"></path>
+                                                <path d="M12 8h.01"></path>
+                                            </svg>
+                                        </a>
                                     </div>
                                 </td>
                             </tr>
@@ -764,6 +923,17 @@
                                         </svg>
                                         REACTIVAR
                                     </a>
+                                    <a href="javascript:void(0)" title="Ver Historial"
+                                        onclick="verHistorial('{% if c.nombre %}{{ c.nombre|escapejs }} {{ c.apellido|escapejs }}{% else %}{{ c.razon_social|escapejs }}{% endif %}', '{{ c.historial_cambios|escapejs }}', '{{ c.documento_nit|escapejs }}', '{% if c.razon_social %}{{ c.razon_social|escapejs }}{% else %}{{ c.nombre|escapejs }} {{ c.apellido|escapejs }}{% endif %}', '{{ c.nombre_rep_legal|escapejs }}', '{{ c.correo|escapejs }}', '{{ c.celular|escapejs }}', '{{ c.ciudad|escapejs }}', '{{ c.direccion|escapejs }}', '{% if c.nombre %}Persona Natural{% else %}Persona Jurídica{% endif %}', '{{ c.tipo_doc.nombre_tipo|escapejs }}', '{{ c.fecha_registro|date:"d/m/Y H:i" }}', '{{ c.usuario_asignado.nombre_usuario|escapejs }}')"
+                                        style="color: #666; text-decoration: none; font-size: 11px; display: flex; align-items: center; gap: 5px; margin-top: 5px;">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14"
+                                            viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+                                            stroke-linecap="round" stroke-linejoin="round">
+                                            <circle cx="12" cy="12" r="10"></circle>
+                                            <polyline points="12 6 12 12 16 14"></polyline>
+                                        </svg>
+                                        HISTORIAL
+                                    </a>
                                 </td>
                             </tr>
                             {% empty %}
@@ -825,7 +995,128 @@
         // Sidebar expand logic toggle if needed (currently hover based in CSS)
         // window.onload = cambiar;
         document.addEventListener('DOMContentLoaded', cambiar);
+
+        function verHistorial(nombre, historial, doc, razon, rep, mail, cel, ciudad, dir, tper, tid, fechaReg, creador) {
+            const container = document.getElementById('historial-container-modal');
+            const card = document.getElementById('m-client-card');
+            const subtitle = document.getElementById('modal-audit-subtitle');
+
+            container.innerHTML = "";
+            subtitle.innerText = `[${fechaReg}] Registrado por ${creador || 'Sistema'}`;
+            card.innerHTML = `
+                <div class="m-info-item" id="m-field-tper"><span class="m-info-label">Tipo de Persona</span><span class="m-info-value">${tper}</span></div>
+                <div class="m-info-item" id="m-field-tid"><span class="m-info-label">Tipo de Identificación</span><span class="m-info-value">${tid}</span></div>
+                <div class="m-info-item" id="m-field-nit"><span class="m-info-label">Número ID / NIT</span><span class="m-info-value">${doc}</span></div>
+                <div class="m-info-item" id="m-field-nom"><span class="m-info-label">Razón Social / Nombre</span><span class="m-info-value">${nombre || razon}</span></div>
+                <div class="m-info-item" id="m-field-rep"><span class="m-info-label">Rep. Legal</span><span class="m-info-value">${rep || '-'}</span></div>
+                <div class="m-info-item" id="m-field-mail"><span class="m-info-label">Email</span><span class="m-info-value">${mail || '-'}</span></div>
+                <div class="m-info-item" id="m-field-cel"><span class="m-info-label">Celular</span><span class="m-info-value">${cel || '-'}</span></div>
+                <div class="m-info-item" id="m-field-loc" style="grid-column: span 2;"><span class="m-info-label">Ubicación</span><span class="m-info-value">${ciudad}, ${dir}</span></div>
+            `;
+
+            const fieldLogsAdded = new Set();
+
+            if (historial && historial.trim() !== "" && historial !== 'None') {
+                const logs = historial.split('\n');
+                
+                // Buscar registro inicial para el subtítulo (Case Insensitive)
+                const regLog = logs.find(l => l.toLowerCase().includes("registrado por"));
+                if (regLog) {
+                    subtitle.innerText = regLog.trim();
+                } else {
+                    subtitle.innerText = `[${fechaReg}] Registrado por ${creador || 'Sistema'}`;
+                }
+
+                logs.reverse().forEach(log => {
+                    const trimmed = log.trim();
+                    if (!trimmed) return;
+
+                    let targetId = null;
+                    if (trimmed.includes("Modificó Número ID/NIT")) targetId = "m-field-nit";
+                    else if (trimmed.includes("Email")) targetId = "m-field-mail";
+                    else if (trimmed.includes("Celular")) targetId = "m-field-cel";
+                    else if (trimmed.includes("Ciudad") || trimmed.includes("Dirección")) targetId = "m-field-loc";
+                    else if (trimmed.includes("Nombre") || trimmed.includes("Apellido") || trimmed.includes("Razón Social")) targetId = "m-field-nom";
+                    else if (trimmed.includes("Rep. Legal")) targetId = "m-field-rep";
+
+                    const div = document.createElement('div');
+                    div.className = "historial-item";
+                    div.innerHTML = `
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <line x1="12" y1="8" x2="12" y2="12"></line>
+                            <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                        </svg>
+                        <span>${trimmed}</span>
+                    `;
+
+                    if (targetId && !fieldLogsAdded.has(targetId)) {
+                        const targetField = document.getElementById(targetId);
+                        const smallDiv = div.cloneNode(true);
+
+                        // Incluir fecha y hora como solicitó el usuario
+                        const matchAutor = trimmed.match(/por\s+(.+)$/i);
+                        const matchFecha = trimmed.match(/^\[(.+?)\]/);
+                        const autor = matchAutor ? matchAutor[1] : "Usuario";
+                        const fecha = matchFecha ? matchFecha[1] : "";
+                        smallDiv.querySelector('span').innerText = `[${fecha}] Modificado por ${autor}`;
+
+                        smallDiv.style.marginTop = "8px";
+                        smallDiv.style.padding = "6px 10px";
+                        smallDiv.style.fontSize = "10px";
+                        smallDiv.style.borderStyle = "solid";
+                        smallDiv.style.backgroundColor = "#fff";
+                        smallDiv.querySelector('svg').setAttribute('width', '12');
+                        smallDiv.querySelector('svg').setAttribute('height', '12');
+                        targetField.appendChild(smallDiv);
+                        fieldLogsAdded.add(targetId);
+                    }
+
+                    container.appendChild(div);
+                });
+            } else {
+                container.innerHTML = '<p style="text-align:center; padding:20px; color:#94a3b8; font-style:italic;">Sin historial de cambios.</p>';
+            }
+            document.getElementById('modalHistorial').style.display = 'flex';
+        }
+
+        function cerrarHistorial(event) {
+            document.getElementById('modalHistorial').style.display = 'none';
+        }
     </script>
+
+    <!-- Modal para Historial -->
+    <div id="modalHistorial" class="modal-historial" onclick="cerrarHistorial(event)">
+        <div class="modal-historial-contenido" style="max-width: 600px; min-height: 300px;"
+            onclick="event.stopPropagation()">
+            <div class="modal-historial-header" style="flex-direction: column; align-items: flex-start;">
+                <div style="display: flex; justify-content: space-between; width: 100%; align-items: center;">
+                    <h3 style="margin: 0;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none"
+                            stroke="var(--rojo-primario)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
+                            <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
+                            <path d="M9 12h6"></path>
+                            <path d="M9 16h6"></path>
+                            <path d="M12 8h.01"></path>
+                        </svg>
+                        Información del contacto
+                    </h3>
+                    <button onclick="cerrarHistorial(null)"
+                        style="background:none; border:none; font-size:24px; color:#cbd5e1; cursor:pointer; padding: 5px;">&times;</button>
+                </div>
+                <p id="modal-audit-subtitle" style="font-size: 11px; color: #94a3b8; margin: 4px 0 0 32px; font-weight: 500; font-style: italic;">
+                    <!-- Se llena por JS -->
+                </p>
+            </div>
+
+            <div class="modal-client-info-card" id="m-client-card" style="margin-bottom: 0;">
+                <!-- Se llena por JS -->
+            </div>
+
+            <div id="historial-container-modal" class="modal-historial-lista"></div>
+        </div>
+    </div>
 </body>
 
 </html>
