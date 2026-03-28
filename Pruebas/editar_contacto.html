@@ -9,8 +9,7 @@
     <!-- Fuente Inter (Moderna y Profesional) -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
-        /* CSS EMBEDDED DIRECTLY TO MATCH DASHBOARD */
-        :root {
+:root {
             --rojo-primario: #D32F2F;
             --rojo-hover: #B71C1C;
             --blanco: #FFFFFF;
@@ -38,182 +37,76 @@
             display: flex;
         }
 
+        /* --- SIDEBAR & LAYOUT --- */
         .barra-lateral {
-            position: fixed;
-            top: 0;
-            left: 0;
-            height: 100vh;
-            width: var(--ancho-sidebar-contraido);
-            background-color: var(--blanco);
-            border-right: 1px solid var(--gris-borde);
-            display: flex;
-            flex-direction: column;
-            z-index: 1000;
-            transition: var(--transicion);
+            position: fixed; top: 0; left: 0; height: 100vh;
+            width: 80px; background-color: white; border-right: 1px solid #E0E0E0;
+            display: flex; flex-direction: column; z-index: 1000;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
             overflow: hidden;
         }
-
-        .barra-lateral:hover {
-            width: var(--ancho-sidebar-expandido);
-            box-shadow: 5px 0 25px rgba(0, 0, 0, 0.05);
-        }
-
-        .barra-cabecera {
-            padding: 20px;
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            height: 80px;
-        }
-
-        .logo-inicial {
-            min-width: 40px;
-            height: 40px;
-            background-color: var(--rojo-primario);
-            color: white;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 10px;
-            font-weight: 800;
-            font-size: 20px;
-        }
-
-        .logo-texto {
-            font-weight: 800;
-            font-size: 18px;
-            color: var(--rojo-primario);
-            white-space: nowrap;
-            opacity: 0;
-            transition: opacity 0.2s ease;
-        }
-
-        .barra-lateral:hover .logo-texto {
-            opacity: 1;
-        }
-
-        .perfil-usuario {
-            padding: 15px;
-            margin: 10px;
-            border-radius: 15px;
-            background: #fdf2f2;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            transition: var(--transicion);
-            overflow: hidden;
-        }
-
-        .avatar-circular {
-            min-width: 40px;
-            height: 40px;
-            background: white;
-            border: 2px solid var(--rojo-primario);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 700;
-            color: var(--rojo-primario);
-        }
-
-        .perfil-info {
-            white-space: nowrap;
-            overflow: hidden;
-            opacity: 0;
-            transition: opacity 0.2s ease;
-        }
-
-        .perfil-nombre {
-            display: block;
-            font-weight: 600;
-            font-size: 14px;
-        }
-
-        .perfil-rol {
-            display: block;
-            font-size: 11px;
-            color: var(--rojo-primario);
-            font-weight: 700;
-            text-transform: uppercase;
-        }
-
-        .barra-lateral:hover .perfil-info {
-            opacity: 1;
-        }
-
-        .navegacion-sidebar {
-            flex: 1;
-            padding: 10px;
-        }
-
-        .nav-enlace {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            padding: 14px;
-            text-decoration: none;
-            color: var(--texto-secundario);
-            border-radius: 12px;
-            margin-bottom: 5px;
-            transition: var(--transicion);
-            white-space: nowrap;
-        }
-
-        .nav-enlace:hover {
-            background-color: #FEEBEB;
-            color: var(--rojo-primario);
-        }
-
-        .nav-enlace.activo {
-            background-color: var(--rojo-primario);
-            color: white;
-        }
-
-        .iconosvg {
-            min-width: 24px;
-            height: 24px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .texto-enlace {
-            font-size: 14px;
-            font-weight: 500;
-            opacity: 0;
-            transition: opacity 0.2s ease;
-        }
-
-        .barra-lateral:hover .texto-enlace {
-            opacity: 1;
-        }
-
-        .barra-pie {
-            padding: 10px;
-            border-top: 1px solid var(--gris-borde);
-        }
+        .barra-lateral:hover { width: 260px; box-shadow: 5px 0 25px rgba(0,0,0,0.05); }
+        .barra-cabecera { padding: 20px; display: flex; align-items: center; gap: 15px; height: 80px; }
+        .logo-inicial { min-width: 40px; height: 40px; background-color: #D32F2F; color: white; display: flex; align-items: center; justify-content: center; border-radius: 12px; font-weight: 800; font-size: 20px; }
+        .logo-texto { font-weight: 800; font-size: 19px; color: #D32F2F; white-space: nowrap; opacity: 0; transition: opacity 0.3s ease; letter-spacing: -0.2px; }
+        .barra-lateral:hover .logo-texto { opacity: 1; }
+        .perfil-usuario { padding: 14px; margin: 12px; border-radius: 18px; background: #fdf2f2; display: flex; align-items: center; gap: 12px; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); overflow: hidden; }
+        .avatar-circular { min-width: 40px; height: 40px; background: white; border: 1.5px solid #D32F2F; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; color: #D32F2F; font-size: 16px; }
+        .perfil-info { white-space: nowrap; overflow: hidden; opacity: 0; transition: opacity 0.3s ease; }
+        .barra-lateral:hover .perfil-info { opacity: 1; }
+        .perfil-nombre { display: block; font-weight: 600; font-size: 14px; color: #333333; }
+        .perfil-rol { display: block; font-size: 11px; color: #757575; font-weight: 500; }
+        .navegacion-sidebar { flex: 1; padding: 12px; display: flex; flex-direction: column; gap: 4px; }
+        .nav-enlace { display: flex; align-items: center; gap: 15px; padding: 12px 14px; text-decoration: none; color: #5f6368; border-radius: 14px; transition: all 0.2s ease; white-space: nowrap; font-weight: 500; }
+        .nav-enlace:hover { background-color: #fdf2f2; color: #D32F2F; }
+        .nav-enlace.activo { background-color: #D32F2F; color: white; }
+        .iconosvg { min-width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; }
+        .nav-text { font-size: 14px; font-weight: 500; opacity: 0; transition: opacity 0.2s ease; }
+        .barra-lateral:hover .nav-text { opacity: 1; }
+        .barra-pie { padding: 10px; border-top: 1px solid #E0E0E0; }
 
         .contenido-principal {
-            margin-left: var(--ancho-sidebar-contraido);
-            flex: 1;
-            padding: 40px;
-            transition: var(--transicion);
-            width: calc(100% - var(--ancho-sidebar-contraido));
+            margin-left: 80px;
+            flex: 1; padding: 40px;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            width: calc(100% - 80px);
         }
 
-        .barra-lateral:hover~.contenido-principal {
-            margin-left: var(--ancho-sidebar-expandido);
-            width: calc(100% - var(--ancho-sidebar-expandido));
+        .barra-lateral:hover ~ main,
+        .barra-lateral:hover ~ .main-wrapper,
+        .barra-lateral:hover ~ .contenido-principal {
+            margin-left: 260px;
+            width: calc(100% - 260px);
         }
 
-        .tarjeta-blanca {
-            background: var(--blanco);
-            padding: 35px;
-            border-radius: 20px;
-            box-shadow: var(--sombra-suave);
-            margin-bottom: 20px;
+        /* CSS EMBEDDED DIRECTLY TO MATCH DASHBOARD */
+            --rojo-primario: #D32F2F;
+            --rojo-hover: #B71C1C;
+            --blanco: #FFFFFF;
+            --gris-fondo: #F8F9FA;
+            --gris-borde: #E0E0E0;
+            --texto-principal: #333333;
+            --texto-secundario: #757575;
+            --ancho-sidebar-expandido: 260px;
+            --ancho-sidebar-contraido: 80px;
+            --sombra-suave: 0 4px 20px rgba(0, 0, 0, 0.05);
+            --transicion: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+            font-family: 'Inter', sans-serif;
+            background-color: var(--gris-fondo);
+            color: var(--texto-principal);
+            overflow-x: hidden;
+            display: flex;
+        }
+
+        
 
         .tarjeta-blanca h2 {
             font-size: 18px;
@@ -290,14 +183,37 @@
             font-size: 14px;
             border: 1px solid #FFCDD2;
         }
+        
+
+        /* === SIDEBAR === */
+        
+        
+        
+
+        /* BARRA LATERAL */
+
+        .perfil-nombre {
+            display: block;
+            font-weight: 600;
+            font-size: 14px;
+            color: #333333;
+        }
+
+        .perfil-rol {
+            display: block;
+            font-size: 11px;
+            color: #757575;
+            font-weight: 500;
+        }
+
+    
+
     </style>
 </head>
 
 <body>
-    <!-- ═══════════════════════════════════════════
-         BARRA LATERAL (SIDEBAR)
-    ════════════════════════════════════════════ -->
-    <aside class="barra-lateral" id="sidebar">
+        <!-- BARRA LATERAL -->
+    <aside class="barra-lateral">
         <div class="barra-cabecera">
             <div class="logo-inicial">D</div>
             <div class="logo-texto">CONSTRUCTORA</div>
@@ -314,48 +230,50 @@
         </div>
 
         <nav class="navegacion-sidebar">
-            <a href="/" class="nav-enlace activo" title="Registro de Contactos">
+            <!-- INICIO -->
+            <a href="{% url 'dashboard' %}" class="nav-enlace" title="Inicio">
                 <span class="iconosvg">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none"
-                        stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                        <rect x="3" y="2" width="16" height="20" rx="2" />
-                        <circle cx="11" cy="11" r="3" />
-                        <path d="M8 15h6" />
-                        <path d="M19 6h3" />
-                        <path d="M19 11h3" />
-                        <path d="M19 16h3" />
-                        <path d="M3 6h2m-2 4h2m-2 4h2m-2 4h2" />
+                    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                        <polyline points="9 22 9 12 15 12 15 22"></polyline>
                     </svg>
                 </span>
-                <span class="texto-enlace">Registro de Contactos</span>
+                <span class="nav-text">Inicio</span>
             </a>
 
-            <a href="/interacciones/" class="nav-enlace" title="Interacciones">
+            <!-- CONTACTOS -->
+            <a href="{% url 'contactos' %}" class="nav-enlace activo" title="Registro de Contactos">
                 <span class="iconosvg">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-                        stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"></path>
-                        <path d="M8 12h.01"></path>
-                        <path d="M12 12h.01"></path>
-                        <path d="M16 12h.01"></path>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+                        <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
                     </svg>
                 </span>
-                <span class="texto-enlace">Interacciones</span>
+                <span class="nav-text">Registro de Contactos</span>
             </a>
 
+            <!-- INTERACCIONES -->
+            <a href="{% url 'interacciones' %}" class="nav-enlace" title="Interacciones">
+                <span class="iconosvg">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                    </svg>
+                </span>
+                <span class="nav-text">Interacciones</span>
+            </a>
+
+            <!-- USUARIOS (Admin) -->
             {% if usuario_logueado.rol.nombre_rol == "Administrador" %}
-            <!-- Gestión de Usuarios -->
-            <a href="/usuarios/" class="nav-enlace" title="Gestión de Usuarios">
+            <a href="{% url 'usuarios' %}" class="nav-enlace" title="Gestión de Usuarios">
                 <span class="iconosvg">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none"
-                        stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
                         <circle cx="9" cy="7" r="4"></circle>
                         <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
                         <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
                     </svg>
                 </span>
-                <span class="texto-enlace">Gestión de Usuarios</span>
+                <span class="nav-text">Gestión de Usuarios</span>
             </a>
             {% endif %}
         </nav>
@@ -363,17 +281,19 @@
         <div class="barra-pie">
             <a href="/logout/" class="nav-enlace" title="Cerrar Sesión">
                 <span class="iconosvg">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-                        stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
                         <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
                         <polyline points="16 17 21 12 16 7"></polyline>
                         <line x1="21" y1="12" x2="9" y2="12"></line>
                     </svg>
                 </span>
-                <span class="texto-enlace">Cerrar Sesión</span>
+                <span class="nav-text">Cerrar Sesión</span>
             </a>
         </div>
     </aside>
+
+
+
 
     <!-- ═══════════════════════════════════════════
          CONTENIDO PRINCIPAL
