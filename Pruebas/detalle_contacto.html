@@ -8,29 +8,35 @@
     <title>{{ c.nombre|default:c.razon_social }} - Detalle CRM</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
     <style>
         :root {
             --rojo-primario: #B71C1C;
             --rojo-hover: #D32F2F;
             --blanco: #FFFFFF;
-            --gris-fondo: #F8F9FA;
-            --gris-borde: #E0E0E0;
-            --texto-principal: #333333;
+            --gris-fondo: #f1f5f9;
+            --gris-borde: #E2E8F0;
+            --texto-principal: #1e293b;
             --texto-secundario: #64748b;
-            --transicion: all 0.2s ease;
+            --transicion: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #f1f5f9;
+            background-color: var(--gris-fondo);
             color: var(--texto-principal);
             display: flex;
             height: 100vh;
             overflow: hidden;
         }
 
-        /* --- SIDEBAR --- */
+        /* --- SIDEBAR & LAYOUT --- */
         .barra-lateral {
             position: fixed;
             top: 0;
@@ -42,16 +48,16 @@
             display: flex;
             flex-direction: column;
             z-index: 1000;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: var(--transicion);
             overflow: hidden;
         }
 
         .barra-lateral:hover {
             width: 260px;
-            box-shadow: 5px 0 25px rgba(0, 0, 0, 0.05);
+            box-shadow: 10px 0 30px rgba(0, 0, 0, 0.05);
         }
 
-        .logo-d {
+        .barra-cabecera {
             padding: 20px;
             display: flex;
             align-items: center;
@@ -59,7 +65,7 @@
             height: 80px;
         }
 
-        .logo-box {
+        .logo-inicial {
             min-width: 40px;
             height: 40px;
             background-color: var(--rojo-primario);
@@ -72,7 +78,7 @@
             font-size: 20px;
         }
 
-        .logo-txt {
+        .logo-texto {
             font-weight: 800;
             font-size: 19px;
             color: var(--rojo-primario);
@@ -82,11 +88,11 @@
             letter-spacing: -0.2px;
         }
 
-        .barra-lateral:hover .logo-txt {
+        .barra-lateral:hover .logo-texto {
             opacity: 1;
         }
 
-        .user-section {
+        .perfil-usuario {
             padding: 14px;
             margin: 12px;
             border-radius: 18px;
@@ -94,50 +100,50 @@
             display: flex;
             align-items: center;
             gap: 12px;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: var(--transicion);
             overflow: hidden;
         }
 
-        .user-avatar {
+        .avatar-circular {
             min-width: 40px;
             height: 40px;
             background: white;
-            border: 1.5px solid var(--rojo-primario);
+            border: 1.5px solid var(--rojo-hover);
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
             font-weight: 700;
-            color: var(--rojo-primario);
+            color: var(--rojo-hover);
             font-size: 16px;
         }
 
-        .user-info {
+        .perfil-info {
             white-space: nowrap;
             overflow: hidden;
             opacity: 0;
             transition: opacity 0.3s ease;
         }
 
-        .user-n {
+        .barra-lateral:hover .perfil-info {
+            opacity: 1;
+        }
+
+        .perfil-nombre {
             display: block;
             font-weight: 600;
             font-size: 14px;
             color: var(--texto-principal);
         }
 
-        .user-r {
+        .perfil-rol {
             display: block;
             font-size: 11px;
             color: var(--texto-secundario);
             font-weight: 500;
         }
 
-        .barra-lateral:hover .user-info {
-            opacity: 1;
-        }
-
-        .nav-sidebar {
+        .navegacion-sidebar {
             flex: 1;
             padding: 12px;
             display: flex;
@@ -145,7 +151,7 @@
             gap: 4px;
         }
 
-        .nav-icon {
+        .nav-enlace {
             display: flex;
             align-items: center;
             gap: 15px;
@@ -153,549 +159,975 @@
             text-decoration: none;
             color: #5f6368;
             border-radius: 14px;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: all 0.2s ease;
             white-space: nowrap;
-            font-weight: 500;
-            width: 100%;
+            font-weight: 600;
         }
 
-        .nav-icon:hover {
+        .nav-enlace:hover {
             background-color: #fdf2f2;
-            color: var(--rojo-primario);
+            color: var(--rojo-hover);
         }
 
-        .nav-icon.active {
-            background-color: var(--rojo-primario);
+        .nav-enlace.activo {
+            background-color: var(--rojo-hover);
             color: white;
         }
 
-        .nav-text { 
-            font-size: 14px; font-weight: 600; white-space: nowrap; 
-            opacity: 0; transition: opacity 0.2s ease; 
+        .iconosvg {
+            min-width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
-        .barra-lateral:hover .nav-text { opacity: 1; }
+        .nav-text {
+            font-size: 14px;
+            font-weight: 600;
+            opacity: 0;
+            transition: opacity 0.2s ease;
+        }
 
-        /* --- LAYOUT --- */
+        .barra-lateral:hover .nav-text {
+            opacity: 1;
+        }
+
+        .barra-pie {
+            padding: 10px;
+            border-top: 1px solid var(--gris-borde);
+        }
+
         .main-wrapper {
             flex: 1;
             margin-left: 80px;
-            padding: 20px;
+            padding: 24px;
             display: flex;
-            gap: 20px;
+            gap: 24px;
             overflow: hidden;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: var(--transicion);
         }
-        .barra-lateral:hover ~ .main-wrapper {
+
+        .barra-lateral:hover~.main-wrapper {
             margin-left: 260px;
         }
 
         /* --- PANEL IZQUIERDO --- */
         .panel-izquierdo {
-            width: 340px;
+            width: 380px;
             background: white;
-            border-radius: 16px;
+            border-radius: 24px;
             border: 1px solid var(--gris-borde);
             display: flex;
             flex-direction: column;
-            padding: 24px;
+            padding: 28px;
             overflow-y: auto;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02);
         }
+
         .link-atras {
-            color: #B71C1C;
+            color: var(--rojo-primario);
             text-decoration: none;
-            font-size: 14px;
-            font-weight: 700;
+            font-size: 15px;
+            font-weight: 800;
             display: flex;
             align-items: center;
             gap: 8px;
-            margin-bottom: 24px;
+            margin-bottom: 28px;
         }
-        
+
         .card-info-box {
             background: #f8fafc;
             border: 1px solid #e2e8f0;
-            border-radius: 12px;
-            padding: 16px;
-            margin-bottom: 24px;
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 28px;
         }
+
         .info-box-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 12px;
+            margin-bottom: 14px;
         }
-        .label-responsable { font-size: 11px; font-weight: 700; color: #64748b; text-transform: uppercase; }
-        .badge-activo { font-size: 10px; font-weight: 800; color: #059669; background: #ecfdf5; padding: 2px 8px; border-radius: 4px; }
-        
-        .user-assigned { display: flex; align-items: center; gap: 10px; }
-        .user-assigned-circle { width: 32px; height: 32px; background: #B71C1C; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 14px; }
-        .user-assigned-name { font-weight: 700; color: #1e293b; font-size: 14px; }
+
+        .label-responsable {
+            font-size: 12px;
+            font-weight: 800;
+            color: var(--texto-secundario);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .badge-activo {
+            font-size: 11px;
+            font-weight: 800;
+            color: #059669;
+            background: #ecfdf5;
+            padding: 4px 10px;
+            border-radius: 8px;
+        }
+
+        .user-assigned {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .user-assigned-circle {
+            width: 36px;
+            height: 36px;
+            background: var(--rojo-primario);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 15px;
+        }
+
+        .user-assigned-name {
+            font-weight: 700;
+            color: var(--texto-principal);
+            font-size: 15px;
+        }
 
         .perfil-contacto {
             display: flex;
             align-items: center;
-            gap: 16px;
-            margin-bottom: 30px;
+            gap: 20px;
+            margin-bottom: 35px;
         }
+
         .avatar-contacto {
-            width: 56px; height: 56px;
+            width: 64px;
+            height: 64px;
             background: #edc27e;
             color: white;
             border-radius: 50%;
-            display: flex; align-items: center; justify-content: center;
-            font-size: 24px; font-weight: 800;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            font-weight: 800;
         }
-        .perfil-info-text h2 { font-size: 18px; font-weight: 800; color: #1e293b; }
-        .perfil-info-text p { font-size: 13px; color: #64748b; }
+
+        .perfil-info-text h2 {
+            font-size: 20px;
+            font-weight: 800;
+            color: var(--texto-principal);
+        }
+
+        .perfil-info-text p {
+            font-size: 14px;
+            color: var(--texto-secundario);
+            font-weight: 500;
+        }
 
         .botones-accion-grid {
             display: flex;
             justify-content: space-between;
-            margin-bottom: 30px;
-            border-bottom: 1px solid #f1f5f9;
-            padding-bottom: 20px;
+            margin-bottom: 35px;
+            border-bottom: 1.5px solid #f1f5f9;
+            padding-bottom: 24px;
         }
+
         .btn-accion-circular {
             display: flex;
-            flex-direction: column; align-items: center; gap: 8px;
-            background: none; border: none; cursor: pointer;
-            color: #64748b; font-size: 11px; font-weight: 600;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: var(--texto-secundario);
+            font-size: 12px;
+            font-weight: 700;
         }
+
         .btn-accion-circular .ico-circ {
-            width: 42px; height: 42px;
-            border: 1px solid #e2e8f0;
+            width: 48px;
+            height: 48px;
+            border: 1.5px solid #e2e8f0;
             border-radius: 50%;
-            display: flex; align-items: center; justify-content: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             background: white;
             transition: 0.2s;
         }
-        .btn-accion-circular:hover .ico-circ { border-color: #B71C1C; color: #B71C1C; background: #fff1f2; }
-        .btn-accion-circular:hover { color: #B71C1C; }
+
+        .btn-accion-circular:hover .ico-circ {
+            border-color: var(--rojo-primario);
+            color: var(--rojo-primario);
+            background: #fff1f2;
+            transform: translateY(-2px);
+        }
+
+        .btn-accion-circular:hover {
+            color: var(--rojo-primario);
+        }
 
         .seccion-basica-titulo {
-            font-size: 13px; font-weight: 800; color: #64748b;
-            display: flex; align-items: center; gap: 10px;
-            margin-bottom: 20px; text-transform: uppercase; letter-spacing: 0.5px;
+            font-size: 14px;
+            font-weight: 800;
+            color: var(--texto-secundario);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 24px;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
         }
-        .basic-info-item { margin-bottom: 16px; }
-        .basic-info-lbl { font-size: 11px; color: #94a3b8; margin-bottom: 4px; }
-        .basic-info-val { font-size: 14px; color: #1e293b; font-weight: 600; word-break: break-all; }
+
+        .basic-info-item {
+            margin-bottom: 20px;
+        }
+
+        .basic-info-lbl {
+            font-size: 12px;
+            color: #94a3b8;
+            margin-bottom: 6px;
+            font-weight: 600;
+        }
+
+        .basic-info-val {
+            font-size: 15px;
+            color: var(--texto-principal);
+            font-weight: 700;
+            word-break: break-all;
+        }
 
         /* --- PANEL DERECHO --- */
         .panel-derecho {
             flex: 1;
             background: white;
-            border-radius: 16px;
+            border-radius: 24px;
             border: 1px solid var(--gris-borde);
             display: flex;
             flex-direction: column;
             overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02);
         }
 
         .tabs-header-top {
             display: flex;
             border-bottom: 1px solid var(--gris-borde);
-            padding: 0 30px;
+            padding: 0 40px;
             background: #fafafa;
+            gap: 30px;
         }
+
         .tab-top {
-            padding: 16px 24px;
+            padding: 20px 0;
             border: none;
             background: none;
-            font-size: 14px; font-weight: 700; color: #64748b;
+            font-size: 15px;
+            font-weight: 800;
+            color: var(--texto-secundario);
             cursor: pointer;
-            border-bottom: 3px solid transparent;
+            border-bottom: 4px solid transparent;
             transition: all 0.3s ease;
         }
-        .tab-top.active { color: #B71C1C; border-bottom-color: #B71C1C; }
+
+        .tab-top.active {
+            color: var(--rojo-primario);
+            border-bottom-color: var(--rojo-primario);
+        }
 
         .tab-content-container {
             display: none;
             flex: 1;
             overflow-y: auto;
         }
+
         .tab-content-container.active {
             display: flex;
             flex-direction: column;
         }
 
-        .desc-section { padding: 40px; }
-        .desc-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 30px; }
-        .desc-item { margin-bottom: 20px; }
-        .desc-label { font-size: 12px; font-weight: 800; color: #94a3b8; text-transform: uppercase; margin-bottom: 8px; }
-        .desc-value { font-size: 15px; font-weight: 600; color: #1e293b; }
+        .desc-section {
+            padding: 40px;
+        }
+
+        .desc-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 35px;
+        }
+
+        .desc-label {
+            font-size: 13px;
+            font-weight: 800;
+            color: #94a3b8;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+        }
+
+        .desc-value {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--texto-principal);
+        }
 
         .tabs-sub-nav {
             display: flex;
-            gap: 25px;
-            padding: 15px 30px;
+            gap: 30px;
+            padding: 20px 40px;
             border-bottom: 1px solid #f1f5f9;
             position: relative;
         }
+
         .tab-sub {
-            padding-bottom: 12px;
-            border: none; background: none; cursor: pointer;
-            font-size: 13px; font-weight: 600; color: #94a3b8;
+            padding-bottom: 14px;
+            border: none;
+            background: none;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 700;
+            color: #94a3b8;
             transition: color 0.3s ease;
             position: relative;
             z-index: 1;
         }
-        .tab-sub.active { color: #1e293b; }
-        
-        /* Indicador animado */
+
+        .tab-sub.active {
+            color: var(--texto-principal);
+        }
+
         .tab-indicator {
             position: absolute;
             bottom: 0;
             left: 0;
-            height: 3px;
-            background: #1e293b;
+            height: 4px;
+            background: var(--texto-principal);
             transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
-            border-radius: 3px 3px 0 0;
+            border-radius: 4px 4px 0 0;
         }
 
         .interaccion-form-box {
-            padding: 24px 30px;
+            padding: 30px 40px;
             border-bottom: 1px solid #f1f5f9;
         }
-        .interaccion-form-box select { margin-bottom: 12px; }
-        .interaccion-form-box textarea { min-height: 80px; margin-bottom: 16px; resize: none; }
-        .btn-rojo-guardar {
-            background: #B71C1C; color: white;
-            padding: 10px 24px; border-radius: 8px;
-            border: none; font-weight: 700; cursor: pointer;
-            float: right;
+
+        .interaccion-form-box select,
+        .interaccion-form-box textarea {
+            width: 100%;
+            border: 1.5px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 10px 14px; /* Reduced padding */
+            font-family: inherit;
+            font-size: 14px;
+            background: #f8fafc;
+            transition: 0.2s;
+            outline: none;
         }
-        .btn-rojo-guardar:hover { background: #D32F2F; }
+
+        .interaccion-form-box select:focus,
+        .interaccion-form-box textarea:focus {
+            border-color: var(--rojo-primario);
+            background: white;
+        }
+
+        .interaccion-form-box textarea {
+            min-height: 100px;
+            margin-top: 15px;
+            margin-bottom: 20px;
+            resize: none;
+        }
+
+        .btn-rojo-guardar {
+            background: var(--rojo-primario);
+            color: white;
+            padding: 12px 28px;
+            border-radius: 12px;
+            border: none;
+            font-weight: 700;
+            cursor: pointer;
+            float: right;
+            transition: 0.2s;
+            box-shadow: 0 4px 10px rgba(183, 28, 28, 0.2);
+        }
+
+        .btn-rojo-guardar:hover {
+            background: var(--rojo-hover);
+            transform: translateY(-1px);
+        }
 
         .timeline-scroll {
             flex: 1;
             overflow-y: auto;
-            padding: 30px;
-            background: #fdfdfd;
+            padding: 40px;
+            background: #fcfcfc;
         }
-        .timeline-title { font-size: 14px; font-weight: 700; color: #64748b; margin-bottom: 24px; }
-        .timeline-vertical {
-            border-left: 2px solid #e2e8f0;
-            padding-left: 30px;
-            margin-left: 10px;
-        }
-        .tm-card {
-            background: white; border: 1px solid #e2e8f0;
-            border-radius: 12px; padding: 16px 20px;
-            margin-bottom: 20px; position: relative;
-        }
-        .tm-card::before {
-            content: ''; position: absolute; left: -37px; top: 18px;
-            width: 12px; height: 12px; background: #cbd5e0;
-            border: 2px solid white; border-radius: 50%;
-        }
-        .tm-header {
-            display: flex; justify-content: space-between; align-items: center;
-            margin-bottom: 10px;
-        }
-        .tm-type-user { font-size: 14px; font-weight: 700; color: #1e293b; }
-        .tm-date { font-size: 12px; color: #94a3b8; }
-        .tm-body { font-size: 13px; color: #444; line-height: 1.6; white-space: pre-wrap; }
 
-        .tm-actions { margin-top: 12px; display: flex; gap: 15px; }
-        .btn-tm-link {
-            background: none; border: none; cursor: pointer;
-            padding: 0; font-size: 11px; font-weight: 700;
-            color: #0d9488; text-transform: uppercase;
+        .timeline-title {
+            font-size: 15px;
+            font-weight: 800;
+            color: var(--texto-secundario);
+            margin-bottom: 30px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
-        .btn-tm-link.red { color: #B71C1C; }
+
+        .timeline-vertical {
+            border-left: 2px solid #eef2f6;
+            padding-left: 35px;
+            position: relative;
+        }
+
+        .tm-card {
+            background: white;
+            border: 1px solid #eef2f6;
+            border-radius: 16px;
+            padding: 20px 24px;
+            margin-bottom: 25px;
+            position: relative;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.01);
+        }
+
+        .tm-card::before {
+            content: '';
+            position: absolute;
+            left: -44px;
+            top: 22px;
+            width: 14px;
+            height: 14px;
+            background: #cbd5e0;
+            border: 3px solid white;
+            border-radius: 50%;
+            box-shadow: 0 0 0 2px #f4f7f9;
+        }
+
+        .tm-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .tm-type-user {
+            font-size: 15px;
+            font-weight: 800;
+            color: var(--texto-principal);
+        }
+
+        .tm-date {
+            font-size: 13px;
+            color: #94a3b8;
+            font-weight: 500;
+        }
+
+        .tm-body {
+            font-size: 14px;
+            color: #444;
+            line-height: 1.6;
+            white-space: pre-wrap;
+            font-weight: 500;
+        }
+
+        .tm-actions {
+            margin-top: 15px;
+            display: flex;
+            gap: 20px;
+        }
+
+        .btn-tm-link {
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 0;
+            font-size: 12px;
+            font-weight: 800;
+            color: #0d9488;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .btn-tm-link.red {
+            color: var(--rojo-primario);
+        }
+
+        .btn-tm-link:hover {
+            text-decoration: underline;
+            opacity: 0.8;
+        }
+
+        /* --- MODALES --- */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(15, 23, 42, 0.4);
+            backdrop-filter: blur(4px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+        }
+
+        .modal-card {
+            background: white;
+            width: 90%;
+            max-width: 550px;
+            border-radius: 28px;
+            padding: 35px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15);
+            animation: modalIn 0.3s ease;
+        }
+
+        @keyframes modalIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+
+        /* --- HIDE SECONDARY CONTAINERS --- */
+        .reuniones-container,
+        .grid-notas-container,
+        .correos-container,
+        #historial-container {
+            display: none;
+        }
+
 
         /* --- GRID DE NOTAS --- */
         .grid-notas-container {
-            display: none;
-            flex: 1;
-            overflow-y: auto;
-            padding: 30px;
-            background: #fdfdfd;
+            padding: 40px;
+            background: #fcfcfc;
         }
+
         .grid-notas-layout {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 20px;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 24px;
         }
+
         .nota-box {
             background: white;
-            border: 1px solid #e2e8f0;
-            border-radius: 12px;
-            padding: 20px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
-            transition: var(--transicion);
+            border: 1px solid #eef2f6;
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.02);
             display: flex;
             flex-direction: column;
-            justify-content: space-between;
+            gap: 16px;
+            transition: var(--transicion);
         }
+
         .nota-box:hover {
-            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-            transform: translateY(-2px);
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.04);
         }
+
         .nota-box-content {
-            font-size: 13px;
-            color: #334155;
-            line-height: 1.5;
-            margin-bottom: 15px;
+            font-size: 14px;
+            color: #444;
+            line-height: 1.6;
             white-space: pre-wrap;
+            font-weight: 500;
         }
+
         .nota-box-footer {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-top: 1px solid #f1f5f9;
-            padding-top: 12px;
-            font-size: 11px;
+            border-top: 1.5px solid #f8fafc;
+            padding-top: 16px;
+            font-size: 12px;
             color: #94a3b8;
+            font-weight: 600;
         }
 
-        /* --- CORREOS ESTILO GMAIL --- */
-        .correos-container {
-            display: none;
-            flex: 1;
-            overflow-y: auto;
-            padding: 20px 30px;
-            background: #f8fafc;
+        /* --- REUNIONES ESTILO CRM --- */
+        .reuniones-container {
+            padding: 40px;
+            background: #fcfcfc;
         }
+
+        .reuniones-stats-clean {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 35px;
+        }
+
+        .stat-badge {
+            padding: 10px 20px;
+            border-radius: 12px;
+            font-size: 13px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: 0.2s;
+        }
+
+        .stat-badge.fin {
+            background: #ecfdf5;
+            color: #059669;
+        }
+
+        .stat-badge.prog {
+            background: #eff6ff;
+            color: #2563eb;
+        }
+
+        .stat-badge.canc {
+            background: #fef2f2;
+            color: #d32f2f;
+        }
+
+        .reunion-hist-title {
+            font-size: 15px;
+            font-weight: 800;
+            color: var(--texto-secundario);
+            margin-bottom: 25px;
+        }
+
+        .cal-card {
+            background: white;
+            border: 1px solid #eef2f6;
+            border-radius: 18px;
+            padding: 0;
+            margin-bottom: 24px;
+            display: flex;
+            overflow: hidden;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.01);
+            transition: var(--transicion);
+        }
+
+        .cal-card:hover {
+            transform: translateX(5px);
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.03);
+        }
+
+        .cal-date-block {
+            width: 90px;
+            background: #f8fafc;
+            border-right: 1.5px solid #f1f5f9;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+        }
+
+        .cal-day {
+            font-size: 26px;
+            font-weight: 800;
+            color: var(--texto-principal);
+            line-height: 1;
+        }
+
+        .cal-month {
+            font-size: 13px;
+            font-weight: 800;
+            color: var(--rojo-primario);
+            text-transform: uppercase;
+        }
+
+        .cal-body {
+            flex: 1;
+            padding: 25px;
+            display: grid;
+            grid-template-columns: 80px 1fr 140px;
+            align-items: center;
+            gap: 25px;
+        }
+
+        .cal-col-time {
+            font-size: 15px;
+            font-weight: 700;
+            color: #1e293b;
+        }
+
+        .cal-col-asunto {
+            font-size: 16px;
+            font-weight: 700;
+            color: #334155;
+        }
+
+        .cal-col-asunto small {
+            display: block;
+            font-size: 13px;
+            color: #94a3b8;
+            margin-top: 6px;
+            font-weight: 500;
+        }
+
+        .cal-badge {
+            padding: 4px 12px;
+            border-radius: 8px;
+            font-size: 11px;
+            font-weight: 800;
+            text-transform: uppercase;
+            display: inline-block;
+        }
+
+        .cal-badge.presencial {
+            background: #f0fdf4;
+            color: #166534;
+        }
+
+        .cal-badge.virtual {
+            background: #f5f3ff;
+            color: #5b21b6;
+        }
+
+        .cal-badge.finalizada {
+            background: #f0fdfa;
+            color: #0f766e;
+        }
+
+        .cal-badge.programada {
+            background: #fffbeb;
+            color: #92400e;
+        }
+
+        .cal-badge.cancelada-badge {
+            background: #fff1f2;
+            color: #9f1239;
+        }
+
+        .cal-actions {
+            width: 180px;
+            padding: 25px;
+            border-left: 1.5px solid #f1f5f9;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            align-items: center;
+            justify-content: center;
+            background: #fafafa;
+        }
+
+        .cal-btn-action,
+        .cal-btn-fin,
+        .cal-btn-cancel {
+            padding: 8px 14px;
+            border-radius: 10px;
+            border: 1px solid #e2e8f0;
+            background: white;
+            font-size: 12px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: 0.2s;
+            flex: 1;
+            min-width: 80px;
+            text-align: center;
+        }
+
+        .cal-btn-action:hover {
+            border-color: #2563eb;
+            color: #2563eb;
+            background: #eff6ff;
+        }
+
+        .cal-btn-fin {
+            border-color: #059669;
+            color: #059669;
+        }
+
+        .cal-btn-fin:hover {
+            background: #ecfdf5;
+        }
+
+        .cal-btn-cancel {
+            border-color: #ef4444;
+            color: #ef4444;
+        }
+
+        .cal-btn-cancel:hover {
+            background: #fef2f2;
+        }
+    
+        /* --- ESTILOS DE FORMULARIOS EN MODALES --- */
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; border-bottom: 1.5px solid #f1f5f9; padding-bottom: 15px; }
+        .modal-title { font-size: 18px; font-weight: 800; color: var(--texto-principal); }
+        .btn-close-modal { background: #f1f5f9; border: none; width: 32px; height: 32px; border-radius: 50%; font-size: 20px; color: #64748b; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.2s; }
+        .btn-close-modal:hover { background: #fee2e2; color: #ef4444; }
+
+        .entrada-field { margin-bottom: 20px; }
+        .entrada-lbl { display: block; font-size: 13px; font-weight: 700; color: #64748b; margin-bottom: 8px; }
+        .entrada-texto, .modal-card textarea { width: 100%; padding: 12px 16px; border: 1.5px solid #e2e8f0; border-radius: 12px; font-family: inherit; font-size: 14px; color: #1e293b; background: #f8fafc; transition: 0.2s; outline: none; }
+        .entrada-texto:focus, .modal-card textarea:focus { border-color: var(--rojo-primario); background: white; box-shadow: 0 0 0 4px rgba(183, 28, 28, 0.05); }
+        
+        .input-with-icon { position: relative; }
+        .input-with-icon .entrada-texto { padding-right: 45px; }
+        .input-icon { position: absolute; right: 16px; top: 50%; transform: translateY(-50%); color: #94a3b8; pointer-events: none; }
+        
+        .modal-card textarea { min-height: 120px; resize: none; line-height: 1.6; }
+
+    
+        /* --- ESTILOS MODAL VER DETALLE --- */
+        .ver-grid { display: grid; grid-template-columns: 100px 1fr; gap: 15px 20px; margin-top: 20px; }
+        .ver-label { font-size: 13px; font-weight: 800; color: #94a3b8; text-transform: uppercase; }
+        .ver-value { font-size: 15px; font-weight: 700; color: #1e293b; }
+        
+        .ver-audit-box { margin-top: 15px; max-height: 200px; overflow-y: auto; padding: 10px; background: #fdf2f2; border-radius: 12px; border: 1px dashed #fee2e2; }
+
+    
+        .btn-mail-filled {
+            background: linear-gradient(135deg, var(--rojo-primario) 0%, var(--rojo-hover) 100%);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 14px;
+            border: none;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(183, 28, 28, 0.25);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .btn-mail-filled:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(183, 28, 28, 0.35);
+            filter: brightness(1.1);
+        }
+
+
         .correos-header-actions {
             display: flex;
-            justify-content: flex-end;
-            gap: 12px;
-            margin-bottom: 20px;
+            justify-content: flex-end; /* Align to right */
+            gap: 15px;
+            padding: 20px 40px;
+            border-bottom: 1px solid #f1f5f9;
         }
-        .btn-mail-outline {
-            border: 1px solid #e2e8f0; background: white; color: #64748b;
-            padding: 8px 16px; border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer;
-        }
-        .btn-mail-filled {
-            background: #B71C1C; color: white; border: none;
-            padding: 8px 16px; border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer;
-        }
-        .email-card {
-            background: white; border: 1px solid #e2e8f0; border-radius: 12px;
-            margin-bottom: 15px; overflow: hidden;
-        }
-        .email-card-header {
-            padding: 12px 20px; display: flex; justify-content: space-between; align-items: center;
-            cursor: pointer; background: #fcfcfc; transition: 0.2s;
-        }
-        .email-card-header:hover { background: #f1f5f9; }
-        .email-subject-row { display: flex; align-items: center; gap: 12px; font-size: 14px; font-weight: 700; color: #1e293b; }
-        .email-date-row { font-size: 12px; color: #94a3b8; }
-        
-        .email-card-body {
-            display: none; padding: 25px; border-top: 1px solid #f1f5f9;
-        }
-        .email-sender-info { display: flex; gap: 15px; margin-bottom: 20px; position: relative; }
-        .email-avatar-v2 {
-            width: 44px; height: 44px; background: #fff1f2; color: #B71C1C;
-            border-radius: 50%; display: flex; align-items: center; justify-content: center;
-            font-weight: 700; font-size: 18px;
-        }
+
+    
+        /* --- ESTILOS CORREO --- */
+        .correos-container { padding: 40px; background: #fcfcfc; }
+        .email-card { background: white; border: 1.5px solid #f1f5f9; border-radius: 16px; margin-bottom: 12px; transition: 0.2s; overflow: hidden; }
+        .email-card:hover { border-color: #e2e8f0; box-shadow: 0 4px 12px rgba(0,0,0,0.03); }
+        .email-card-header { padding: 15px 25px; display: flex; align-items: center; justify-content: space-between; cursor: pointer; background: #fff; }
+        .email-subject-row { display: flex; align-items: center; gap: 12px; font-weight: 700; color: #334155; font-size: 14.5px; }
+        .email-card-body { display: none; padding: 25px; background: #fafafa; border-top: 1.5px solid #f1f5f9; }
+        .email-sender-info { display: flex; align-items: center; gap: 15px; margin-bottom: 20px; position: relative; }
+        .email-avatar-v2 { width: 40px; height: 40px; border-radius: 50%; background: var(--rojo-primario); color: white; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 15px; }
         .email-names { flex: 1; }
-        .email-sender-name { font-weight: 700; font-size: 14px; color: #1e293b; margin-bottom: 2px; }
-        .email-to-list { font-size: 12px; color: #64748b; }
-        .email-status-badge { color: #10b981; font-size: 11px; font-weight: 600; margin-top: 8px; display: flex; align-items: center; gap: 4px; }
-        
-        .email-actions-inline { position: absolute; top: 0; right: 0; display: flex; gap: 15px; }
-        .email-actions-inline button {
-            background: none; border: none; cursor: pointer; font-size: 13px; font-weight: 700; color: #0d9488;
-        }
-        .email-actions-inline button.red { color: #B71C1C; }
-
-        .email-text-content { 
-            font-size: 14px; color: #334155; line-height: 1.6; margin-left: 59px; white-space: pre-wrap;
-        }
-        .email-inner-subject { font-weight: 700; color: #1e293b; margin-bottom: 15px; }
-
-        .btn-star {
-            background: none; border: none; cursor: pointer; color: #cbd5e0;
-            font-size: 18px; transition: 0.2s; padding: 0 5px;
-        }
+        .email-sender-name { font-weight: 800; color: #1e293b; font-size: 14px; }
+        .email-to-list { font-size: 12px; color: #64748b; margin-top: 2px; }
+        .email-status-badge { font-size: 11px; font-weight: 800; color: #10b981; display: flex; align-items: center; gap: 4px; margin-top: 4px; text-transform: uppercase; }
+        .email-text-content { font-size: 14.5px; color: #334155; line-height: 1.7; white-space: pre-wrap; padding: 10px 5px; }
+        .btn-star { background: none; border: none; font-size: 18px; color: #cbd5e0; cursor: pointer; transition: 0.2s; }
         .btn-star.active { color: #f59e0b; }
+        .email-actions-inline { position: absolute; right: 0; top: 0; display: flex; gap: 8px; }
+        .email-actions-inline button { background: none; border: none; color: #94a3b8; cursor: pointer; font-size: 14px; padding: 5px; }
+        .email-actions-inline button:hover { color: #ef4444; }
 
-        /* --- CSS HISTORIAL REUNIONES ESTILO CALENDARIO --- */
-        .reuniones-container {
-            display: none; flex-direction: column;
-            overflow-y: auto; padding: 20px 30px; background: #f8fafc;
-        }
-        .reuniones-header-actions { display: flex; justify-content: flex-end; gap: 12px; margin-bottom: 20px; }
-
-        /* Contadores */
-        .reuniones-stats-clean { display: flex; gap: 12px; margin-bottom: 20px; flex-wrap: wrap; }
-        .stat-badge {
-            background: white; border: 1px solid #e2e8f0; border-radius: 8px;
-            padding: 8px 16px; font-size: 13px; color: #475569; font-weight: 600;
-            display: flex; align-items: center; gap: 6px; flex-shrink: 0;
-        }
-        .stat-badge span { color: #1e293b; font-weight: 800; }
-        .stat-badge.fin { border-left: 3px solid #10b981; }
-        .stat-badge.prog { border-left: 3px solid #3b82f6; }
-        .stat-badge.canc { border-left: 3px solid #ef4444; }
-        .reunion-hist-title { font-size: 13px; font-weight: 700; color: #94a3b8; margin-bottom: 12px; text-transform: uppercase; letter-spacing: 0.8px; }
-
-        /* calendario */
-        .cal-card {
-            background: white; border: 1px solid #e2e8f0; border-radius: 12px;
-            margin-bottom: 12px; display: flex; overflow: hidden;
-        }
-        .cal-date-block {
-            min-width: 72px; background: #f1f5f9; display: flex; flex-direction: column;
-            align-items: center; justify-content: center; padding: 16px 12px;
-            border-right: 1px solid #e2e8f0; flex-shrink: 0;
-        }
-        .cal-day { font-size: 30px; font-weight: 800; color: #1e293b; line-height: 1; }
-        .cal-month { font-size: 12px; font-weight: 700; color: #64748b; text-transform: uppercase; margin-top: 2px; }
-        .cal-body {
-            flex: 1; display: flex; align-items: center;
-            padding: 14px 20px; gap: 0;
-        }
-        .cal-col-time { min-width: 70px; font-size: 14px; font-weight: 700; color: #475569; }
-        .cal-col-asunto { flex: 1; font-size: 14px; color: #1e293b; font-weight: 600; padding: 0 10px; }
-        .cal-col-asunto small { display: block; font-size: 12px; color: #94a3b8; font-weight: 400; margin-top: 2px; }
-        .cal-col-mod { min-width: 110px; text-align: right; }
-        .cal-badge {
-            display: inline-block; font-size: 11px; font-weight: 700; padding: 3px 10px;
-            border-radius: 20px; background: #e0f2fe; color: #0284c7;
-        }
-        .cal-badge.presencial { background: #dcfce7; color: #16a34a; }
-        .cal-badge.virtual { background: #ede9fe; color: #7c3aed; }
-        .cal-badge.programada { background: #fef9c3; color: #ca8a04; }
-        .cal-badge.finalizada { background: #dcfce7; color: #16a34a; }
-        .cal-actions { display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 12px 14px; justify-content: center; width: 100px; border-left: 1px solid #f1f5f9; }
-        .cal-btn-action { background: none; border: 1px solid #e2e8f0; border-radius: 6px; padding: 4px 8px; font-size: 11px; font-weight: 700; color: #64748b; cursor: pointer; white-space: nowrap; transition: 0.2s; width: 100%; text-align: center; }
-        .cal-btn-action:hover { background: #f8fafc; color: #334155; border-color: #cbd5e1; }
-        .cal-btn-cancel { background: none; border: 1px solid #fca5a5; border-radius: 6px; padding: 4px 8px; font-size: 11px; font-weight: 700; color: #ef4444; cursor: pointer; white-space: nowrap; transition: 0.2s; width: 100%; text-align: center; }
-        .cal-btn-cancel:hover { background: #fef2f2; }
-        .cal-btn-fin { background: none; border: 1px solid #6ee7b7; border-radius: 6px; padding: 4px 8px; font-size: 11px; font-weight: 700; color: #10b981; cursor: pointer; white-space: nowrap; transition: 0.2s; width: 100%; text-align: center; }
-        .cal-btn-fin:hover { background: #f0fdf4; }
-        
-        /* Modal Ver Detalle */
-        .ver-grid { display: grid; grid-template-columns: 120px 1fr; gap: 15px; margin-top: 15px; }
-        .ver-label { font-size: 12px; font-weight: 700; color: #64748b; text-transform: uppercase; }
-        .ver-value { font-size: 14px; color: #1e293b; }
-        .ver-audit-box { margin-top: 20px; padding: 12px; background: #f8fafc; border-radius: 8px; border: 1px solid #e2e8f0; font-size: 12px; color: #64748b; white-space: pre-line; }
-
-
-        /* --- MODALES --- */
-
-        /* --- MODALES PREMIUM --- */
-        .modal-overlay { 
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
-            background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(4px);
-            display: none; align-items: center; justify-content: center; z-index: 2000; 
-        }
-        .modal-card { 
-            background: white; width: 100%; max-width: 500px; border-radius: 24px; 
-            padding: 32px; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-            animation: modalFadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-        @keyframes modalFadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        
-        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
-        .modal-title { font-size: 20px; font-weight: 800; color: #1e293b; display: flex; align-items: center; gap: 10px; }
-        .btn-close-modal { background: none; border: none; font-size: 24px; color: #94a3b8; cursor: pointer; transition: 0.2s; }
-        .btn-close-modal:hover { color: #64748b; transform: rotate(90deg); }
-
-        .entrada-field { margin-bottom: 20px; position: relative; }
-        .entrada-lbl { display: block; font-size: 13px; font-weight: 700; color: #475569; margin-bottom: 8px; }
-        .input-with-icon { position: relative; display: flex; align-items: center; }
-        .input-icon { position: absolute; right: 16px; color: #94a3b8; pointer-events: none; }
-        .input-icon-left { position: absolute; left: 12px; color: #D32F2F; pointer-events: none; width: 16px; }
-        
-        .entrada-texto { 
-            width: 100%; padding: 12px 16px; border: 1.5px solid #e2e8f0; border-radius: 12px; 
-            font-size: 14px; color: #1e293b; transition: all 0.2s; outline: none; background: #f8fafc;
-        }
-        .entrada-texto:focus { border-color: #D32F2F; background: white; box-shadow: 0 0 0 4px rgba(211, 47, 47, 0.1); }
-        .entrada-texto.with-icon-left { padding-left: 36px; }
-        
-        textarea { 
-            width: 100%; padding: 12px 16px; border: 1.5px solid #e2e8f0; border-radius: 12px; 
-            font-size: 14px; min-height: 100px; transition: 0.2s; outline: none; background: #f8fafc; resize: none;
-        }
-        textarea:focus { border-color: #D32F2F; background: white; }
-
-        .btn-p-guardar { 
-            background: #B71C1C; color: white; border: none; padding: 12px 32px; 
-            border-radius: 12px; font-weight: 700; font-size: 15px; cursor: pointer; 
-            transition: all 0.2s; box-shadow: 0 4px 12px rgba(183, 28, 28, 0.2);
-        }
-        .btn-p-guardar:hover { background: #D32F2F; transform: translateY(-1px); box-shadow: 0 6px 15px rgba(183, 28, 28, 0.3); }
-        
-        .entrada-field { margin-bottom: 20px; }
-        .entrada-lbl { display: block; font-size: 12px; font-weight: 700; color: #64748b; margin-bottom: 8px; }
-
-        /* reuniones canceladas */
-        .cal-card-cancelada { opacity: 0.6; }
-        .cal-card-cancelada .cal-date-block { background: #f1f5f9; }
-        .cal-badge.cancelada-badge { background: #fee2e2; color: #ef4444; }
-        .stat-badge.active-filter { box-shadow: 0 0 0 2px currentColor; font-weight: 800; }
     </style>
 </head>
 
 <body>
-    <!-- SIDEBAR -->
-    <aside class="barra-lateral" id="sidebar">
-        <div class="logo-d">
-            <div class="logo-box">D</div>
-            <div class="logo-txt">CONSTRUCTORA</div>
+    <!-- BARRA LATERAL -->
+    <aside class="barra-lateral">
+        <div class="barra-cabecera">
+            <div class="logo-inicial">D</div>
+            <div class="logo-texto">DYCO</div>
         </div>
 
-        <div class="user-section">
-            <div class="user-avatar" title="{{ usuario_logueado.nombre_usuario }}">
+        <div class="perfil-usuario">
+            <div class="avatar-circular" title="{{ usuario_logueado.nombre_usuario }}">
                 {{ usuario_logueado.nombre_usuario|make_list|first|upper }}
             </div>
-            <div class="user-info">
-                <span class="user-n">{{ usuario_logueado.nombre_usuario }}</span>
-                <span class="user-r">{{ usuario_logueado.rol.nombre_rol }}</span>
+            <div class="perfil-info">
+                <span class="perfil-nombre">{{ usuario_logueado.nombre_usuario }}</span>
+                <span class="perfil-rol">{{ usuario_logueado.rol.nombre_rol }}</span>
             </div>
         </div>
 
-        <div class="nav-sidebar">
-            <a href="{% url 'contactos' %}" class="nav-icon" title="Registro de Contactos">
-                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none"
-                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"></path>
-                    <circle cx="12" cy="7" r="4"></circle>
-                    <rect x="3" y="2" width="18" height="20" rx="2" ry="2" stroke-width="1.5"></rect>
-                </svg>
+        <nav class="navegacion-sidebar">
+            <!-- INICIO -->
+            <a href="{% url 'dashboard' %}" class="nav-enlace" title="Inicio">
+                <span class="iconosvg">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                        <polyline points="9 22 9 12 15 12 15 22"></polyline>
+                    </svg>
+                </span>
+                <span class="nav-text">Inicio</span>
+            </a>
+
+            <!-- CONTACTOS -->
+            <a href="{% url 'contactos' %}" class="nav-enlace activo" title="Registro de Contactos">
+                <span class="iconosvg">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+                        <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+                    </svg>
+                </span>
                 <span class="nav-text">Registro de Contactos</span>
             </a>
-            
-            <a href="{% url 'interacciones' %}" class="nav-icon" title="Interacciones">
-                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none"
-                    stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
-                    <circle cx="8" cy="11" r="0.5" fill="currentColor"></circle>
-                    <circle cx="12" cy="11" r="0.5" fill="currentColor"></circle>
-                    <circle cx="16" cy="11" r="0.5" fill="currentColor"></circle>
-                </svg>
+
+            <!-- INTERACCIONES -->
+            <a href="{% url 'interacciones' %}" class="nav-enlace" title="Interacciones">
+                <span class="iconosvg">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                    </svg>
+                </span>
                 <span class="nav-text">Interacciones</span>
             </a>
 
+            <!-- USUARIOS (Admin) -->
             {% if usuario_logueado.rol.nombre_rol == "Administrador" %}
-            <a href="{% url 'usuarios' %}" class="nav-icon" title="Gestión de Usuarios">
-                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none"
-                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
-                    <circle cx="9" cy="7" r="4"></circle>
-                    <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
-                    <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
-                </svg>
+            <a href="{% url 'usuarios' %}" class="nav-enlace" title="Gestión de Usuarios">
+                <span class="iconosvg">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="9" cy="7" r="4"></circle>
+                        <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                        <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                    </svg>
+                </span>
                 <span class="nav-text">Gestión de Usuarios</span>
             </a>
             {% endif %}
+        </nav>
+
+        <div class="barra-pie">
+            <a href="/logout/" class="nav-enlace" title="Cerrar Sesión">
+                <span class="iconosvg">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                        <polyline points="16 17 21 12 16 7"></polyline>
+                        <line x1="21" y1="12" x2="9" y2="12"></line>
+                    </svg>
+                </span>
+                <span class="nav-text">Cerrar Sesión</span>
+            </a>
         </div>
     </aside>
+
+
+
 
     <main class="main-wrapper">
         <!-- PANEL IZQUIERDO -->
         <section class="panel-izquierdo">
             <a href="/" class="link-atras">
-                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="15 18 9 12 15 6"></polyline>
+                </svg>
                 Contactos
             </a>
 
@@ -723,31 +1155,53 @@
             <div class="botones-accion-grid">
                 <button class="btn-accion-circular" onclick="abrirModalNota()">
                     <div class="ico-circ">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2">
+                            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+                            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+                        </svg>
                     </div>
                     Nota
                 </button>
                 <button class="btn-accion-circular" onclick="abrirModalCorreo()">
                     <div class="ico-circ">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="14" rx="2" ry="2"/><polyline points="3 7 12 13 21 7"/></svg>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2">
+                            <rect x="3" y="5" width="18" height="14" rx="2" ry="2" />
+                            <polyline points="3 7 12 13 21 7" />
+                        </svg>
                     </div>
                     Correo
                 </button>
                 <button class="btn-accion-circular" onclick="abrirModalGenerico('Llamada')">
                     <div class="ico-circ">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2">
+                            <path
+                                d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" />
+                        </svg>
                     </div>
                     Llamar
                 </button>
                 <button class="btn-accion-circular" onclick="abrirModalGenerico('Tarea')">
                     <div class="ico-circ">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2">
+                            <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
+                            <line x1="16" y1="2" x2="16" y2="6" />
+                            <line x1="8" y1="2" x2="8" y2="6" />
+                            <line x1="3" y1="10" x2="21" y2="10" />
+                        </svg>
                     </div>
                     Tarea
                 </button>
                 <button class="btn-accion-circular" onclick="abrirModalReunion()">
                     <div class="ico-circ">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10" />
+                            <polyline points="12 6 12 12 16 14" />
+                        </svg>
                     </div>
                     Reunión
                 </button>
@@ -755,7 +1209,11 @@
 
             <div class="seccion-info-basica">
                 <h3 class="seccion-basica-titulo">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2.5">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                        <polyline points="14 2 14 8 20 8" />
+                    </svg>
                     Información Básica
                 </h3>
                 <div class="basic-info-item">
@@ -784,8 +1242,10 @@
         <!-- PANEL DERECHO -->
         <section class="panel-derecho">
             <div class="tabs-header-top">
-                <button class="tab-top" id="btn-top-desc" onclick="cambiarTabPrincipal('descripcion')">Descripción</button>
-                <button class="tab-top active" id="btn-top-activ" onclick="cambiarTabPrincipal('actividades')">Actividades</button>
+                <button class="tab-top" id="btn-top-desc"
+                    onclick="cambiarTabPrincipal('descripcion')">Descripción</button>
+                <button class="tab-top active" id="btn-top-activ"
+                    onclick="cambiarTabPrincipal('actividades')">Actividades</button>
             </div>
 
             <!-- CONTENIDO DESCRIPCIÓN -->
@@ -843,23 +1303,33 @@
 
                         {% if c.historial_cambios %}
                         <div class="audit-history-list" style="grid-column: 1 / -1; margin-top: 30px;">
-                            <h3 style="font-size: 12px; color: #94a3b8; font-weight: 700; text-transform: uppercase; margin-bottom: 15px; border-top: 1px solid #f1f5f9; padding-top: 20px; display: flex; align-items: center; gap: 8px;">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                            <h3
+                                style="font-size: 12px; color: #94a3b8; font-weight: 700; text-transform: uppercase; margin-bottom: 15px; border-top: 1px solid #f1f5f9; padding-top: 20px; display: flex; align-items: center; gap: 8px;">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"
+                                    fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"
+                                    stroke-linejoin="round">
+                                    <circle cx="12" cy="12" r="10" />
+                                    <line x1="12" y1="8" x2="12" y2="12" />
+                                    <line x1="12" y1="16" x2="12.01" y2="16" />
+                                </svg>
                                 Historial de Auditoría
                             </h3>
                             {% with logs=c.historial_cambios.splitlines %}
-                                {% for log in logs reversed %}
-                                    {% if log.strip %}
-                                    <div class="alerta-auditoria" style="margin-bottom: 10px; background-color: #fffbfa; border: 1px dashed var(--rojo-primario); padding: 10px 14px; border-radius: 12px; display: flex; align-items: center; gap: 10px; color: #444; font-size: 13px;">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--rojo-primario)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                                            <circle cx="12" cy="12" r="10"></circle>
-                                            <line x1="12" y1="8" x2="12" y2="12"></line>
-                                            <line x1="12" y1="16" x2="12.01" y2="16"></line>
-                                        </svg>
-                                        <span>{{ log }}</span>
-                                    </div>
-                                    {% endif %}
-                                {% endfor %}
+                            {% for log in logs reversed %}
+                            {% if log.strip %}
+                            <div class="alerta-auditoria"
+                                style="margin-bottom: 10px; background-color: #fffbfa; border: 1px dashed var(--rojo-primario); padding: 10px 14px; border-radius: 12px; display: flex; align-items: center; gap: 10px; color: #444; font-size: 13px;">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+                                    fill="none" stroke="var(--rojo-primario)" stroke-width="2.5" stroke-linecap="round"
+                                    stroke-linejoin="round">
+                                    <circle cx="12" cy="12" r="10"></circle>
+                                    <line x1="12" y1="8" x2="12" y2="12"></line>
+                                    <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                                </svg>
+                                <span>{{ log }}</span>
+                            </div>
+                            {% endif %}
+                            {% endfor %}
                             {% endwith %}
                         </div>
                         {% endif %}
@@ -869,199 +1339,196 @@
 
             <!-- CONTENIDO ACTIVIDADES (Envuelve todo lo anterior) -->
             <div id="cnt-principal-actividades" class="tab-content-container active">
-            <div class="tabs-sub-nav" id="tabs-sub-nav">
-                <button class="tab-sub active" id="btn-tab-actividad" onclick="cambiarSubTab('actividad')">Actividad</button>
-                <button class="tab-sub" id="btn-tab-notas" onclick="cambiarSubTab('notas')">Notas</button>
-                <button class="tab-sub" id="btn-tab-correos" onclick="cambiarSubTab('correos')">Correos</button>
-                <button class="tab-sub" id="btn-tab-llamadas" onclick="cambiarSubTab('llamadas')">Llamadas</button>
-                <button class="tab-sub" id="btn-tab-tareas" onclick="cambiarSubTab('tareas')">Tareas</button>
-                <button class="tab-sub" id="btn-tab-reuniones" onclick="cambiarSubTab('reuniones')">Reuniones</button>
-                <button class="tab-sub" id="btn-tab-historial" onclick="cambiarSubTab('historial')">Historial</button>
-                <div class="tab-indicator" id="tab-indicator"></div>
-            </div>
-
-            <div class="interaccion-form-box" id="interaccion-form-box">
-                <form method="POST">
-                    {% csrf_token %}
-                    <select name="tipo_interaccion" required>
-                        <option value="">Seleccione el medio...</option>
-                        {% for t in tipos %}<option value="{{ t.id }}">{{ t.nombre_tipo }}</option>{% endfor %}
-                    </select>
-                    <textarea name="detalle" placeholder="Registrar una actividad..." required></textarea>
-                    <button type="submit" class="btn-rojo-guardar">Guardar Actividad</button>
-                </form>
-            </div>
-
-            <div class="timeline-scroll" id="timeline-scroll">
-                <h4 class="timeline-title">Historial de Interacciones</h4>
-                <div class="timeline-vertical">
-                    {% for inter in interacciones %}
-                    <div class="tm-card interaction-row t-{{ inter.tipo_interaccion.nombre_tipo|lower }}" id="panel-{{ inter.id }}">
-                        <div class="tm-header">
-                            <span class="tm-type-user">{{ inter.tipo_interaccion.nombre_tipo }} - por {{ inter.usuario_responsable.nombre_usuario }}</span>
-                            <span class="tm-date">{{ inter.fecha_interaccion|date:"d M, Y - h:i a" }}</span>
-                        </div>
-                        <div class="tm-body" id="tm-body-{{ inter.id }}">{{ inter.detalle_actividad }}</div>
-                        
-                        <div class="tm-actions">
-                            {% if inter.tipo_interaccion.nombre_tipo == 'Correo' %}
-                            <button class="btn-tm-link" onclick="abrirEmailAction('Responder', {{ inter.id }})">Responder</button>
-                            <button class="btn-tm-link" onclick="abrirEmailAction('Reenviar', {{ inter.id }})">Reenviar</button>
-                            {% endif %}
-                            <button class="btn-tm-link red" onclick="eliminarInter({{ inter.id }}, '{{ inter.tipo_interaccion.nombre_tipo }}')">Eliminar</button>
-                        </div>
-                    </div>
-                    {% endfor %}
-                </div>
-            </div>
-
-            <!-- GRID DE NOTAS -->
-            <div class="grid-notas-container" id="grid-notas-container">
-                <h4 class="timeline-title">Galería de Notas</h4>
-                <div class="grid-notas-layout">
-                    {% for inter in interacciones %}
-                    {% if inter.tipo_interaccion.nombre_tipo == 'Nota' %}
-                    <div class="nota-box">
-                        <div class="nota-box-content">{{ inter.detalle_actividad }}</div>
-                        <div class="nota-box-footer">
-                            <span>{{ inter.usuario_responsable.nombre_usuario }}</span>
-                            <span>{{ inter.fecha_interaccion|date:"d M, Y" }}</span>
-                            <button class="btn-tm-link red" style="font-size: 10px;" onclick="eliminarInter({{ inter.id }}, 'Nota')">Eliminar</button>
-                        </div>
-                    </div>
-                    {% endif %}
-                    {% endfor %}
-                </div>
-            </div>
-
-            <!-- SECCIÓN REUNIONES ESTILO CRM -->
-            <div class="reuniones-container" id="reuniones-container">
-                <div class="reuniones-header-actions">
-                    <button class="btn-mail-filled" onclick="abrirModalReunion()">Programar reunión</button>
-                </div>
-                
-                <div class="reuniones-stats-clean">
-                    <div class="stat-badge fin" id="badge-fin" onclick="filtrarReuniones('Finalizada')" style="cursor:pointer;">Finalizadas: <span id="count-finalizadas">0</span></div>
-                    <div class="stat-badge prog" id="badge-prog" onclick="filtrarReuniones('Programada')" style="cursor:pointer;">Programadas: <span id="count-programadas">0</span></div>
-                    <div class="stat-badge canc" id="badge-canc" onclick="filtrarReuniones('Cancelada')" style="cursor:pointer;">Canceladas: <span id="count-canceladas">0</span></div>
+                <div class="tabs-sub-nav" id="tabs-sub-nav">
+                    <button class="tab-sub active" id="btn-tab-actividad"
+                        onclick="cambiarSubTab('actividad')">Actividad</button>
+                    <button class="tab-sub" id="btn-tab-notas" onclick="cambiarSubTab('notas')">Notas</button>
+                    <button class="tab-sub" id="btn-tab-correos" onclick="cambiarSubTab('correos')">Correos</button>
+                    <button class="tab-sub" id="btn-tab-llamadas" onclick="cambiarSubTab('llamadas')">Llamadas</button>
+                    <button class="tab-sub" id="btn-tab-tareas" onclick="cambiarSubTab('tareas')">Tareas</button>
+                    <button class="tab-sub" id="btn-tab-reuniones"
+                        onclick="cambiarSubTab('reuniones')">Reuniones</button>
+                    <button class="tab-sub" id="btn-tab-historial"
+                        onclick="cambiarSubTab('historial')">Historial</button>
+                    <div class="tab-indicator" id="tab-indicator"></div>
                 </div>
 
-                <div class="reunion-hist-title">Historial de reuniones</div>
+                <div class="interaccion-form-box" id="interaccion-form-box">
+                    <h4 class="timeline-title" style="margin-bottom:15px;">Registrar una actividad</h4>
+                    <form method="POST">
+                        {% csrf_token %}
+                        <select name="tipo_interaccion" required>
+                            <option value="">Seleccione el medio...</option>
+                            {% for t in tipos %}<option value="{{ t.id }}">{{ t.nombre_tipo }}</option>{% endfor %}
+                        </select>
+                        <textarea name="detalle" placeholder="Registrar una actividad..." required></textarea>
+                        <button type="submit" class="btn-rojo-guardar">Guardar Actividad</button>
+                    </form>
+                </div>
 
-                <div class="reuniones-list" id="reuniones-list-container">
-                    {% for inter in interacciones %}
-                    {% if inter.tipo_interaccion.nombre_tipo == 'Reunión' %}
-                    <div class="cal-card {% if inter.estado == 'Cancelada' %}cal-card-cancelada{% endif %}" data-estado="{{ inter.estado }}">
-                        <div class="cal-date-block">
-                            <div class="cal-day">{% if inter.fecha_reunion %}{{ inter.fecha_reunion|date:"d" }}{% else %}{{ inter.fecha_interaccion|date:"d" }}{% endif %}</div>
-                            <div class="cal-month">{% if inter.fecha_reunion %}{{ inter.fecha_reunion|date:"M" }}{% else %}{{ inter.fecha_interaccion|date:"M" }}{% endif %}</div>
-                        </div>
-                        <div class="cal-body">
-                            <div class="cal-col-time">{% if inter.hora_reunion %}{{ inter.hora_reunion|time:"H:i" }}{% else %}-{% endif %}</div>
-                            <div class="cal-col-asunto">
-                                {{ inter.asunto|default:inter.detalle_actividad|truncatechars:50 }}
-                                <small>{% if inter.direccion %}📍 {{ inter.direccion }}{% elif inter.detalle_actividad %} {{ inter.detalle_actividad|truncatechars:60 }}{% endif %}</small>
-                            </div>
-                            <div class="cal-col-mod">
-                                <span class="cal-badge {% if inter.modalidad == 'Presencial' %}presencial{% elif inter.modalidad == 'Virtual' %}virtual{% endif %}">{{ inter.modalidad|default:"Presencial" }}</span><br>
-                                <span class="cal-badge {% if inter.estado == 'Finalizada' %}finalizada{% elif inter.estado == 'Cancelada' %}cancelada-badge{% else %}programada{% endif %}" style="margin-top:4px;">{{ inter.estado }}</span>
+
+                <!-- GRID DE NOTAS -->
+                <div class="grid-notas-container" id="grid-notas-container">
+                    <h4 class="timeline-title">Galería de Notas</h4>
+                    <div class="grid-notas-layout">
+                        {% for inter in interacciones %}
+                        {% if inter.tipo_interaccion.nombre_tipo == 'Nota' and inter.estado != 'Inactiva' %}
+                        <div class="nota-box">
+                            <div class="nota-box-content">{{ inter.detalle_actividad }}</div>
+                            <div class="nota-box-footer">
+                                <span>{{ inter.usuario_responsable.nombre_usuario }}</span>
+                                <span>{{ inter.fecha_interaccion|date:"d M, Y" }}</span>
+                                <button class="btn-tm-link red" style="font-size: 10px;"
+                                    onclick="eliminarInter({{ inter.id }}, 'Nota')">Desactivar</button>
                             </div>
                         </div>
-                        <div class="cal-actions">
-                            <button class="cal-btn-action" onclick="abrirModalVer({{ inter.id }}, '{{ inter.asunto|escapejs }}', '{{ inter.fecha_reunion|date:'Y-m-d' }}', '{{ inter.hora_reunion|time:'H:i' }}', '{{ inter.modalidad }}', '{{ inter.direccion|default:''|escapejs }}', '{{ inter.detalle_actividad|escapejs }}', '{{ inter.historial_cambios|default:''|escapejs }}')">Ver</button>
-                            
-                            {% if inter.estado == 'Programada' %}
-                            <button class="cal-btn-action" onclick="abrirModalEditar({{ inter.id }}, '{{ inter.asunto|escapejs }}', '{{ inter.fecha_reunion|date:'Y-m-d' }}', '{{ inter.hora_reunion|time:'H:i' }}', '{{ inter.modalidad }}', '{{ inter.direccion|default:''|escapejs }}', '{{ inter.detalle_actividad|escapejs }}')">Editar</button>
-                            <button class="cal-btn-fin" onclick="finalizarReunion({{ inter.id }})">Finalizar</button>
-                            <button class="cal-btn-cancel" onclick="abrirCancelacion({{ inter.id }})">Cancelar</button>
-                            {% else %}
-                            <button class="cal-btn-cancel" onclick="eliminarInter({{ inter.id }}, 'Reunión')" style="border-color:#e2e8f0;color:#94a3b8;">Eliminar</button>
-                            {% endif %}
-                        </div>
+                        {% endif %}
+                        {% endfor %}
                     </div>
-                    {% endif %}
-                    {% endfor %}
                 </div>
-            </div>
 
-            <!-- HISTORIAL DE CAMBIOS DEL CONTACTO -->
-            <div class="timeline-scroll" id="historial-container" style="display:none;">
-                <h4 class="timeline-title">Historial de Modificaciones del Contacto</h4>
-                <div class="timeline-vertical">
-                    {% if c.historial_cambios %}
-                        {% with logs=c.historial_cambios.splitlines %}
-                            {% for log in logs reversed %}
-                                {% if log.strip %}
-                                <div class="tm-card">
-                                    <div class="tm-body">{{ log }}</div>
+                <!-- SECCIÓN REUNIONES ESTILO CRM -->
+                <div class="reuniones-container" id="reuniones-container">
+                    <div class="reuniones-header-actions">
+                        <button class="btn-mail-filled" onclick="abrirModalReunion()">Programar reunión</button>
+                    </div>
+
+                    <div class="reuniones-stats-clean">
+                        <div class="stat-badge fin" id="badge-fin" onclick="filtrarReuniones('Finalizada')"
+                            style="cursor:pointer;">Finalizadas: <span id="count-finalizadas">0</span></div>
+                        <div class="stat-badge prog" id="badge-prog" onclick="filtrarReuniones('Programada')"
+                            style="cursor:pointer;">Programadas: <span id="count-programadas">0</span></div>
+                        <div class="stat-badge canc" id="badge-canc" onclick="filtrarReuniones('Cancelada')"
+                            style="cursor:pointer;">Canceladas: <span id="count-canceladas">0</span></div>
+                    </div>
+
+                    <div class="reunion-hist-title">Historial de reuniones</div>
+
+                    <div class="reuniones-list" id="reuniones-list-container">
+                        {% for inter in interacciones %}
+                        {% if inter.tipo_interaccion.nombre_tipo == 'Reunión' %}
+                        <div class="cal-card {% if inter.estado == 'Cancelada' %}cal-card-cancelada{% endif %}" data-estado="{{ inter.estado }}">
+                            <div class="cal-date-block">
+                                <div class="cal-day">{% if inter.fecha_reunion %}{{ inter.fecha_reunion|date:"d" }}{% else %}{{ inter.fecha_interaccion|date:"d" }}{% endif %}</div>
+                                <div class="cal-month">{% if inter.fecha_reunion %}{{ inter.fecha_reunion|date:"M" }}{% else %}{{ inter.fecha_interaccion|date:"M" }}{% endif %}</div>
+                            </div>
+                            <div class="cal-body">
+                                <div class="cal-col-time">{% if inter.hora_reunion %}{{ inter.hora_reunion|time:"H:i" }}{% else %}-{% endif %}</div>
+                                <div class="cal-col-asunto">
+                                    {{ inter.asunto|default:inter.detalle_actividad|truncatechars:50 }}
+                                    <small>{% if inter.direccion %}📍 {{ inter.direccion }}{% elif inter.detalle_actividad %} {{ inter.detalle_actividad|truncatechars:60 }}{% endif %}</small>
                                 </div>
-                                {% endif %}
-                            {% endfor %}
-                        {% endwith %}
-                    {% else %}
-                        <p style="padding: 20px; color: #94a3b8; font-style: italic;">No hay registros de modificaciones para este contacto.</p>
-                    {% endif %}
-                </div>
-            </div>
-
-            <!-- CORREOS ESTILO GMAIL -->
-            <div class="correos-container" id="correos-container">
-                <div class="correos-header-actions">
-                    <button class="btn-mail-outline" onclick="sincronizarCorreos()">Sincronizar correos</button>
-                    <button class="btn-mail-filled" onclick="abrirModalCorreo()">Crear correo</button>
-                </div>
-                <div class="correos-list">
-                    {% for inter in interacciones %}
-                    {% if inter.tipo_interaccion.nombre_tipo == 'Correo' %}
-                    <div class="email-card">
-                        <div class="email-card-header" onclick="toggleEmail({{ inter.id }})">
-                            <div class="email-subject-row">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="3" id="arrow-{{ inter.id }}"><polyline points="6 9 12 15 18 9"></polyline></svg>
-                                Correo - {{ inter.detalle_actividad|truncatechars:40 }}
-                            </div>
-                            <div style="display: flex; align-items: center; gap: 15px;">
-                                <button class="btn-star {% if inter.destacado %}active{% endif %}" onclick="toggleDestacar(event, {{ inter.id }})">
-                                    {% if inter.destacado %}★{% else %}☆{% endif %}
-                                </button>
-                                <div class="email-date-row">
-                                    {{ inter.fecha_interaccion|date:"d M \a \l\a\s h:i A" }}
+                                <div class="cal-col-mod">
+                                    <span class="cal-badge {% if inter.modalidad == 'Presencial' %}presencial{% elif inter.modalidad == 'Virtual' %}virtual{% endif %}">{{ inter.modalidad|default:"Presencial" }}</span><br>
+                                    <span class="cal-badge {% if inter.estado == 'Finalizada' %}finalizada{% elif inter.estado == 'Cancelada' %}cancelada-badge{% else %}programada{% endif %}" style="margin-top:4px;">{{ inter.estado }}</span>
                                 </div>
                             </div>
-                        </div>
-                        <div class="email-card-body" id="mail-body-{{ inter.id }}">
-                            <div class="email-sender-info">
-                                {% if inter.tipo_comunicacion == 'Entrante' %}
-                                <div class="email-avatar-v2" style="background: #eef2ff; color: #4338ca;">{{ c.nombre|default:c.razon_social|first|upper }}</div>
-                                <div class="email-names">
-                                    <div class="email-sender-name">{% if c.nombre %}{{ c.nombre }} {{ c.apellido }}{% else %}{{ c.razon_social }}{% endif %}</div>
-                                    <div class="email-to-list">a mí ({{ usuario_logueado.nombre_usuario }}) ▼</div>
-                                    <div class="email-status-badge" style="color: #6366f1;">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
-                                        Recibidos
-                                    </div>
-                                </div>
+                            <div class="cal-actions">
+                                <button class="cal-btn-action" onclick="abrirModalVer({{ inter.id }}, '{{ inter.asunto|escapejs }}', '{{ inter.fecha_reunion|date:'Y-m-d' }}', '{{ inter.hora_reunion|time:'H:i' }}', '{{ inter.modalidad }}', '{{ inter.direccion|default:''|escapejs }}', '{{ inter.detalle_actividad|escapejs }}', '{{ inter.historial_cambios|default:''|escapejs }}')">Ver</button>
+                                {% if inter.estado == 'Programada' %}
+                                <button class="cal-btn-action" onclick="abrirModalEditar({{ inter.id }}, '{{ inter.asunto|escapejs }}', '{{ inter.fecha_reunion|date:'Y-m-d' }}', '{{ inter.hora_reunion|time:'H:i' }}', '{{ inter.modalidad }}', '{{ inter.direccion|default:''|escapejs }}', '{{ inter.detalle_actividad|escapejs }}')">Editar</button>
+                                <button class="cal-btn-fin" onclick="finalizarReunion({{ inter.id }})">Finalizar</button>
+                                <button class="cal-btn-cancel" onclick="abrirCancelacion({{ inter.id }})">Cancelar</button>
                                 {% else %}
-                                <div class="email-avatar-v2">{{ inter.usuario_responsable.nombre_usuario|first|upper }}</div>
-                                <div class="email-names">
-                                    <div class="email-sender-name">Tú ({{ inter.usuario_responsable.nombre_usuario }})</div>
-                                    <div class="email-to-list">para: {% if c.nombre %}{{ c.nombre }} {{ c.apellido }}{% else %}{{ c.razon_social }}{% endif %} ▼</div>
-                                    <div class="email-status-badge">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                                        Enviado
+                                <button class="cal-btn-cancel" onclick="eliminarInter({{ inter.id }}, 'Reunión')" style="border-color:#e2e8f0;color:#94a3b8;">Eliminar</button>
+                                {% endif %}
+                            </div>
+                        </div>
+                        {% endif %}
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <!-- HISTORIAL DE CAMBIOS DEL CONTACTO -->
+                <div class="timeline-scroll" id="historial-container" style="display:none;">
+                    <h4 class="timeline-title">Historial de Modificaciones del Contacto</h4>
+                    <div class="timeline-vertical">
+                        {% if c.historial_cambios %}
+                        {% with logs=c.historial_cambios.splitlines %}
+                        {% for log in logs reversed %}
+                        {% if log.strip %}
+                        <div class="tm-card">
+                            <div class="tm-body">{{ log }}</div>
+                        </div>
+                        {% endif %}
+                        {% endfor %}
+                        {% endwith %}
+                        {% else %}
+                        <p style="padding: 20px; color: #94a3b8; font-style: italic;">No hay registros de modificaciones
+                            para este contacto.</p>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- CORREOS ESTILO GMAIL -->
+                <div class="correos-container" id="correos-container">
+                    <div class="correos-header-actions">
+                        <button class="btn-mail-outline" onclick="sincronizarCorreos()">Sincronizar correos</button>
+                        <button class="btn-mail-filled" onclick="abrirModalCorreo()">Crear correo</button>
+                    </div>
+                    <div class="correos-list">
+                        {% for inter in interacciones %}
+                        {% if inter.tipo_interaccion.nombre_tipo == 'Correo' %}
+                        <div class="email-card">
+                            <div class="email-card-header" onclick="toggleEmail({{ inter.id }})">
+                                <div class="email-subject-row">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+                                        fill="none" stroke="#10b981" stroke-width="3" id="arrow-{{ inter.id }}">
+                                        <polyline points="6 9 12 15 18 9"></polyline>
+                                    </svg>
+                                    Correo - {{ inter.detalle_actividad|truncatechars:40 }}
+                                </div>
+                                <div style="display: flex; align-items: center; gap: 15px;">
+                                    <button class="btn-star {% if inter.destacado %}active{% endif %}"
+                                        onclick="toggleDestacar(event, {{ inter.id }})">
+                                        {% if inter.destacado %}★{% else %}☆{% endif %}
+                                    </button>
+                                    <div class="email-date-row">
+                                        {{ inter.fecha_interaccion|date:"d M \a \l\a\s h:i A" }}
                                     </div>
                                 </div>
-                                {% endif %}
-                                <div class="email-actions-inline">
-                                    <button onclick="cerrarEmail({{ inter.id }})">✖</button>
-                                </div>
                             </div>
-                            <div class="email-text-content">{{ inter.detalle_actividad }}</div>
+                            <div class="email-card-body" id="mail-body-{{ inter.id }}">
+                                <div class="email-sender-info">
+                                    {% if inter.tipo_comunicacion == 'Entrante' %}
+                                    <div class="email-avatar-v2" style="background: #eef2ff; color: #4338ca;">{{ c.nombre|default:c.razon_social|first|upper }}</div>
+                                    <div class="email-names">
+                                        <div class="email-sender-name">{% if c.nombre %}{{ c.nombre }} {{ c.apellido }}{% else %}{{ c.razon_social }}{% endif %}</div>
+                                        <div class="email-to-list">a mí ({{ usuario_logueado.nombre_usuario }}) ▼</div>
+                                        <div class="email-status-badge" style="color: #6366f1;">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14"
+                                                viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                                                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z">
+                                                </path>
+                                            </svg>
+                                            Recibidos
+                                        </div>
+                                    </div>
+                                    {% else %}
+                                    <div class="email-avatar-v2">{{ inter.usuario_responsable.nombre_usuario|first|upper }}</div>
+                                    <div class="email-names">
+                                        <div class="email-sender-name">Tú ({{ inter.usuario_responsable.nombre_usuario }})</div>
+                                        <div class="email-to-list">para: {% if c.nombre %}{{ c.nombre }} {{ c.apellido }}{% else %}{{ c.razon_social }}{% endif %} ▼</div>
+                                        <div class="email-status-badge">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14"
+                                                viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                                                <polyline points="20 6 9 17 4 12"></polyline>
+                                            </svg>
+                                            Enviado
+                                        </div>
+                                    </div>
+                                    {% endif %}
+                                    <div class="email-actions-inline">
+                                        <button onclick="cerrarEmail({{ inter.id }})">✖</button>
+                                    </div>
+                                </div>
+                                <div class="email-text-content">{{ inter.detalle_actividad }}</div>
+                            </div>
                         </div>
+                        {% endif %}
+                        {% endfor %}
                     </div>
-                    {% endif %}
-                    {% endfor %}
                 </div>
-            </div>
 
             </div>
         </section>
@@ -1077,9 +1544,11 @@
             <form method="POST">
                 {% csrf_token %}<input type="hidden" name="tipo_interaccion_nombre" value="Nota">
                 <div class="entrada-field">
-                    <textarea name="detalle" style="min-height: 180px;" placeholder="¿Qué quieres recordar?" required></textarea>
+                    <textarea name="detalle" style="min-height: 180px;" placeholder="¿Qué quieres recordar?"
+                        required></textarea>
                 </div>
-                <div style="text-align: right;"><button type="submit" class="btn-rojo-guardar">Guardar Nota</button></div>
+                <div style="text-align: right;"><button type="submit" class="btn-rojo-guardar">Guardar Nota</button>
+                </div>
             </form>
         </div>
     </div>
@@ -1095,7 +1564,8 @@
                 {% csrf_token %}<input type="hidden" name="tipo_interaccion_nombre" value="Correo">
                 <div class="entrada-field">
                     <label class="entrada-lbl">Para:</label>
-                    <input type="text" value="{{ c.correo }}" class="entrada-texto" style="background:#f1f5f9;" readonly>
+                    <input type="text" value="{{ c.correo }}" class="entrada-texto" style="background:#f1f5f9;"
+                        readonly>
                 </div>
                 <div class="entrada-field">
                     <label class="entrada-lbl">Asunto:</label>
@@ -1104,7 +1574,8 @@
                 <div class="entrada-field">
                     <textarea name="detalle" id="mailDetalle" style="min-height: 250px;" required></textarea>
                 </div>
-                <div style="text-align: right;"><button type="submit" class="btn-rojo-guardar">Enviar Correo</button></div>
+                <div style="text-align: right;"><button type="submit" class="btn-rojo-guardar">Enviar Correo</button>
+                </div>
             </form>
         </div>
     </div>
@@ -1118,20 +1589,32 @@
             </div>
             <form method="POST">
                 {% csrf_token %}<input type="hidden" name="tipo_interaccion_nombre" value="Reunión">
-                
+
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
                     <div class="entrada-field">
                         <label class="entrada-lbl">Fecha de la reunión:</label>
                         <div class="input-with-icon">
                             <input type="date" name="fecha_reunion" class="entrada-texto" required>
-                            <svg class="input-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                            <svg class="input-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                                viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                stroke-linecap="round" stroke-linejoin="round">
+                                <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
+                                <line x1="16" y1="2" x2="16" y2="6" />
+                                <line x1="8" y1="2" x2="8" y2="6" />
+                                <line x1="3" y1="10" x2="21" y2="10" />
+                            </svg>
                         </div>
                     </div>
                     <div class="entrada-field">
                         <label class="entrada-lbl">Hora de la reunión:</label>
                         <div class="input-with-icon">
                             <input type="time" name="hora_reunion" class="entrada-texto" required>
-                            <svg class="input-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                            <svg class="input-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                                viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="12" cy="12" r="10" />
+                                <polyline points="12 6 12 12 16 14" />
+                            </svg>
                         </div>
                     </div>
                 </div>
@@ -1148,7 +1631,8 @@
                     <label class="entrada-lbl" style="display: flex; align-items: center; gap: 4px;">
                         <span style="color: #D32F2F;">📍</span> Dirección (lugar de la reunión):
                     </label>
-                    <input type="text" name="direccion" class="entrada-texto" placeholder="Ej: Calle 50 #12-34, Medellín">
+                    <input type="text" name="direccion" class="entrada-texto"
+                        placeholder="Ej: Calle 50 #12-34, Medellín">
                 </div>
 
                 <div class="entrada-field">
@@ -1158,7 +1642,8 @@
 
                 <div class="entrada-field">
                     <label class="entrada-lbl">Descripción:</label>
-                    <textarea name="detalle" style="min-height: 100px;" placeholder="Breve descripción de la reunión..."></textarea>
+                    <textarea name="detalle" style="min-height: 100px;"
+                        placeholder="Breve descripción de la reunión..."></textarea>
                 </div>
                 <div style="text-align: right;">
                     <button type="submit" class="btn-rojo-guardar">Guardar</button>
@@ -1188,7 +1673,8 @@
                     <label class="entrada-lbl">Descripción / Objetivo:</label>
                     <textarea name="detalle" style="min-height: 100px;"></textarea>
                 </div>
-                <div style="text-align: right;"><button type="submit" class="btn-rojo-guardar">Programar Reunión</button></div>
+                <div style="text-align: right;"><button type="submit" class="btn-rojo-guardar">Programar
+                        Reunión</button></div>
             </form>
         </div>
     </div>
@@ -1200,25 +1686,27 @@
                 <h3 class="modal-title" id="verAsunto">Detalle de la Reunión</h3>
                 <button class="btn-close-modal" onclick="cerrarModal('modalVerReunion')">&times;</button>
             </div>
-            
+
             <div class="ver-grid">
                 <div class="ver-label">Fecha:</div>
                 <div class="ver-value" id="verFecha"></div>
-                
+
                 <div class="ver-label">Hora:</div>
                 <div class="ver-value" id="verHora"></div>
-                
+
                 <div class="ver-label">Modalidad:</div>
                 <div class="ver-value"><span id="verModalidad" class="cal-badge"></span></div>
-                
+
                 <div class="ver-label" id="verLblDireccion">Dirección:</div>
                 <div class="ver-value" id="verDireccion"></div>
-                
+
                 <div class="ver-label">Descripción:</div>
                 <div class="ver-value" id="verDetalle" style="white-space: pre-wrap;"></div>
             </div>
 
-            <div class="ver-監査-title" style="margin-top:25px; font-size:12px; font-weight:700; color:#64748b; border-top:1px solid #f1f5f9; padding-top:15px;">AUDITORÍA Y CAMBIOS</div>
+            <div class="ver-監査-title"
+                style="margin-top:25px; font-size:12px; font-weight:700; color:#64748b; border-top:1px solid #f1f5f9; padding-top:15px;">
+                AUDITORÍA Y CAMBIOS</div>
             <div class="ver-audit-box" id="verAuditoria"></div>
         </div>
     </div>
@@ -1250,28 +1738,36 @@
                 </div>
                 <div class="entrada-field">
                     <label class="entrada-lbl">Modalidad:</label>
-                    <select name="modalidad" class="entrada-texto" id="editarModalidad" onchange="toggleDireccionEditar()">
+                    <select name="modalidad" class="entrada-texto" id="editarModalidad"
+                        onchange="toggleDireccionEditar()">
                         <option value="Presencial">Presencial</option>
                         <option value="Virtual">Virtual</option>
                     </select>
                 </div>
                 <div class="entrada-field" id="editarFieldDireccion">
                     <label class="entrada-lbl">Dirección:</label>
-                    <input type="text" name="direccion" id="editarDireccion" class="entrada-texto" placeholder="Ingrese el lugar de la reunión">
+                    <input type="text" name="direccion" id="editarDireccion" class="entrada-texto"
+                        placeholder="Ingrese el lugar de la reunión">
                 </div>
                 <div class="entrada-field">
                     <label class="entrada-lbl">Descripción / Objetivo:</label>
                     <textarea name="detalle" id="editarDetalle" style="min-height: 100px;"></textarea>
                 </div>
-                <div style="text-align: right;"><button type="submit" class="btn-rojo-guardar">Guardar Cambios</button></div>
+                <div style="text-align: right;"><button type="submit" class="btn-rojo-guardar">Guardar Cambios</button>
+                </div>
             </form>
         </div>
     </div>
 
-    <form id="formDelete" method="POST" style="display:none;">{% csrf_token %}<input type="hidden" name="accion" value="eliminar_interaccion"><input type="hidden" name="interaccion_id" id="del_id"></form>
-    <form id="formSync" method="POST" style="display:none;">{% csrf_token %}<input type="hidden" name="accion" value="sincronizar_correos"></form>
-    <form id="formCancelar" method="POST" style="display:none;">{% csrf_token %}<input type="hidden" name="accion" value="cancelar_reunion"><input type="hidden" name="interaccion_id" id="cancel_id"><input type="hidden" name="motivo_cancelacion" id="cancel_motivo"></form>
-    <form id="formFinalizar" method="POST" style="display:none;">{% csrf_token %}<input type="hidden" name="accion" value="finalizar_reunion"><input type="hidden" name="interaccion_id" id="fin_id"></form>
+    <form id="formDelete" method="POST" style="display:none;">{% csrf_token %}<input type="hidden" name="accion"
+            value="eliminar_interaccion"><input type="hidden" name="interaccion_id" id="del_id"></form>
+    <form id="formSync" method="POST" style="display:none;">{% csrf_token %}<input type="hidden" name="accion"
+            value="sincronizar_correos"></form>
+    <form id="formCancelar" method="POST" style="display:none;">{% csrf_token %}<input type="hidden" name="accion"
+            value="cancelar_reunion"><input type="hidden" name="interaccion_id" id="cancel_id"><input type="hidden"
+            name="motivo_cancelacion" id="cancel_motivo"></form>
+    <form id="formFinalizar" method="POST" style="display:none;">{% csrf_token %}<input type="hidden" name="accion"
+            value="finalizar_reunion"><input type="hidden" name="interaccion_id" id="fin_id"></form>
 
     <!-- MODAL CANCELACIÓN -->
     <div class="modal-overlay" id="modalCancelacion">
@@ -1282,7 +1778,8 @@
             </div>
             <div class="entrada-field">
                 <label class="entrada-lbl">Motivo de cancelación:</label>
-                <textarea id="inputMotivoCancelacion" style="min-height:110px;" placeholder="Escribe aquí el motivo por el que se cancela la reunión..."></textarea>
+                <textarea id="inputMotivoCancelacion" style="min-height:110px;"
+                    placeholder="Escribe aquí el motivo por el que se cancela la reunión..."></textarea>
             </div>
             <div style="text-align:right; margin-top:8px;">
                 <button class="btn-rojo-guardar" onclick="confirmarCancelacion()">Confirmar cancelación</button>
@@ -1295,7 +1792,7 @@
         function cerrarModal(id) { document.getElementById(id).style.display = 'none'; }
 
         function abrirModalNota() { abrirModal('modalNota'); }
-        function abrirModalCorreo(asunto='', detalle='') {
+        function abrirModalCorreo(asunto = '', detalle = '') {
             document.getElementById('mailAsunto').value = asunto;
             document.getElementById('mailDetalle').value = detalle;
             abrirModal('modalCorreo');
@@ -1303,10 +1800,10 @@
         function abrirModalGenerico(tipo) {
             document.getElementById('genTitle').innerText = 'Registrar ' + tipo;
             document.getElementById('genTypeName').value = tipo;
-            
+
             // Mostrar modalidad solo si es Reunión
             document.getElementById('fieldModalidad').style.display = (tipo === 'Reunión') ? 'block' : 'none';
-            
+
             abrirModal('modalGenerico');
         }
 
@@ -1329,14 +1826,14 @@
                 // Re-inicializar indicador por si se movió algo
                 const activeSubTab = document.querySelector('.tab-sub.active');
                 if (activeSubTab) {
-                   setTimeout(() => {
+                    setTimeout(() => {
                         const nav = document.getElementById('tabs-sub-nav');
                         const indicator = document.getElementById('tab-indicator');
                         const navRect = nav.getBoundingClientRect();
                         const tabRect = activeSubTab.getBoundingClientRect();
                         indicator.style.width = tabRect.width + 'px';
                         indicator.style.left = (tabRect.left - navRect.left) + 'px';
-                   }, 50);
+                    }, 50);
                 }
             }
         }
@@ -1345,12 +1842,12 @@
             const body = document.getElementById('tm-body-' + id).innerText;
             const lines = body.split('\n');
             let asunto = lines[0].replace('Asunto: ', '').trim();
-            if(!asunto) asunto = "Sin asunto";
-            
+            if (!asunto) asunto = "Sin asunto";
+
             const realMsg = lines.slice(1).join('\n').trim();
             let nAsunto = (accion === 'Responder' ? 'Re: ' : 'Fwd: ') + asunto;
             let nCuerpo = (accion === 'Responder' ? '\n\n---\nAsunto: ' : '\n\n---------- Forwarded message ----------\nAsunto: ') + asunto + '\n' + realMsg;
-            
+
             abrirModalCorreo(nAsunto, nCuerpo);
         }
 
@@ -1363,18 +1860,18 @@
 
             // Reset containers
             [containerScroll, containerNotas, containerCorreos, containerReuniones].forEach(c => {
-                if(c) c.style.display = 'none';
+                if (c) c.style.display = 'none';
             });
-            
+
             // Tab Logic
             if (tab === 'notas') {
-                if(containerNotas) containerNotas.style.display = 'block';
+                if (containerNotas) containerNotas.style.display = 'block';
                 formBox.style.display = 'none';
             } else if (tab === 'correos') {
-                if(containerCorreos) containerCorreos.style.display = 'block';
+                if (containerCorreos) containerCorreos.style.display = 'block';
                 formBox.style.display = 'none';
             } else if (tab === 'reuniones') {
-                if(containerReuniones) {
+                if (containerReuniones) {
                     containerReuniones.style.display = 'flex';
                     containerReuniones.style.flexDirection = 'column';
                 }
@@ -1382,12 +1879,12 @@
                 actualizarContadoresReuniones();
             } else if (tab === 'historial') {
                 const hist = document.getElementById('historial-container');
-                if(hist) hist.style.display = 'block';
+                if (hist) hist.style.display = 'block';
                 formBox.style.display = 'none';
             } else {
-                if(containerScroll) containerScroll.style.display = 'block';
+                if (containerScroll) containerScroll.style.display = 'block';
                 formBox.style.display = (tab === 'actividad' || tab === 'tareas') ? 'block' : 'none';
-                
+
                 const cards = document.querySelectorAll('.interaction-row');
                 cards.forEach(card => {
                     const t_val = tab === 'actividad' ? true : (card.classList.contains('t-' + tab) || card.classList.contains('t-' + tab.slice(0, -1)));
@@ -1398,18 +1895,18 @@
             // Update Tab styles & Indicator
             const tabs = document.querySelectorAll('.tab-sub');
             const indicator = document.getElementById('tab-indicator');
-            
+
             tabs.forEach(t => t.classList.remove('active'));
-            
+
             const activeTab = document.getElementById('btn-tab-' + tab) || document.querySelector(`.tab-sub[onclick*="'${tab}'"]`);
             if (activeTab) {
                 activeTab.classList.add('active');
-                
+
                 // Mover el indicador
                 const nav = document.getElementById('tabs-sub-nav');
                 const navRect = nav.getBoundingClientRect();
                 const tabRect = activeTab.getBoundingClientRect();
-                
+
                 indicator.style.width = tabRect.width + 'px';
                 indicator.style.left = (tabRect.left - navRect.left) + 'px';
             }
@@ -1417,19 +1914,19 @@
 
         function actualizarContadoresReuniones() {
             try {
-            let prog = 0, fin = 0, canc = 0;
-            {% for inter in interacciones %}
+                let prog = 0, fin = 0, canc = 0;
+                {% for inter in interacciones %}
                 {% if inter.tipo_interaccion.nombre_tipo == 'Reunión' %}
-                    {% if inter.estado == 'Programada' %} prog++;
-                    {% elif inter.estado == 'Finalizada' %} fin++;
-                    {% elif inter.estado == 'Cancelada' %} canc++;
-                    {% endif %}
+                {% if inter.estado == 'Programada' %} prog++;
+                {% elif inter.estado == 'Finalizada' %} fin++;
+                {% elif inter.estado == 'Cancelada' %} canc++;
                 {% endif %}
-            {% endfor %}
-            document.getElementById('count-programadas').innerText = prog;
-            document.getElementById('count-finalizadas').innerText = fin;
-            document.getElementById('count-canceladas').innerText = canc;
-        } catch(e) {}
+                {% endif %}
+                {% endfor %}
+                document.getElementById('count-programadas').innerText = prog;
+                document.getElementById('count-finalizadas').innerText = fin;
+                document.getElementById('count-canceladas').innerText = canc;
+            } catch (e) { }
         }
 
         function abrirModalReunion() {
@@ -1503,11 +2000,11 @@
             document.getElementById('verAsunto').innerText = asunto || 'Detalle de la Reunión';
             document.getElementById('verFecha').innerText = fecha || '-';
             document.getElementById('verHora').innerText = hora || '-';
-            
+
             const badge = document.getElementById('verModalidad');
             badge.innerText = mod;
             badge.className = 'cal-badge ' + (mod === 'Presencial' ? 'presencial' : 'virtual');
-            
+
             const lblDir = document.getElementById('verLblDireccion');
             const valDir = document.getElementById('verDireccion');
             if (mod === 'Presencial') {
@@ -1518,9 +2015,9 @@
                 lblDir.style.display = 'none';
                 valDir.style.display = 'none';
             }
-            
+
             document.getElementById('verDetalle').innerText = detalle || '-';
-            
+
             const auditBox = document.getElementById('verAuditoria');
             auditBox.innerHTML = "";
             if (historial && historial.trim() !== "" && historial !== 'None') {
@@ -1542,7 +2039,7 @@
             } else {
                 auditBox.innerHTML = '<p style="font-size:12px; color:#94a3b8; font-style:italic;">Sin cambios registrados.</p>';
             }
-            
+
             abrirModal('modalVerReunion');
         }
 
@@ -1554,7 +2051,7 @@
             document.getElementById('editarModalidad').value = mod;
             document.getElementById('editarDireccion').value = dir;
             document.getElementById('editarDetalle').value = detalle;
-            
+
             toggleDireccionEditar();
             abrirModal('modalEditarReunion');
         }
@@ -1568,7 +2065,7 @@
             const body = document.getElementById('reu-body-' + id);
             const arrow = document.getElementById('arrow-reu-' + id);
             const isHidden = body.style.display === 'none' || body.style.display === '';
-            
+
             body.style.display = isHidden ? 'block' : 'none';
             arrow.style.transform = isHidden ? 'rotate(180deg)' : 'rotate(0deg)';
         }
@@ -1577,7 +2074,7 @@
             const body = document.getElementById('mail-body-' + id);
             const arrow = document.getElementById('arrow-' + id);
             const isHidden = body.style.display === 'none' || body.style.display === '';
-            
+
             body.style.display = isHidden ? 'block' : 'none';
             arrow.style.transform = isHidden ? 'rotate(0deg)' : 'rotate(-90deg)';
         }
@@ -1599,7 +2096,7 @@
                 method: 'POST',
                 headers: { 'X-CSRFToken': '{{ csrf_token }}' }
             }).then(response => {
-                if(response.ok) {
+                if (response.ok) {
                     const isActive = btn.classList.toggle('active');
                     btn.innerText = isActive ? '★' : '☆';
                 }
@@ -1611,7 +2108,7 @@
                 title: '¿Eliminar registro?', text: 'Esta acción borrará esta ' + tipo + ' permanentemente.',
                 icon: 'warning', showCancelButton: true, confirmButtonColor: '#B71C1C', confirmButtonText: 'Eliminar'
             }).then((val) => {
-                if(val.isConfirmed) {
+                if (val.isConfirmed) {
                     document.getElementById('del_id').value = id;
                     document.getElementById('formDelete').submit();
                 }
@@ -1620,7 +2117,7 @@
 
         {% if messages %}
         {% for m in messages %}
-            Swal.fire({ icon: '{{ m.tags }}' === 'error' ? 'error' : 'success', text: '{{ m }}', showConfirmButton: false, timer: 3000 });
+        Swal.fire({ icon: '{{ m.tags }}' === 'error' ? 'error' : 'success', text: '{{ m }}', showConfirmButton: false, timer: 3000 });
         {% endfor %}
         {% endif %}
 
@@ -1643,4 +2140,5 @@
         });
     </script>
 </body>
+
 </html>

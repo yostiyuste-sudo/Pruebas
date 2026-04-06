@@ -1,0 +1,560 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inicio - Constructora Dyco</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+:root {
+            --rojo-principal: #D32F2F;
+            --rojo-oscuro: #B71C1C;
+            --rojo-claro: #FEE7E7;
+            --blanco: #FFFFFF;
+            --gris-fondo: #F5F7F9;
+            --gris-borde: #E2E8F0;
+            --texto-negro: #1E293B;
+            --texto-gris: #64748B;
+            --sidebar-width: 280px;
+            --sidebar-collapsed: 85px;
+            --transicion: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            --sombra-card: 0 10px 15px -3px rgba(0, 0, 0, 0.04), 0 4px 6px -4px rgba(0, 0, 0, 0.04);
+            --sombra-nav: 10px 0 30px -10px rgba(0, 0, 0, 0.08);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--gris-fondo);
+            color: var(--texto-negro);
+            display: flex;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* --- SIDEBAR & LAYOUT --- */
+        .barra-lateral {
+            position: fixed; top: 0; left: 0; height: 100vh;
+            width: 80px; background-color: white; border-right: 1px solid #E0E0E0;
+            display: flex; flex-direction: column; z-index: 1000;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            overflow: hidden;
+        }
+        .barra-lateral:hover { width: 260px; box-shadow: 5px 0 25px rgba(0,0,0,0.05); }
+        .barra-cabecera { padding: 20px; display: flex; align-items: center; gap: 15px; height: 80px; }
+        .logo-inicial { min-width: 40px; height: 40px; background-color: #D32F2F; color: white; display: flex; align-items: center; justify-content: center; border-radius: 12px; font-weight: 800; font-size: 20px; }
+        .logo-texto { font-weight: 800; font-size: 19px; color: #D32F2F; white-space: nowrap; opacity: 0; transition: opacity 0.3s ease; letter-spacing: -0.2px; }
+        .barra-lateral:hover .logo-texto { opacity: 1; }
+        .perfil-usuario { padding: 14px; margin: 12px; border-radius: 18px; background: #fdf2f2; display: flex; align-items: center; gap: 12px; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); overflow: hidden; }
+        .avatar-circular { min-width: 40px; height: 40px; background: white; border: 1.5px solid #D32F2F; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; color: #D32F2F; font-size: 16px; }
+        .perfil-info { white-space: nowrap; overflow: hidden; opacity: 0; transition: opacity 0.3s ease; }
+        .barra-lateral:hover .perfil-info { opacity: 1; }
+        .perfil-nombre { display: block; font-weight: 600; font-size: 14px; color: #333333; }
+        .perfil-rol { display: block; font-size: 11px; color: #757575; font-weight: 500; }
+        .navegacion-sidebar { flex: 1; padding: 12px; display: flex; flex-direction: column; gap: 4px; }
+        .nav-enlace { display: flex; align-items: center; gap: 15px; padding: 12px 14px; text-decoration: none; color: #5f6368; border-radius: 14px; transition: all 0.2s ease; white-space: nowrap; font-weight: 500; }
+        .nav-enlace:hover { background-color: #fdf2f2; color: #D32F2F; }
+        .nav-enlace.activo { background-color: #D32F2F; color: white; }
+        .iconosvg { min-width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; }
+        .nav-text { font-size: 14px; font-weight: 500; opacity: 0; transition: opacity 0.2s ease; }
+        .barra-lateral:hover .nav-text { opacity: 1; }
+        .barra-pie { padding: 10px; border-top: 1px solid #E0E0E0; }
+
+        main, .main-wrapper, .contenido-principal {
+            margin-left: 80px;
+            flex: 1; padding: 40px;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            width: calc(100% - 80px);
+        }
+
+        .barra-lateral:hover ~ main,
+        .barra-lateral:hover ~ .main-wrapper,
+        .barra-lateral:hover ~ .contenido-principal {
+            margin-left: 260px;
+            width: calc(100% - 260px);
+        }
+
+            --rojo-principal: #D32F2F;
+            --rojo-oscuro: #B71C1C;
+            --rojo-claro: #FEE7E7;
+            --blanco: #FFFFFF;
+            --gris-fondo: #F5F7F9;
+            --gris-borde: #E2E8F0;
+            --texto-negro: #1E293B;
+            --texto-gris: #64748B;
+            --sidebar-width: 280px;
+            --sidebar-collapsed: 85px;
+            --transicion: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            --sombra-card: 0 10px 15px -3px rgba(0, 0, 0, 0.04), 0 4px 6px -4px rgba(0, 0, 0, 0.04);
+            --sombra-nav: 10px 0 30px -10px rgba(0, 0, 0, 0.08);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+            font-family: 'Inter', sans-serif;
+            background-color: var(--gris-fondo);
+            color: var(--texto-negro);
+            display: flex;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        main {
+            flex: 1;
+            padding: 40px;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        /* HEADER */
+        header {
+            margin-bottom: 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .bienvenida h1 {
+            font-size: 32px;
+            font-weight: 800;
+            letter-spacing: -0.8px;
+            color: var(--texto-negro);
+        }
+
+        .bienvenida p {
+            color: var(--texto-gris);
+            font-size: 16px;
+            margin-top: 5px;
+            font-weight: 500;
+        }
+
+        /* KPI CARDS */
+        .grid-kpi {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 24px;
+            margin-bottom: 40px;
+        }
+
+        .card-kpi {
+            background: white;
+            padding: 28px;
+            border-radius: 24px;
+            border: 1px solid var(--gris-borde);
+            box-shadow: var(--sombra-card);
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            transition: transform 0.3s ease;
+        }
+
+        .card-kpi:hover {
+            transform: translateY(-5px);
+        }
+
+        .kpi-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .kpi-icon {
+            width: 54px;
+            height: 54px;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+        }
+
+        .kpi-info .kpi-val {
+            font-size: 30px;
+            font-weight: 800;
+            color: var(--texto-negro);
+            display: block;
+        }
+
+        .kpi-info .kpi-lab {
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--texto-gris);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* DASHBOARD CONTENT GRID */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 32px;
+        }
+
+        .box-blanco {
+            background: white;
+            border-radius: 28px;
+            padding: 32px;
+            border: 1px solid var(--gris-borde);
+            box-shadow: var(--sombra-card);
+        }
+
+        .box-titulo {
+            font-size: 19px;
+            font-weight: 700;
+            margin-bottom: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .btn-ver-mas {
+            font-size: 14px;
+            color: var(--rojo-principal);
+            text-decoration: none;
+            font-weight: 700;
+        }
+
+        /* RECIENTES */
+        .actividad-item {
+            display: flex;
+            gap: 20px;
+            padding: 18px 0;
+            border-bottom: 1.5px solid #f8fafc;
+        }
+
+        .actividad-item:last-child {
+            border-bottom: none;
+        }
+
+        .act-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            background: #f1f5f9;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .act-info h4 {
+            font-size: 15px;
+            font-weight: 700;
+            margin-bottom: 2px;
+        }
+
+        .act-info p {
+            font-size: 14px;
+            color: var(--texto-gris);
+            line-height: 1.5;
+        }
+
+        .act-date {
+            font-size: 12px;
+            color: #94A3B8;
+            font-weight: 600;
+            margin-top: 6px;
+        }
+
+        /* LISTA SIMPLE */
+        .lista-segmentos {
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+        }
+
+        .item-segmento {
+            padding: 16px;
+            border-radius: 16px;
+            background: #F8FAFC;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .segmento-nombre {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--texto-negro);
+        }
+
+        .segmento-valor {
+            font-weight: 800;
+            color: var(--rojo-principal);
+            font-size: 16px;
+        }
+
+        /* === SIDEBAR === */
+
+        .perfil-nombre {
+            display: block;
+            font-weight: 600;
+            font-size: 14px;
+            color: #333;
+        }
+
+        .perfil-rol {
+            display: block;
+            font-size: 11px;
+            color: #757575;
+            font-weight: 500;
+        }
+
+        }
+
+        /* BARRA LATERAL */
+
+        .perfil-nombre {
+            display: block;
+            font-weight: 600;
+            font-size: 14px;
+            color: #333333;
+        }
+
+        .perfil-rol {
+            display: block;
+            font-size: 11px;
+            color: #757575;
+            font-weight: 500;
+        }
+
+        main,
+
+    
+
+    </style>
+</head>
+
+<body>
+    <!-- BARRA LATERAL -->
+    <aside class="barra-lateral">
+        <div class="barra-cabecera">
+            <div class="logo-inicial">D</div>
+            <div class="logo-texto">CONSTRUCTORA</div>
+        </div>
+
+        <div class="perfil-usuario">
+            <div class="avatar-circular" title="{{ usuario_logueado.nombre_usuario }}">
+                {{ usuario_logueado.nombre_usuario|make_list|first|upper }}
+            </div>
+            <div class="perfil-info">
+                <span class="perfil-nombre">{{ usuario_logueado.nombre_usuario }}</span>
+                <span class="perfil-rol">{{ usuario_logueado.rol.nombre_rol }}</span>
+            </div>
+        </div>
+
+        <nav class="navegacion-sidebar">
+            <!-- INICIO -->
+            <a href="{% url 'dashboard' %}" class="nav-enlace activo" title="Inicio">
+                <span class="iconosvg">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                        <polyline points="9 22 9 12 15 12 15 22"></polyline>
+                    </svg>
+                </span>
+                <span class="nav-text">Inicio</span>
+            </a>
+
+            <!-- CONTACTOS -->
+            <a href="{% url 'contactos' %}" class="nav-enlace" title="Registro de Contactos">
+                <span class="iconosvg">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+                        <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+                    </svg>
+                </span>
+                <span class="nav-text">Registro de Contactos</span>
+            </a>
+
+            <!-- INTERACCIONES -->
+            <a href="{% url 'interacciones' %}" class="nav-enlace" title="Interacciones">
+                <span class="iconosvg">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                    </svg>
+                </span>
+                <span class="nav-text">Interacciones</span>
+            </a>
+
+            <!-- USUARIOS (Admin) -->
+            {% if usuario_logueado.rol.nombre_rol == "Administrador" %}
+            <a href="{% url 'usuarios' %}" class="nav-enlace" title="Gestión de Usuarios">
+                <span class="iconosvg">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="9" cy="7" r="4"></circle>
+                        <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                        <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                    </svg>
+                </span>
+                <span class="nav-text">Gestión de Usuarios</span>
+            </a>
+            {% endif %}
+        </nav>
+
+        <div class="barra-pie">
+            <a href="/logout/" class="nav-enlace" title="Cerrar Sesión">
+                <span class="iconosvg">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                        <polyline points="16 17 21 12 16 7"></polyline>
+                        <line x1="21" y1="12" x2="9" y2="12"></line>
+                    </svg>
+                </span>
+                <span class="nav-text">Cerrar Sesión</span>
+            </a>
+        </div>
+    </aside>
+
+
+
+    <main>
+        <header>
+            <div class="bienvenida">
+                <h1>Hola, {{ usuario_logueado.nombre_usuario }} 👋</h1>
+                <p>Bienvenido al Panel de Control de Constructora Dyco.</p>
+            </div>
+            <div>
+                <a href="{% url 'contactos' %}"
+                    style="background: var(--rojo-principal); color: white; padding: 14px 28px; border-radius: 16px; text-decoration: none; font-weight: 700; font-size: 15px; box-shadow: 0 10px 20px rgba(211, 47, 47, 0.2);">
+                    Añadir Contacto
+                </a>
+            </div>
+        </header>
+
+        <!-- KPI GRID -->
+        <div class="grid-kpi">
+            <div class="card-kpi">
+                <div class="kpi-header">
+                    <div class="kpi-icon" style="background: linear-gradient(135deg, #EF4444 0%, #B91C1C 100%);">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                            <circle cx="9" cy="7" r="4"></circle>
+                            <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                            <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                        </svg>
+                    </div>
+                    <div class="kpi-info">
+                        <span class="kpi-val">{{ total_contactos }}</span>
+                        <span class="kpi-lab">Contactos Totales</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card-kpi">
+                <div class="kpi-header">
+                    <div class="kpi-icon" style="background: linear-gradient(135deg, #3B82F6 0%, #1D4ED8 100%);">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                            <path
+                                d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z">
+                            </path>
+                        </svg>
+                    </div>
+                    <div class="kpi-info">
+                        <span class="kpi-val">{{ total_interacciones }}</span>
+                        <span class="kpi-lab">Interacciones Realizadas</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card-kpi">
+                <div class="kpi-header">
+                    <div class="kpi-icon" style="background: linear-gradient(135deg, #10B981 0%, #059669 100%);">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <polyline points="12 6 12 12 16 14"></polyline>
+                        </svg>
+                    </div>
+                    <div class="kpi-info">
+                        <span class="kpi-val">{{ reuniones_programadas }}</span>
+                        <span class="kpi-lab">Reuniones en Agenda</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="dashboard-grid">
+            <!-- RECIENTES -->
+            <div class="box-blanco">
+                <div class="box-titulo">
+                    Actividad Reciente
+                    <a href="{% url 'interacciones' %}" class="btn-ver-mas">Explorar todo →</a>
+                </div>
+                <div class="lista-actividad">
+                    {% for r in recientes %}
+                    <div class="actividad-item">
+                        <div class="act-icon">
+                            {% if r.tipo_interaccion.nombre_tipo == 'Llamada' %}
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
+                                fill="none" stroke="#3B82F6" stroke-width="2.5">
+                                <path
+                                    d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z">
+                                </path>
+                            </svg>
+                            {% elif r.tipo_interaccion.nombre_tipo == 'Correo' %}
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
+                                fill="none" stroke="#EC4899" stroke-width="2.5">
+                                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z">
+                                </path>
+                                <polyline points="22,6 12,13 2,6"></polyline>
+                            </svg>
+                            {% else %}
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
+                                fill="none" stroke="#6366F1" stroke-width="2.5">
+                                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                                <line x1="16" y1="2" x2="16" y2="6"></line>
+                                <line x1="8" y1="2" x2="8" y2="6"></line>
+                                <line x1="3" y1="10" x2="21" y2="10"></line>
+                            </svg>
+                            {% endif %}
+                        </div>
+                        <div class="act-info">
+                            <h4>{{ r.contacto.nombre }}{{ r.contacto.razon_social }}</h4>
+                            <p>{{ r.detalle_actividad|truncatechars:120 }}</p>
+                            <div class="act-date">{{ r.fecha_interaccion|date:"d M, Y - h:i a" }}</div>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <p style="text-align: center; color: #94A3B8; padding: 60px;">Aún no hay actividad registrada.</p>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- SEGMENTACION -->
+            <div class="box-blanco">
+                <div class="box-titulo">Directorio</div>
+                <div class="lista-segmentos">
+                    <div class="item-segmento">
+                        <span class="segmento-nombre">Contactos Activos</span>
+                        <span class="segmento-valor" style="color: #10B981;">{{ contactos_activos }}</span>
+                    </div>
+                    <div class="item-segmento">
+                        <span class="segmento-nombre">Contactos Inactivos</span>
+                        <span class="segmento-valor" style="color: #EF4444;">{{ contactos_inactivos }}</span>
+                    </div>
+
+
+                </div>
+            </div>
+        </div>
+    </main>
+</body>
+
+</html>

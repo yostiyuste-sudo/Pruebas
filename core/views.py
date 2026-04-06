@@ -10,7 +10,7 @@ from django.utils import timezone
 from django.conf import settings
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
-from django.db.models import Q
+from django.db.models import Q, Count
 from .models import Contacto, TipoContacto, TipoIdentificacion, Interaccion, TipoInteraccion, Usuario, Rol
 
 def registro_view(request):
@@ -264,6 +264,41 @@ def resetear_contrasena_view(request, token):
             
     return render(request, "resetear_contrasena.html", {"error": error, "token": token})
 
+def dashboard(request):
+    user_id = request.session.get('user_id')
+    if not user_id: return redirect('/login/')
+    u = Usuario.objects.get(id=user_id)
+    
+    # Estadísticas generales
+    total_contactos = Contacto.objects.count()
+    contactos_activos = Contacto.objects.filter(activo=True).count()
+    contactos_inactivos = Contacto.objects.filter(activo=False).count()
+    
+    # Interacciones
+    total_interacciones = Interaccion.objects.count()
+    reuniones_programadas = Interaccion.objects.filter(tipo_interaccion__nombre_tipo='Reunión', estado='Programada').count()
+    
+    # Interacciones por tipo
+    stats_interacciones = Interaccion.objects.values('tipo_interaccion__nombre_tipo').annotate(total=Count('id'))
+    
+    # Actividad reciente
+    recientes = Interaccion.objects.all().order_by('-fecha_interaccion')[:8]
+    
+    # Mis contactos
+    mis_contactos = Contacto.objects.filter(usuario_asignado=u).count()
+
+    return render(request, "dashboard.html", {
+        "usuario_logueado": u,
+        "total_contactos": total_contactos,
+        "contactos_activos": contactos_activos,
+        "contactos_inactivos": contactos_inactivos,
+        "total_interacciones": total_interacciones,
+        "reuniones_programadas": reuniones_programadas,
+        "stats_interacciones": stats_interacciones,
+        "recientes": recientes,
+        "mis_contactos": mis_contactos,
+    })
+
 def contactos(request):
     # Verificación de sesión
     id_sesion = request.session.get('user_id')
@@ -512,12 +547,19 @@ def detalle_contacto(request, id_contacto):
             id_inter = request.POST.get('interaccion_id')
             inter_a_eliminar = get_object_or_404(Interaccion, id=id_inter, contacto=contacto)
             tipo_n = inter_a_eliminar.tipo_interaccion.nombre_tipo
-            inter_a_eliminar.delete()
-            messages.success(request, f"{tipo_n} eliminada correctamente.")
+            
+            # Si es una nota, desactivamos en lugar de borrar
+            if tipo_n == 'Nota':
+                inter_a_eliminar.estado = 'Inactiva'
+                inter_a_eliminar.save()
+                messages.success(request, "Nota desactivada correctamente.")
+            else:
+                inter_a_eliminar.delete()
+                messages.success(request, f"{tipo_n} eliminada correctamente.")
+            
             # Redirigir a la pestaña correspondiente
             tabname = 'correos' if tipo_n == 'Correo' else ('notas' if tipo_n == 'Nota' else ('reuniones' if tipo_n == 'Reunión' else 'actividad'))
             return redirect(f'/contacto/{id_contacto}/?tab={tabname}')
-
         # Cancelar reunión
         if request.POST.get('accion') == 'cancelar_reunion':
             id_inter = request.POST.get('interaccion_id')
