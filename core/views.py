@@ -524,7 +524,8 @@ def sincronizar_correos_imap(request, contacto, usuario_logueado):
                 tipo_interaccion=tipo_correo,
                 detalle_actividad=clean_detalle,
                 tipo_comunicacion='Entrante',
-                mensaje_id=mid
+                mensaje_id=mid,
+                historial_cambios=f"[{timezone.now().strftime('%d/%m/%Y %H:%M')}] Sincronizada automáticamente vía IMAP"
             )
             count += 1
         
@@ -551,6 +552,8 @@ def detalle_contacto(request, id_contacto):
             # Si es una nota, desactivamos en lugar de borrar
             if tipo_n == 'Nota':
                 inter_a_eliminar.estado = 'Inactiva'
+                log = f"[{timezone.now().strftime('%d/%m/%Y %H:%M')}] Nota marcada como Inactiva por {usuario_logueado.nombre_usuario}"
+                inter_a_eliminar.historial_cambios = (inter_a_eliminar.historial_cambios + "\n" + log) if inter_a_eliminar.historial_cambios else log
                 inter_a_eliminar.save()
                 messages.success(request, "Nota desactivada correctamente.")
             else:
@@ -636,6 +639,7 @@ def detalle_contacto(request, id_contacto):
         fecha_reunion = request.POST.get('fecha_reunion') or None
         hora_reunion = request.POST.get('hora_reunion') or None
 
+        prefix = 'Programada' if tipo_obj.nombre_tipo == 'Reunión' else 'Registrada'
         inter = Interaccion.objects.create(
             contacto=contacto,
             usuario_responsable=usuario_logueado,
@@ -647,7 +651,7 @@ def detalle_contacto(request, id_contacto):
             fecha_reunion=fecha_reunion,
             hora_reunion=hora_reunion,
             direccion=request.POST.get('direccion', '') or None,
-            historial_cambios=f"[{timezone.now().strftime('%d/%m/%Y %H:%M')}] Programada por {usuario_logueado.nombre_usuario}" if tipo_obj.nombre_tipo == 'Reunión' else None
+            historial_cambios=f"[{timezone.now().strftime('%d/%m/%Y %H:%M')}] {prefix} por {usuario_logueado.nombre_usuario}"
         )
 
         # Lógica de envío real si es correo
@@ -731,24 +735,4 @@ def usuarios_view(request):
         "tipos_doc": TipoIdentificacion.objects.all(),
     })
 
-def reset_password_admin(request):
-    """Permite a un administrador resetear la contraseña de cualquier usuario directamente."""
-    id_sesion = request.session.get('user_id')
-    if not id_sesion or request.session.get('rol_name') != "Administrador":
-        return JsonResponse({'status': 'error', 'message': 'No autorizado'}, status=403)
-    
-    if request.method == "POST":
-        target_user_id = request.POST.get('user_id')
-        new_password = request.POST.get('new_password')
-        
-        if not target_user_id or not new_password:
-            return JsonResponse({'status': 'error', 'message': 'Faltan datos'}, status=400)
-        
-        user = get_object_or_404(Usuario, id=target_user_id)
-        user.password_hash = new_password
-        user.token_password = "" 
-        user.save()
-        
-        return JsonResponse({'status': 'ok', 'message': f'Contraseña de {user.nombre_usuario} actualizada con éxito.'})
-    
-    return JsonResponse({'status': 'error', 'message': 'Método no permitido'}, status=405)
+

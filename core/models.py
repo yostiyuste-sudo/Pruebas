@@ -79,7 +79,7 @@ class Interaccion(models.Model):
     es_exitosa = models.BooleanField(default=False)
     procede_a_compromiso = models.BooleanField(default=False)
     fecha_interaccion = models.DateTimeField(auto_now_add=True)
-    fecha_actualizacion = models.DateTimeField(null=True, blank=True)
+    fecha_actualizacion = models.DateTimeField(auto_now=True, null=True, blank=True)
     
     # Campos adicionales basados en la vista y DB
     tipo_comunicacion = models.CharField(max_length=10, default='Saliente') # 'Entrante' / 'Saliente'
