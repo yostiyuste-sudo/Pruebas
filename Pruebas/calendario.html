@@ -1,0 +1,246 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calendario - Constructora Dyco</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-principal: #F8F9FA;
+            --bg-accent: #FEE7E7;
+            --primario: #D32F2F;
+            --secundario: #4B5563;
+            --destacado: #E67E22;
+            --blanco: #FFFFFF;
+            --texto: #1F2937;
+            --texto-suave: #6B7280;
+            --sombra: 0 10px 40px rgba(0, 0, 0, 0.04);
+            --transicion: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background-color: var(--bg-principal);
+            color: var(--texto);
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* --- SIDEBAR --- */
+        .barra-lateral {
+            position: fixed; top: 0; left: 0; height: 100vh;
+            width: 90px; background-color: var(--blanco); border-right: 1px solid #F0F0F0;
+            display: flex; flex-direction: column; z-index: 1000;
+            transition: var(--transicion); overflow: hidden;
+        }
+        .barra-lateral:hover { width: 280px; box-shadow: 10px 0 50px rgba(0,0,0,0.03); }
+        .barra-cabecera { padding: 25px; display: flex; align-items: center; gap: 18px; }
+        .logo-d { 
+            min-width: 45px; height: 45px; 
+            background: linear-gradient(135deg, var(--primario), var(--secundario));
+            color: white; display: flex; align-items: center; justify-content: center;
+            border-radius: 12px; font-weight: 800; font-size: 22px; 
+        }
+        .logo-texto { font-weight: 800; font-size: 22px; color: var(--primario); white-space: nowrap; opacity: 0; transition: 0.3s opacity; }
+        .barra-lateral:hover .logo-texto { opacity: 1; }
+
+        .perfil-sidebar { padding: 15px; margin: 15px; border-radius: 20px; background: var(--bg-accent); display: flex; align-items: center; gap: 15px; overflow: hidden; }
+        .avatar-s { min-width: 45px; height: 45px; background: white; border: 2px solid var(--primario); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; color: var(--primario); font-size: 18px; }
+        .p-info { opacity: 0; white-space: nowrap; transition: 0.3s opacity; }
+        .barra-lateral:hover .p-info { opacity: 1; }
+        .p-nombre { block-size: auto; font-weight: 600; font-size: 15px; }
+        .p-rol { font-size: 12px; color: var(--texto-suave); }
+
+        .navegacion { flex: 1; padding: 15px; display: flex; flex-direction: column; gap: 8px; }
+        .nav-enlace { display: flex; align-items: center; gap: 20px; padding: 14px 18px; text-decoration: none; color: var(--texto-suave); border-radius: 16px; transition: 0.2s; white-space: nowrap; }
+        .nav-enlace:hover { background: var(--bg-accent); color: var(--primario); }
+        .nav-enlace.activo { background: var(--primario); color: white; }
+        
+        .nav-text { font-size: 15px; font-weight: 600; display: none; }
+        .barra-lateral:hover .nav-text { display: block; }
+
+        /* --- CONTENT --- */
+        .wrapper {
+            margin-left: 90px; flex: 1; padding: 50px;
+            transition: var(--transicion); width: calc(100% - 90px);
+        }
+        .barra-lateral:hover ~ .wrapper { margin-left: 280px; width: calc(100% - 280px); }
+
+        .header-section { margin-bottom: 40px; display: flex; justify-content: space-between; align-items: center; }
+        .title-h1 { font-size: 32px; font-weight: 800; }
+
+        .calendar-grid {
+            background: white; border-radius: 40px; padding: 40px;
+            box-shadow: var(--sombra);
+        }
+        .calendar-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
+        .month-title { font-size: 24px; font-weight: 800; }
+
+        .days-header { display: grid; grid-template-columns: repeat(7, 1fr); gap: 10px; margin-bottom: 20px; text-align: center; font-weight: 800; color: var(--texto-suave); }
+        .days-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 15px; }
+        .day-cell {
+            aspect-ratio: 1; background: #fafafa; border-radius: 20px;
+            padding: 15px; display: flex; flex-direction: column; gap: 10px;
+            transition: 0.3s; position: relative; border: 1px solid transparent;
+        }
+        .day-cell:hover { background: white; border-color: var(--primario); transform: translateY(-5px); box-shadow: var(--sombra); }
+        .day-number { font-size: 18px; font-weight: 800; }
+        .day-cell.today { background: var(--bg-accent); border-color: var(--primario); }
+        .day-cell.today .day-number { color: var(--primario); }
+
+        .event-dot {
+            width: 8px; height: 8px; border-radius: 50%;
+            background: var(--primario); display: inline-block;
+        }
+        
+        .events-list { margin-top: 50px; }
+        .event-card {
+            background: white; padding: 25px; border-radius: 25px;
+            box-shadow: var(--sombra); display: flex; align-items: center; gap: 20px;
+            margin-bottom: 15px; transition: 0.3s;
+        }
+        .event-card:hover { transform: translateX(10px); }
+        .event-time { font-weight: 800; color: var(--primario); font-size: 16px; min-width: 80px; }
+        .event-info h4 { font-weight: 800; font-size: 18px; }
+        .event-info p { color: var(--texto-suave); font-size: 14px; font-weight: 500; }
+        
+        .btn-back {
+            text-decoration: none; background: var(--primario); color: white; border-radius: 18px;
+            padding: 12px 28px; font-weight: 800; font-size: 14px;
+            display: inline-flex; align-items: center; gap: 10px; margin-bottom: 30px;
+            transition: 0.3s; box-shadow: 0 10px 25px rgba(211, 47, 47, 0.2);
+        }
+        .btn-back:hover { transform: translateY(-3px); box-shadow: 0 15px 35px rgba(211, 47, 47, 0.3); }
+    </style>
+</head>
+
+<body>
+    <aside class="barra-lateral">
+        <div class="barra-cabecera">
+            <div class="logo-d">D</div>
+            <div class="logo-texto">CONSTRUCTORA</div>
+        </div>
+        <div class="perfil-sidebar">
+            <div class="avatar-s">{{ usuario_logueado.nombre_usuario|make_list|first|upper }}</div>
+            <div class="p-info">
+                <span class="p-nombre">{{ usuario_logueado.nombre_usuario }}</span>
+                <p class="p-rol">{{ usuario_logueado.rol.nombre_rol }}</p>
+            </div>
+        </div>
+        <nav class="navegacion">
+            <a href="{% url 'dashboard' %}" class="nav-enlace">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+                <span class="nav-text">Inicio</span>
+            </a>
+            <a href="{% url 'contactos' %}" class="nav-enlace">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                <span class="nav-text">Registro de Contacto</span>
+            </a>
+            <a href="{% url 'calendario' %}" class="nav-enlace activo">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                <span class="nav-text">Calendario</span>
+            </a>
+            {% if usuario_logueado.rol.nombre_rol == "Administrador" %}
+            <a href="{% url 'usuarios' %}" class="nav-enlace">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+                <span class="nav-text">Gestión de Usuarios</span>
+            </a>
+            {% endif %}
+        </nav>
+    </aside>
+
+    <div class="wrapper">
+        <a href="{% url 'dashboard' %}" class="btn-back">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+            Volver al Inicio
+        </a>
+        
+        <header class="header-section">
+            <h1 class="title-h1">Mi Calendario</h1>
+        </header>
+
+        <section class="calendar-grid">
+            <div class="calendar-header">
+                <h2 class="month-title">Abril 2026</h2>
+                <div style="display: flex; gap: 10px;">
+                    <button style="border: none; background: var(--bg-accent); padding: 10px 20px; border-radius: 12px; font-weight: 700; color: var(--primario); cursor: pointer;">Hoy</button>
+                </div>
+            </div>
+
+            <div class="days-header">
+                <span>Lun</span><span>Mar</span><span>Mié</span><span>Jue</span><span>Vie</span><span>Sab</span><span>Dom</span>
+            </div>
+            
+            <div class="days-grid">
+                <!-- Grid for April 2026 -->
+                <div class="day-cell" style="opacity: 0.3;"><span class="day-number">30</span></div>
+                <div class="day-cell" style="opacity: 0.3;"><span class="day-number">31</span></div>
+                <div class="day-cell"><span class="day-number">1</span></div>
+                <div class="day-cell"><span class="day-number">2</span></div>
+                <div class="day-cell"><span class="day-number">3</span></div>
+                <div class="day-cell"><span class="day-number">4</span></div>
+                <div class="day-cell"><span class="day-number">5</span></div>
+                
+                <div class="day-cell today">
+                    <span class="day-number">6</span>
+                    <div style="display: flex; gap: 5px;"><span class="event-dot"></span><span class="event-dot" style="background: var(--destacado);"></span></div>
+                </div>
+                <div class="day-cell"><span class="day-number">7</span></div>
+                <div class="day-cell"><span class="day-number">8</span><span class="event-dot" style="background: var(--destacado);"></span></div>
+                <div class="day-cell"><span class="day-number">9</span></div>
+                <div class="day-cell"><span class="day-number">10</span></div>
+                <div class="day-cell"><span class="day-number">11</span></div>
+                <div class="day-cell"><span class="day-number">12</span></div>
+                
+                <div class="day-cell"><span class="day-number">13</span></div>
+                <div class="day-cell"><span class="day-number">14</span></div>
+                <div class="day-cell"><span class="day-number">15</span></div>
+                <div class="day-cell"><span class="day-number">16</span></div>
+                <div class="day-cell"><span class="day-number">17</span></div>
+                <div class="day-cell"><span class="day-number">18</span></div>
+                <div class="day-cell"><span class="day-number">19</span></div>
+
+                <div class="day-cell"><span class="day-number">20</span></div>
+                <div class="day-cell"><span class="day-number">21</span></div>
+                <div class="day-cell"><span class="day-number">22</span></div>
+                <div class="day-cell"><span class="day-number">23</span></div>
+                <div class="day-cell"><span class="day-number">24</span></div>
+                <div class="day-cell"><span class="day-number">25</span></div>
+                <div class="day-cell"><span class="day-number">26</span></div>
+
+                <div class="day-cell"><span class="day-number">27</span></div>
+                <div class="day-cell"><span class="day-number">28</span></div>
+                <div class="day-cell"><span class="day-number">29</span></div>
+                <div class="day-cell"><span class="day-number">30</span></div>
+                <div class="day-cell" style="opacity: 0.3;"><span class="day-number">1</span></div>
+                <div class="day-cell" style="opacity: 0.3;"><span class="day-number">2</span></div>
+                <div class="day-cell" style="opacity: 0.3;"><span class="day-number">3</span></div>
+            </div>
+        </section>
+
+        <section class="events-list">
+            <h3 style="margin-bottom: 25px; font-size: 24px; font-weight: 800;">Próximas Actividades</h3>
+            
+            {% for i in interacciones %}
+            <div class="event-card">
+                <div class="event-time">{{ i.fecha_interaccion|date:"H:i" }}</div>
+                <div class="event-info">
+                    <h4>{{ i.contacto.nombre }}{{ i.contacto.razon_social }}</h4>
+                    <p>{{ i.tipo_interaccion.nombre_tipo }} - {{ i.detalle_actividad|truncatechars:100 }}</p>
+                </div>
+                <div style="margin-left: auto;">
+                    <a href="/contacto/{{ i.contacto.id }}/" style="color: var(--primario); font-weight: 800; text-decoration: none;">Ver Detalle</a>
+                </div>
+            </div>
+            {% empty %}
+            <p style="text-align: center; color: var(--texto-suave); padding: 40px; font-weight: 600;">No hay actividades programadas para este periodo.</p>
+            {% endfor %}
+        </section>
+    </div>
+</body>
+</html>

@@ -36,5 +36,5 @@ urlpatterns = [
     path('verificar/', views.verificar_correo, name='verificar_correo'),
     path('recuperar-contrasena/', views.recuperar_contrasena_view, name='recuperar_contrasena'),
     path('resetear-contrasena/<str:token>/', views.resetear_contrasena_view, name='resetear_contrasena'),
-
+    path('calendario/', views.calendario_view, name='calendario'),
 ]

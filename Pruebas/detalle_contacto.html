@@ -1242,8 +1242,7 @@
         <!-- PANEL DERECHO -->
         <section class="panel-derecho">
             <div class="tabs-header-top">
-                <button class="tab-top" id="btn-top-desc"
-                    onclick="cambiarTabPrincipal('descripcion')">Descripción</button>
+                <button class="tab-top" id="btn-top-desc" style="pointer-events: none; opacity: 0.6; cursor: default;">Descripción</button>
                 <button class="tab-top active" id="btn-top-activ"
                     onclick="cambiarTabPrincipal('actividades')">Actividades</button>
             </div>
@@ -1348,8 +1347,7 @@
                     <button class="tab-sub" id="btn-tab-tareas" onclick="cambiarSubTab('tareas')">Tareas</button>
                     <button class="tab-sub" id="btn-tab-reuniones"
                         onclick="cambiarSubTab('reuniones')">Reuniones</button>
-                    <button class="tab-sub" id="btn-tab-historial"
-                        onclick="cambiarSubTab('historial')">Historial</button>
+
                     <div class="tab-indicator" id="tab-indicator"></div>
                 </div>
 
@@ -1378,8 +1376,7 @@
                             <div class="nota-box-footer">
                                 <span>{{ inter.usuario_responsable.nombre_usuario }}</span>
                                 <span>{{ inter.fecha_interaccion|date:"d M, Y" }}</span>
-                                <button class="btn-tm-link red" style="font-size: 10px;"
-                                    onclick="eliminarInter({{ inter.id }}, 'Nota')">Desactivar</button>
+
                             </div>
                         </div>
                         {% endif %}
@@ -1439,26 +1436,7 @@
                     </div>
                 </div>
 
-                <!-- HISTORIAL DE CAMBIOS DEL CONTACTO -->
-                <div class="timeline-scroll" id="historial-container" style="display:none;">
-                    <h4 class="timeline-title">Historial de Modificaciones del Contacto</h4>
-                    <div class="timeline-vertical">
-                        {% if c.historial_cambios %}
-                        {% with logs=c.historial_cambios.splitlines %}
-                        {% for log in logs reversed %}
-                        {% if log.strip %}
-                        <div class="tm-card">
-                            <div class="tm-body">{{ log }}</div>
-                        </div>
-                        {% endif %}
-                        {% endfor %}
-                        {% endwith %}
-                        {% else %}
-                        <p style="padding: 20px; color: #94a3b8; font-style: italic;">No hay registros de modificaciones
-                            para este contacto.</p>
-                        {% endif %}
-                    </div>
-                </div>
+
 
                 <!-- CORREOS ESTILO GMAIL -->
                 <div class="correos-container" id="correos-container">

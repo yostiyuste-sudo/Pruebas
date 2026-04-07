@@ -121,8 +121,8 @@ EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'  # O tu servidor SMTP
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = 'lunavale601@gmail.com'
-EMAIL_HOST_PASSWORD = 'kytatiwqqvckczml'
+EMAIL_HOST_USER = 'dsolutions918@gmail.com'
+EMAIL_HOST_PASSWORD = 'jjyx dxky mcta ncdd'
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
 # Configuración IMAP (Recibir Correos)

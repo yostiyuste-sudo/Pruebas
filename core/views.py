@@ -10,7 +10,8 @@ from django.utils import timezone
 from django.conf import settings
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
-from django.db.models import Q, Count
+from django.db.models import Q, Count, Sum
+from django.db.models.functions import TruncMonth
 from .models import Contacto, TipoContacto, TipoIdentificacion, Interaccion, TipoInteraccion, Usuario, Rol
 
 def registro_view(request):
@@ -187,7 +188,7 @@ def recuperar_contrasena_view(request):
                 # Enviar correo (simplificado, sin links de ngrok)
                 try:
                     send_mail(
-                        'Código de Recuperación - CRM Dyco',
+                        'Código de Recuperación - Constructora Dyco',
                         f'Hola {u.nombre_usuario},\n\nTu código de recuperación de contraseña es: {pin}\n\nIntroduce este código en la ventana de recuperación para continuar.',
                         None,
                         [email],
@@ -286,6 +287,57 @@ def dashboard(request):
     
     # Mis contactos
     mis_contactos = Contacto.objects.filter(usuario_asignado=u).count()
+    
+    # Stats de usuarios (Para administrador)
+    total_usuarios = Usuario.objects.count() if u.rol.nombre_rol == "Administrador" else 0
+    usuarios_activos = Usuario.objects.filter(activo=True).count() if u.rol.nombre_rol == "Administrador" else 0
+    usuarios_inactivos = Usuario.objects.filter(activo=False).count() if u.rol.nombre_rol == "Administrador" else 0
+    
+    usuarios_activos_perc = (usuarios_activos / total_usuarios * 100) if total_usuarios > 0 else 0
+    usuarios_inactivos_perc = 100 - usuarios_activos_perc if total_usuarios > 0 else 0
+
+    # 1. Diagrama circular (Natural vs Jurídica)
+    natural_count = Contacto.objects.filter(tipo_contacto__nombre_tipo="Persona Natural").count()
+    juridica_count = total_contactos - natural_count
+    natural_perc = (natural_count / total_contactos * 100) if total_contactos > 0 else 0
+    juridica_perc = 100 - natural_perc if total_contactos > 0 else 0
+    
+    # 2. Diagrama de barras (Llamadas, Correos, Reuniones)
+    stats_acciones = Interaccion.objects.values('tipo_interaccion__nombre_tipo')\
+        .filter(tipo_interaccion__nombre_tipo__in=['Llamada', 'Correo', 'Reunión'])\
+        .annotate(total=Count('id'))
+    
+    # Preparar listas para Chart.js
+    acciones_labels = [s['tipo_interaccion__nombre_tipo'] for s in stats_acciones]
+    acciones_counts = [s['total'] for s in stats_acciones]
+    
+    # 3. Diagrama lineal (Interacciones por mes)
+    import locale
+    # Intentar establecer locale a español para nombres de meses si es necesario, 
+    # pero para mayor robustez usaremos un mapeo manual.
+    meses_nombres = ["ENE", "FEB", "MAR", "ABR", "MAY", "JUN", "JUL", "AGO", "SEP", "OCT", "NOV", "DIC"]
+    stats_mensual = Interaccion.objects.annotate(month=TruncMonth('fecha_interaccion'))\
+        .values('month').annotate(total=Count('id')).order_by('month')
+
+    # Diccionario para asegurar que todos los meses tengan entrada (opcional, pero mejor para el gráfico)
+    # Por ahora simplemente los meses que tienen datos:
+    tendencia_labels = []
+    tendencia_counts = []
+    
+    if stats_mensual:
+        for s in stats_mensual:
+            # s['month'] es un objeto datetime o date truncado al mes
+            m_idx = s['month'].month - 1
+            tendencia_labels.append(meses_nombres[m_idx])
+            tendencia_counts.append(s['total'])
+    else:
+        # Datos de prueba si está vacío
+        tendencia_labels = meses_nombres[:6]
+        tendencia_counts = [5, 12, 8, 15, 10, 20]
+    
+    # 4. Top Contactos
+    top_contactos = Contacto.objects.annotate(num_inter=Count('interaccion'))\
+        .order_by('-num_inter')[:5]
 
     return render(request, "dashboard.html", {
         "usuario_logueado": u,
@@ -297,6 +349,20 @@ def dashboard(request):
         "stats_interacciones": stats_interacciones,
         "recientes": recientes,
         "mis_contactos": mis_contactos,
+        "total_usuarios": total_usuarios,
+        "usuarios_activos": usuarios_activos,
+        "usuarios_inactivos": usuarios_inactivos,
+        "usuarios_activos_perc": usuarios_activos_perc,
+        "usuarios_inactivos_perc": usuarios_inactivos_perc,
+        "natural_count": natural_count,
+        "juridica_count": juridica_count,
+        "natural_perc": natural_perc,
+        "juridica_perc": juridica_perc,
+        "acciones_labels": acciones_labels,
+        "acciones_counts": acciones_counts,
+        "tendencia_labels": tendencia_labels,
+        "tendencia_counts": tendencia_counts,
+        "top_contactos": top_contactos,
     })
 
 def contactos(request):
@@ -354,13 +420,25 @@ def contactos(request):
                 return redirect('/')
             except Exception as e: error = f"Error: {e}"
             
+    query = request.GET.get('q', '')
+    activos = Contacto.objects.all().order_by('-fecha_registro')
+    if query:
+        activos = activos.filter(
+            Q(nombre__icontains=query) | 
+            Q(apellido__icontains=query) | 
+            Q(razon_social__icontains=query) | 
+            Q(documento_nit__icontains=query) | 
+            Q(correo__icontains=query)
+        )
+
     return render(request, "index.html", {
-        "activos": Contacto.objects.all().order_by('-fecha_registro'),
+        "activos": activos,
         "inactivos": Contacto.objects.filter(activo=False),
         "tipos_contacto": TipoContacto.objects.all(),
         "tipos_doc": TipoIdentificacion.objects.all(),
         "error": error,
-        "usuario_logueado": usuario_logueado
+        "usuario_logueado": usuario_logueado,
+        "query": query
     })
 
 def editar_contacto(request, id_contacto):
@@ -721,18 +799,53 @@ def eliminar_interaccion(request, id_inter):
     return redirect('/interacciones/')
 
 def usuarios_view(request):
-    id_sesion = request.session.get('user_id')
-    if not id_sesion or request.session.get('rol_name') != "Administrador":
-        return redirect('/')
+    user_id = request.session.get("user_id")
+    if not user_id:
+        return redirect('login')
     
-    usuario_logueado = Usuario.objects.get(id=id_sesion)
-    usuarios = Usuario.objects.all().order_by('nombre_usuario')
+    usuario_logueado = Usuario.objects.get(id=user_id)
+    if usuario_logueado.rol.nombre_rol != "Administrador":
+        return redirect('dashboard')
+        
+    usuarios = Usuario.objects.select_related('rol').all()
+    roles = Rol.objects.all()
     
+    if request.method == "POST":
+        accion = request.POST.get("accion")
+        if accion == "eliminar":
+            uid = request.POST.get("usuario_id")
+            Usuario.objects.filter(id=uid).delete()
+        elif accion == "modificar":
+            uid = request.POST.get("usuario_id")
+            u = Usuario.objects.get(id=uid)
+            u.nombre_usuario = request.POST.get("nombre")
+            u.email = request.POST.get("email")
+            u.rol_id = request.POST.get("rol_id")
+            u.save()
+        elif accion == "cambiar_estado":
+            uid = request.POST.get("usuario_id")
+            u = Usuario.objects.get(id=uid)
+            u.activo = not u.activo
+            u.save()
+            
     return render(request, "usuarios.html", {
-        "usuarios": usuarios,
         "usuario_logueado": usuario_logueado,
-        "tipos_contacto": TipoContacto.objects.all(),
-        "tipos_doc": TipoIdentificacion.objects.all(),
+        "usuarios": usuarios,
+        "roles": roles
     })
 
+def calendario_view(request):
+    usuario_id = request.session.get('usuario_id') or request.session.get('user_id')
+    if not usuario_id:
+        return redirect('login')
+    
+    usuario_logueado = Usuario.objects.get(id=usuario_id)
+    # Obtener todas las interacciones (o solo reuniones) para el calendario
+    interacciones = Interaccion.objects.select_related('contacto', 'tipo_interaccion').all().order_by('-fecha_interaccion')
+    
+    return render(request, "calendario.html", {
+        "usuario_logueado": usuario_logueado,
+        "interacciones": interacciones,
+        "hoy": timezone.now()
+    })
 

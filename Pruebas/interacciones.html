@@ -1,4 +1,4 @@
-﻿{% load static %}
+{% load static %}
 <!DOCTYPE html>
 <html lang="es">
 
@@ -8,207 +8,135 @@
     <title>Interacciones - Constructora Dyco</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
-:root {
-            --rojo-primario: #D32F2F;
-            --rojo-hover: #B71C1C;
+        :root {
+            --bg-principal: #F4F7FE;
+            --primario: #D32F2F;
+            --primario-soft: rgba(211, 47, 47, 0.1);
+            --secundario: #4318FF;
+            --destacado: #01B574;
+            --texto: #1B2559;
+            --texto-suave: #A3AED0;
             --blanco: #FFFFFF;
+            --sombra: 0 20px 50px rgba(0, 0, 0, 0.05);
+            --transicion: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             --gris-fondo: #F8F9FA;
             --gris-borde: #E0E0E0;
             --texto-principal: #333333;
             --texto-secundario: #757575;
-            --ancho-sidebar-expandido: 260px;
-            --ancho-sidebar-contraido: 80px;
-            --sombra-suave: 0 4px 20px rgba(0, 0, 0, 0.05);
-            --transicion: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             font-family: 'Inter', sans-serif;
-            background-color: var(--gris-fondo);
-            color: var(--texto-principal);
-            overflow-x: hidden;
+            background-color: var(--bg-principal);
+            color: var(--texto);
             display: flex;
+            min-height: 100vh;
+            overflow-x: hidden;
         }
 
-        /* --- SIDEBAR & LAYOUT --- */
+        /* --- SIDEBAR --- */
         .barra-lateral {
             position: fixed; top: 0; left: 0; height: 100vh;
-            width: 80px; background-color: white; border-right: 1px solid #E0E0E0;
+            width: 90px; background-color: var(--blanco); border-right: 1px solid #E9EDF7;
             display: flex; flex-direction: column; z-index: 1000;
-            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-            overflow: hidden;
+            transition: var(--transicion); padding-bottom: 30px; overflow: hidden;
+            align-items: center;
         }
-        .barra-lateral:hover { width: 260px; box-shadow: 5px 0 25px rgba(0,0,0,0.05); }
-        .barra-cabecera { padding: 20px; display: flex; align-items: center; gap: 15px; height: 80px; }
-        .logo-inicial { min-width: 40px; height: 40px; background-color: #D32F2F; color: white; display: flex; align-items: center; justify-content: center; border-radius: 12px; font-weight: 800; font-size: 20px; }
-        .logo-texto { font-weight: 800; font-size: 19px; color: #D32F2F; white-space: nowrap; opacity: 0; transition: opacity 0.3s ease; letter-spacing: -0.2px; }
-        .barra-lateral:hover .logo-texto { opacity: 1; }
-        .perfil-usuario { padding: 14px; margin: 12px; border-radius: 18px; background: #fdf2f2; display: flex; align-items: center; gap: 12px; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); overflow: hidden; }
-        .avatar-circular { min-width: 40px; height: 40px; background: white; border: 1.5px solid #D32F2F; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; color: #D32F2F; font-size: 16px; }
-        .perfil-info { white-space: nowrap; overflow: hidden; opacity: 0; transition: opacity 0.3s ease; }
-        .barra-lateral:hover .perfil-info { opacity: 1; }
-        .perfil-nombre { display: block; font-weight: 600; font-size: 14px; color: #333333; }
-        .perfil-rol { display: block; font-size: 11px; color: #757575; font-weight: 500; }
-        .navegacion-sidebar { flex: 1; padding: 12px; display: flex; flex-direction: column; gap: 4px; }
-        .nav-enlace { display: flex; align-items: center; gap: 15px; padding: 12px 14px; text-decoration: none; color: #5f6368; border-radius: 14px; transition: all 0.2s ease; white-space: nowrap; font-weight: 500; }
-        .nav-enlace:hover { background-color: #fdf2f2; color: #D32F2F; }
-        .nav-enlace.activo { background-color: #D32F2F; color: white; }
-        .iconosvg { min-width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; }
-        .nav-text { font-size: 14px; font-weight: 500; opacity: 0; transition: opacity 0.2s ease; }
-        .barra-lateral:hover .nav-text { opacity: 1; }
-        .barra-pie { padding: 10px; border-top: 1px solid #E0E0E0; }
+        .barra-lateral:hover { width: 290px; align-items: stretch; }
+        
+        .barra-cabecera { padding: 40px 0; display: flex; align-items: center; justify-content: center; gap: 12px; width: 100%; transition: 0.3s; }
+        .barra-lateral:hover .barra-cabecera { padding: 40px 25px; justify-content: flex-start; }
+        
+        .logo-d { 
+            min-width: 48px; height: 48px; 
+            background: #D32F2F; color: white; display: flex; align-items: center; justify-content: center;
+            border-radius: 14px; font-weight: 800; font-size: 24px;
+        }
+        .logo-texto { font-weight: 800; font-size: 22px; color: #D32F2F; letter-spacing: -0.5px; opacity: 0; transition: 0.3s; white-space: nowrap; display: none; margin-left: 5px; }
+        .barra-lateral:hover .logo-texto { opacity: 1; display: block; }
 
+        .perfil-sidebar { 
+            width: 60px; height: 60px; margin-bottom: 30px; border-radius: 20px; 
+            background: #FFF5F5; display: flex; align-items: center; justify-content: center; 
+            transition: 0.3s; overflow: hidden;
+        }
+        .barra-lateral:hover .perfil-sidebar { width: 250px; height: auto; padding: 18px 20px; margin: 0 20px 40px 20px; border-radius: 24px; justify-content: flex-start; gap: 15px; }
+        
+        .avatar-s { 
+            min-width: 48px; height: 48px; background: white; border: 1.5px solid #D32F2F; 
+            border-radius: 50%; display: flex; align-items: center; justify-content: center; 
+            font-weight: 800; color: #D32F2F; font-size: 17px;
+        }
+        .p-info { opacity: 0; transition: 0.3s; white-space: nowrap; display: none; }
+        .barra-lateral:hover .p-info { opacity: 1; display: block; }
+        .p-nombre { font-weight: 800; font-size: 17px; color: #344054; display: block; line-height: 1.2; }
+        .p-rol { font-size: 14px; color: #667085; font-weight: 500; }
+
+        .navegacion { flex: 1; width: 100%; padding: 0 15px; display: flex; flex-direction: column; align-items: center; gap: 8px; }
+        .barra-lateral:hover .navegacion { align-items: stretch; padding: 0 20px; }
+        
+        .nav-enlace { 
+            display: flex; align-items: center; justify-content: center; width: 56px; min-height: 56px; 
+            text-decoration: none; color: #475467; border-radius: 16px; 
+            transition: 0.3s; font-weight: 700; font-size: 16px; white-space: nowrap;
+        }
+        .barra-lateral:hover .nav-enlace { width: 100%; justify-content: flex-start; padding: 16px 22px; border-radius: 20px; gap: 18px; }
+        
+        .nav-enlace:hover { background: #F9FAFB; color: #D32F2F; }
+        .nav-enlace.activo { 
+            background: #D32F2F; color: white !important; 
+            box-shadow: 0 10px 20px rgba(211, 47, 47, 0.15); 
+        }
+        .nav-enlace.activo svg { stroke: white; }
+        .nav-text { opacity: 0; transition: 0.3s; display: none; }
+        .barra-lateral:hover .nav-text { opacity: 1; display: block; }
+
+        .cerrar-sesion-cont { 
+            margin-top: auto; width: 100%; border-top: 1px solid #F2F4F7;
+            display: flex; justify-content: center;
+        }
+        .barra-lateral:hover .cerrar-sesion-cont { padding: 10px 20px 0 20px; justify-content: flex-start; }
+        
+        .btn-cerrar {
+            display: flex; align-items: center; justify-content: center; width: 56px; height: 75px;
+            text-decoration: none; color: #475467; font-weight: 700; font-size: 16px;
+            transition: 0.3s; white-space: nowrap;
+        }
+        .barra-lateral:hover .btn-cerrar { width: 100%; justify-content: flex-start; padding: 0 20px; gap: 18px; }
+        
+        .btn-cerrar:hover { color: #D32F2F; }
+        .btn-cerrar span { opacity: 0; transition: 0.3s; display: none; }
+        .barra-lateral:hover .btn-cerrar span { opacity: 1; display: block; }
+
+        /* --- LAYOUT --- */
         .contenido-principal {
-            margin-left: 80px;
+            margin-left: 90px;
             flex: 1; padding: 40px;
-            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-            width: calc(100% - 80px);
+            transition: var(--transicion);
+            width: calc(100% - 90px);
         }
 
-        .barra-lateral:hover ~ main,
-        .barra-lateral:hover ~ .main-wrapper,
         .barra-lateral:hover ~ .contenido-principal {
-            margin-left: 260px;
-            width: calc(100% - 260px);
-        }
-
-        /* CSS EMBEDDED DIRECTLY */
-            --rojo-primario: #D32F2F;
-            --rojo-hover: #B71C1C;
-            --blanco: #FFFFFF;
-            --gris-fondo: #F8F9FA;
-            --gris-borde: #E0E0E0;
-            --texto-principal: #333333;
-            --texto-secundario: #757575;
-            --ancho-sidebar-expandido: 260px;
-            --ancho-sidebar-contraido: 80px;
-            --sombra-suave: 0 4px 20px rgba(0, 0, 0, 0.05);
-            --transicion: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-            font-family: 'Inter', sans-serif;
-            background-color: var(--gris-fondo);
-            color: var(--texto-principal);
-            overflow-x: hidden;
-            display: flex;
-        }
-
-        
-
-        
-
-        
-
-        .perfil-nombre {
-            display: block;
-            font-weight: 600;
-            font-size: 14px;
-            color: var(--texto-principal);
-        }
-
-        .perfil-rol {
-            display: block;
-            font-size: 11px;
-            color: var(--texto-secundario);
-            font-weight: 500;
-        }
-
-        
-
-        
-
-        
-        }
-
-        .cuadricula-dashboard {
-            display: grid;
-            grid-template-columns: 1fr 1.5fr;
-            gap: 30px;
-            align-items: start;
+            margin-left: 290px;
+            width: calc(100% - 290px);
         }
 
         .tarjeta-blanca {
             background: var(--blanco);
             padding: 30px;
             border-radius: 20px;
-            box-shadow: var(--sombra-suave);
+            box-shadow: var(--sombra);
             margin-bottom: 20px;
         }
 
         .tarjeta-blanca h2 {
             font-size: 18px;
             margin-bottom: 25px;
-            color: var(--texto-principal);
+            color: var(--texto);
             display: flex;
             align-items: center;
             gap: 10px;
-        }
-
-        .grupo-campo {
-            margin-bottom: 20px;
-        }
-
-        .grupo-campo label {
-            display: block;
-            font-size: 13px;
-            font-weight: 600;
-            margin-bottom: 8px;
-            color: var(--texto-secundario);
-        }
-
-        .entrada-texto,
-        select,
-        textarea {
-            width: 100%;
-            padding: 12px 16px;
-            border: 1.5px solid var(--gris-borde);
-            border-radius: 12px;
-            font-size: 14px;
-            transition: var(--transicion);
-            outline: none;
-            font-family: inherit;
-        }
-
-        .entrada-texto:focus,
-        select:focus,
-        textarea:focus {
-            border-color: var(--rojo-primario);
-            background-color: #fff9f9;
-        }
-
-        .boton-principal {
-            width: 100%;
-            background-color: var(--rojo-primario);
-            color: white;
-            border: none;
-            padding: 15px;
-            border-radius: 12px;
-            font-weight: 700;
-            font-size: 14px;
-            cursor: pointer;
-            transition: var(--transicion);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-        }
-
-        .boton-principal:hover {
-            background-color: var(--rojo-hover);
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(211, 47, 47, 0.2);
         }
 
         .tabla-contenedor {
@@ -227,7 +155,7 @@
             font-size: 12px;
             text-transform: uppercase;
             letter-spacing: 1px;
-            color: var(--texto-secundario);
+            color: var(--texto-suave);
             border-bottom: 1.5px solid var(--gris-borde);
             text-align: left;
         }
@@ -251,15 +179,8 @@
             display: inline-block;
         }
 
-        .badge-natural {
-            background: #E3F2FD;
-            color: #4391df;
-        }
-
-        .badge-juridica {
-            background: #F3E5F5;
-            color: #b641ab;
-        }
+        .badge-natural { background: #E3F2FD; color: #1976D2; }
+        .badge-juridica { background: #F3E5F5; color: #7B1FA2; }
 
         .alerta-error {
             background: #FFEBEE;
@@ -271,194 +192,55 @@
             font-size: 14px;
             border: 1px solid #FFCDD2;
         }
-
-        /* Toggle Switch Premium */
-        .switch {
-            position: relative;
-            display: inline-block;
-            width: 34px;
-            height: 18px;
-            vertical-align: middle;
-        }
-
-        .switch input {
-            opacity: 0;
-            width: 0;
-            height: 0;
-        }
-
-        .slider {
-            position: absolute;
-            cursor: pointer;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-color: #ccc;
-            transition: .4s;
-            border-radius: 20px;
-        }
-
-        .slider:before {
-            position: absolute;
-            content: "";
-            height: 14px;
-            width: 14px;
-            left: 2px;
-            bottom: 2px;
-            background-color: white;
-            transition: .4s;
-            border-radius: 50%;
-        }
-
-        input:checked+.slider {
-            background-color: #2E7D32;
-        }
-
-        input:checked+.slider:before {
-            transform: translateX(16px);
-        }
-
-        /* === SIDEBAR === */
-
-        
-            width: 260px;
-            box-shadow: 5px 0 25px rgba(0, 0, 0, 0.05);
-        }
-
-        
-            opacity: 1;
-        }
-
-        
-            opacity: 1;
-        }
-
-        .perfil-nombre {
-            display: block;
-            font-weight: 600;
-            font-size: 14px;
-            color: #333;
-        }
-
-        .perfil-rol {
-            display: block;
-            font-size: 11px;
-            color: #757575;
-            font-weight: 500;
-        }
-
-        
-            opacity: 1;
-        }
-
-        
-        }
-
-        /* BARRA LATERAL */
-
-        .perfil-nombre {
-            display: block;
-            font-weight: 600;
-            font-size: 14px;
-            color: #333333;
-        }
-
-        .perfil-rol {
-            display: block;
-            font-size: 11px;
-            color: #757575;
-            font-weight: 500;
-        }
-
-    
-
     </style>
     <script src="{% static 'js/validaciones.js' %}"></script>
 </head>
 
 <body>
-        <!-- BARRA LATERAL -->
     <aside class="barra-lateral">
         <div class="barra-cabecera">
-            <div class="logo-inicial">D</div>
+            <div class="logo-d">D</div>
             <div class="logo-texto">CONSTRUCTORA</div>
         </div>
 
-        <div class="perfil-usuario">
-            <div class="avatar-circular" title="{{ usuario_logueado.nombre_usuario }}">
+        <div class="perfil-sidebar">
+            <div class="avatar-s">
                 {{ usuario_logueado.nombre_usuario|make_list|first|upper }}
             </div>
-            <div class="perfil-info">
-                <span class="perfil-nombre">{{ usuario_logueado.nombre_usuario }}</span>
-                <span class="perfil-rol">{{ usuario_logueado.rol.nombre_rol }}</span>
+            <div class="p-info">
+                <span class="p-nombre">{{ usuario_logueado.nombre_usuario }}</span>
+                <span class="p-rol">{{ usuario_logueado.rol.nombre_rol }}</span>
             </div>
         </div>
 
-        <nav class="navegacion-sidebar">
-            <!-- INICIO -->
-            <a href="{% url 'dashboard' %}" class="nav-enlace" title="Inicio">
-                <span class="iconosvg">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
-                        <polyline points="9 22 9 12 15 12 15 22"></polyline>
-                    </svg>
-                </span>
+        <nav class="navegacion">
+            <a href="{% url 'dashboard' %}" class="nav-enlace">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
                 <span class="nav-text">Inicio</span>
             </a>
-
-            <!-- CONTACTOS -->
-            <a href="{% url 'contactos' %}" class="nav-enlace" title="Registro de Contactos">
-                <span class="iconosvg">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
-                        <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
-                    </svg>
-                </span>
-                <span class="nav-text">Registro de Contactos</span>
+            <a href="{% url 'contactos' %}" class="nav-enlace">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
+                <span class="nav-text">Registro de Contacto</span>
             </a>
-
-            <!-- INTERACCIONES -->
-            <a href="{% url 'interacciones' %}" class="nav-enlace activo" title="Interacciones">
-                <span class="iconosvg">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
-                    </svg>
-                </span>
+            <a href="{% url 'interacciones' %}" class="nav-enlace activo">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
                 <span class="nav-text">Interacciones</span>
             </a>
-
-            <!-- USUARIOS (Admin) -->
             {% if usuario_logueado.rol.nombre_rol == "Administrador" %}
-            <a href="{% url 'usuarios' %}" class="nav-enlace" title="Gestión de Usuarios">
-                <span class="iconosvg">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
-                        <circle cx="9" cy="7" r="4"></circle>
-                        <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
-                        <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
-                    </svg>
-                </span>
+            <a href="{% url 'usuarios' %}" class="nav-enlace">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
                 <span class="nav-text">Gestión de Usuarios</span>
             </a>
             {% endif %}
         </nav>
 
-        <div class="barra-pie">
-            <a href="/logout/" class="nav-enlace" title="Cerrar Sesión">
-                <span class="iconosvg">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
-                        <polyline points="16 17 21 12 16 7"></polyline>
-                        <line x1="21" y1="12" x2="9" y2="12"></line>
-                    </svg>
-                </span>
-                <span class="nav-text">Cerrar Sesión</span>
+        <div class="cerrar-sesion-cont">
+            <a href="{% url 'logout' %}" class="btn-cerrar">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+                <span>Cerrar Sesión</span>
             </a>
         </div>
     </aside>
-
-
 
 
     <!-- ═══════════════════════════════════════════
@@ -515,7 +297,7 @@
                         <tbody>
                             {% for c in contactos %}
                             <tr>
-                                <td style="font-weight: 700; color: var(--rojo-primario);">{{ c.documento_nit }}</td>
+                                <td style="font-weight: 700; color: var(--primario);">{{ c.documento_nit }}</td>
                                 <td>
                                     {% if c.nombre %}
                                     <span class="badge badge-natural">NATURAL</span>
@@ -533,7 +315,7 @@
                                             {% endif %}
                                         </a>
                                     </div>
-                                    <div style="font-size: 11px; color: var(--texto-secundario);">
+                                    <div style="font-size: 11px; color: var(--texto-suave);">
                                         {{ c.correo|default:"Sin correo" }}
                                     </div>
                                 </td>
@@ -561,7 +343,7 @@
                             {% empty %}
                             <tr>
                                 <td colspan="4"
-                                    style="text-align:center; padding: 60px; color: var(--texto-secundario);">
+                                    style="text-align:center; padding: 60px; color: var(--texto-suave);">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24"
                                         fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
                                         stroke-linejoin="round"
