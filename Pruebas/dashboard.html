@@ -10,21 +10,22 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         :root {
-            --bg-principal: #F4F7FE;
-            --primario: #D32F2F;
-            --primario-soft: rgba(211, 47, 47, 0.1);
-            --secundario: #4318FF;
+            --bg-principal: #f8fafc;
+            --primario: #a82e2e;
+            --primario-soft: rgba(168, 46, 46, 0.1);
+            --secundario: #335d80;
             --destacado: #01B574;
-            --texto: #1B2559;
-            --texto-suave: #A3AED0;
+            --texto: #0f172a;
+            --texto-suave: #64748b;
             --blanco: #FFFFFF;
-            --sombra: 0 20px 50px rgba(0, 0, 0, 0.05);
-            --transicion: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            --sombra: 0 4px 20px rgba(0, 0, 0, 0.04);
+            --transicion: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --gris-borde: #e2e8f0;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
-            font-family: 'Outfit', sans-serif;
+            font-family: 'Inter', sans-serif;
             background-color: var(--bg-principal);
             color: var(--texto);
             display: flex;
@@ -35,7 +36,7 @@
         /* --- SIDEBAR --- */
         .barra-lateral {
             position: fixed; top: 0; left: 0; height: 100vh;
-            width: 90px; background-color: var(--blanco); border-right: 1px solid #E9EDF7;
+            width: 90px; background-color: #1a2232; border-right: 1px solid #111827;
             display: flex; flex-direction: column; z-index: 1000;
             transition: var(--transicion); padding-bottom: 30px; overflow: hidden;
             align-items: center;
@@ -47,62 +48,63 @@
         
         .logo-d { 
             min-width: 48px; height: 48px; 
-            background: #D32F2F; color: white; display: flex; align-items: center; justify-content: center;
+            background: #a82e2e; color: white; display: flex; align-items: center; justify-content: center;
             border-radius: 14px; font-weight: 800; font-size: 24px;
         }
-        .logo-texto { font-weight: 800; font-size: 22px; color: #D32F2F; letter-spacing: -0.5px; opacity: 0; transition: 0.3s; white-space: nowrap; display: none; margin-left: 5px; }
+        .logo-texto { font-weight: 800; font-size: 22px; color: #ffffff; letter-spacing: -0.5px; opacity: 0; transition: 0.3s; white-space: nowrap; display: none; margin-left: 5px; }
         .barra-lateral:hover .logo-texto { opacity: 1; display: block; }
 
         .perfil-sidebar { 
             width: 60px; height: 60px; margin-bottom: 30px; border-radius: 20px; 
-            background: #FFF5F5; display: flex; align-items: center; justify-content: center; 
+            background: rgba(255, 255, 255, 0.03); display: flex; align-items: center; justify-content: center; 
             transition: 0.3s; overflow: hidden;
         }
-        .barra-lateral:hover .perfil-sidebar { width: 250px; height: auto; padding: 18px 20px; margin: 0 20px 40px 20px; border-radius: 24px; justify-content: flex-start; gap: 15px; }
+        .barra-lateral:hover .perfil-sidebar { width: 250px; height: auto; padding: 18px 20px; margin: 0 20px 40px 20px; border-radius: 24px; justify-content: flex-start; gap: 15px; background: rgba(255,255,255,0.05); }
         
         .avatar-s { 
-            min-width: 48px; height: 48px; background: white; border: 1.5px solid #D32F2F; 
+            min-width: 48px; height: 48px; background: #a82e2e; border: 1.5px solid rgba(255,255,255,0.1); 
             border-radius: 50%; display: flex; align-items: center; justify-content: center; 
-            font-weight: 800; color: #D32F2F; font-size: 17px;
+            font-weight: 800; color: white; font-size: 17px;
         }
         .p-info { opacity: 0; transition: 0.3s; white-space: nowrap; display: none; }
         .barra-lateral:hover .p-info { opacity: 1; display: block; }
-        .p-nombre { font-weight: 800; font-size: 17px; color: #344054; display: block; line-height: 1.2; }
-        .p-rol { font-size: 14px; color: #667085; font-weight: 500; }
+        .p-nombre { font-weight: 800; font-size: 17px; color: #ffffff; display: block; line-height: 1.2; }
+        .p-rol { font-size: 14px; color: #94a3b8; font-weight: 500; }
 
         .navegacion { flex: 1; width: 100%; padding: 0 15px; display: flex; flex-direction: column; align-items: center; gap: 8px; }
         .barra-lateral:hover .navegacion { align-items: stretch; padding: 0 20px; }
         
         .nav-enlace { 
             display: flex; align-items: center; justify-content: center; width: 56px; min-height: 56px; 
-            text-decoration: none; color: #475467; border-radius: 16px; 
+            text-decoration: none; color: #94a3b8; border-radius: 16px; 
             transition: 0.3s; font-weight: 700; font-size: 16px; white-space: nowrap;
         }
         .barra-lateral:hover .nav-enlace { width: 100%; justify-content: flex-start; padding: 16px 22px; border-radius: 20px; gap: 18px; }
         
-        .nav-enlace:hover { background: #F9FAFB; color: #D32F2F; }
+        .nav-enlace:hover { background: rgba(255, 255, 255, 0.05); color: #ffffff; }
         .nav-enlace.activo { 
-            background: #D32F2F; color: white !important; 
-            box-shadow: 0 10px 20px rgba(211, 47, 47, 0.15); 
+            background: rgba(168, 46, 46, 0.15); color: #ffffff !important; 
+            border-left: 4px solid #a82e2e;
+            border-radius: 20px 0 0 20px;
         }
-        .nav-enlace.activo svg { stroke: white; }
+        .nav-enlace.activo svg { stroke: #a82e2e; }
         .nav-text { opacity: 0; transition: 0.3s; display: none; }
         .barra-lateral:hover .nav-text { opacity: 1; display: block; }
 
         .cerrar-sesion-cont { 
-            margin-top: auto; width: 100%; border-top: 1px solid #F2F4F7;
+            margin-top: auto; width: 100%; border-top: 1px solid rgba(255, 255, 255, 0.05);
             display: flex; justify-content: center;
         }
         .barra-lateral:hover .cerrar-sesion-cont { padding: 10px 20px 0 20px; justify-content: flex-start; }
         
         .btn-cerrar {
             display: flex; align-items: center; justify-content: center; width: 56px; height: 75px;
-            text-decoration: none; color: #475467; font-weight: 700; font-size: 16px;
+            text-decoration: none; color: #94a3b8; font-weight: 700; font-size: 16px;
             transition: 0.3s; white-space: nowrap;
         }
         .barra-lateral:hover .btn-cerrar { width: 100%; justify-content: flex-start; padding: 0 20px; gap: 18px; }
         
-        .btn-cerrar:hover { color: #D32F2F; }
+        .btn-cerrar:hover { color: #ffffff; }
         .btn-cerrar span { opacity: 0; transition: 0.3s; display: none; }
         .barra-lateral:hover .btn-cerrar span { opacity: 1; display: block; }
 
@@ -112,7 +114,7 @@
 
         /* KPI CARDS */
         .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 25px; margin-bottom: 40px; }
-        .kpi-card { background: white; padding: 25px; border-radius: 25px; box-shadow: var(--sombra); display: flex; align-items: center; gap: 20px; transition: 0.3s; }
+        .kpi-card { background: white; padding: 25px; border-radius: 25px; box-shadow: var(--sombra); display: flex; align-items: center; gap: 20px; transition: 0.3s; border: 1px solid var(--gris-borde); }
         .kpi-card:hover { transform: translateY(-5px); }
         .kpi-icon { width: 56px; height: 56px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 24px; background: var(--bg-principal); }
         .kpi-val { font-size: 24px; font-weight: 800; color: var(--texto); }
@@ -121,8 +123,30 @@
         /* CHARTS GRID */
         .charts-main-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 25px; margin-bottom: 25px; }
         
-        .chart-card { background: white; padding: 30px; border-radius: 30px; box-shadow: var(--sombra); }
-        .chart-title { font-size: 18px; font-weight: 800; margin-bottom: 25px; display: flex; justify-content: space-between; align-items: center; }
+        .chart-card { 
+            background: white; 
+            padding: 24px; 
+            border-radius: 16px; 
+            box-shadow: var(--sombra); 
+            border: 1px solid var(--gris-borde);
+            position: relative;
+        }
+        .chart-title { 
+            background: #a82e2e;
+            color: white !important;
+            margin: -24px -24px 24px -24px !important;
+            padding: 14px 20px;
+            font-size: 15px; 
+            font-weight: 700; 
+            border-top-left-radius: 16px;
+            border-top-right-radius: 16px;
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+        }
+        .chart-title svg {
+            stroke: white !important;
+        }
         
         /* CIRCULAR DIAGRAM */
         .pie-container { display: flex; align-items: center; justify-content: center; height: 220px; position: relative; }
@@ -156,9 +180,9 @@
 
         /* TOP CONTACTS CARD */
         .top-list { display: flex; flex-direction: column; gap: 15px; }
-        .top-item { display: flex; align-items: center; gap: 15px; background: var(--bg-principal); padding: 15px; border-radius: 20px; transition: 0.3s; }
+        .top-item { display: flex; align-items: center; gap: 15px; background: var(--bg-principal); padding: 15px; border-radius: 20px; transition: 0.3s; border: 1px solid var(--gris-borde); }
         .top-item:hover { transform: translateX(10px); background: #ebf0ff; }
-        .item-avatar { width: 45px; height: 45px; background: white; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-weight: 800; color: var(--primario); }
+        .item-avatar { width: 45px; height: 45px; background: white; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-weight: 800; color: var(--primario); border: 1px solid var(--gris-borde); }
         .item-info { flex: 1; }
         .item-name { font-weight: 800; font-size: 14px; display: block; }
         .item-count { font-size: 12px; color: var(--texto-suave); font-weight: 600; }
@@ -167,31 +191,175 @@
         @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
         .chart-card { animation: fadeIn 0.6s ease-out forwards; }
         
+        /* Star icon for emails */
+        .btn-star svg {
+            fill: none;
+            stroke: #cbd5e0;
+            transition: all 0.2s ease;
+        }
+        .btn-star.active svg {
+            fill: #f59e0b;
+            stroke: #f59e0b;
+        }
         /* NEW BUTTON STYLE */
         .btn-banner {
-            background-color: var(--primario);
+            background-color: #1e293b;
             color: white;
             text-decoration: none;
-            padding: 14px 28px;
-            border-radius: 16px;
+            padding: 10px 20px;
+            border-radius: 8px;
             font-weight: 700;
-            font-size: 15px;
+            font-size: 14px;
             transition: var(--transicion);
-            box-shadow: 0 10px 25px rgba(211, 47, 47, 0.3);
             display: inline-flex;
             align-items: center;
-            border: 2px solid var(--primario);
+            border: none;
         }
         .btn-banner:hover {
-            background-color: white;
-            color: var(--primario);
-            transform: translateY(-3px);
-            box-shadow: 0 15px 30px rgba(211, 47, 47, 0.2);
+            background-color: #0f172a;
+            transform: translateY(-2px);
+        }
+
+        /* --- RESPONSIVE STYLES --- */
+        .hamburger-btn {
+            display: none;
+        }
+        .sidebar-overlay {
+            display: none;
+        }
+
+        @media (max-width: 768px) {
+            .barra-lateral {
+                width: 280px !important;
+                position: fixed !important;
+                left: -280px !important;
+                height: 100vh !important;
+                transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), left 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
+                z-index: 10000 !important;
+            }
+            .barra-lateral.activo {
+                left: 0 !important;
+                box-shadow: 15px 0 50px rgba(0,0,0,0.15) !important;
+            }
+            .barra-lateral:hover {
+                width: 280px !important;
+            }
+            .barra-lateral:hover .logo-texto {
+                display: block !important;
+                opacity: 1 !important;
+            }
+            .barra-lateral:hover .p-info {
+                display: block !important;
+                opacity: 1 !important;
+            }
+            .barra-lateral:hover .nav-text {
+                display: block !important;
+                opacity: 1 !important;
+            }
+            .barra-lateral:hover .btn-cerrar span {
+                display: block !important;
+                opacity: 1 !important;
+            }
+            .barra-lateral:hover ~ .wrapper {
+                margin-left: 0 !important;
+                width: 100% !important;
+            }
+            
+            .wrapper {
+                margin-left: 0 !important;
+                width: 100% !important;
+                padding: 20px !important;
+            }
+            
+            .charts-main-grid {
+                grid-template-columns: 1fr !important;
+                gap: 20px !important;
+            }
+            
+            .chart-card[style*="grid-column: span 2"] {
+                grid-column: span 1 !important;
+            }
+            
+            .hamburger-btn {
+                display: flex !important;
+                align-items: center;
+                justify-content: center;
+                background: white;
+                border: 1px solid #e2e8f0;
+                border-radius: 12px;
+                width: 44px;
+                height: 44px;
+                color: #1e293b;
+                cursor: pointer;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+                z-index: 1001;
+                margin-right: 15px;
+                outline: none;
+                flex-shrink: 0;
+            }
+            .hamburger-btn svg {
+                stroke: var(--primario);
+            }
+            
+            .sidebar-overlay {
+                display: none;
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100vw;
+                height: 100vh;
+                background: rgba(0, 0, 0, 0.4);
+                backdrop-filter: blur(4px);
+                z-index: 9999;
+            }
+            .sidebar-overlay.activo {
+                display: block;
+            }
+            
+            .perfil-sidebar {
+                width: 240px !important;
+                height: auto !important;
+                padding: 18px 20px !important;
+                margin: 0 20px 40px 20px !important;
+                border-radius: 24px !important;
+                justify-content: flex-start !important;
+                gap: 15px !important;
+            }
+            .p-info {
+                display: block !important;
+                opacity: 1 !important;
+            }
+            .nav-enlace {
+                width: 100% !important;
+                justify-content: flex-start !important;
+                padding: 16px 22px !important;
+                border-radius: 20px !important;
+                gap: 18px !important;
+            }
+            .nav-text {
+                display: block !important;
+                opacity: 1 !important;
+            }
+            .cerrar-sesion-cont {
+                padding: 10px 20px 0 20px !important;
+                justify-content: flex-start !important;
+            }
+            .btn-cerrar {
+                width: 100% !important;
+                justify-content: flex-start !important;
+                padding: 0 20px !important;
+                gap: 18px !important;
+            }
+            .btn-cerrar span {
+                display: block !important;
+                opacity: 1 !important;
+            }
         }
     </style>
 </head>
 
 <body>
+    <div id="sidebar-overlay" class="sidebar-overlay"></div>
     <aside class="barra-lateral">
         <div class="barra-cabecera">
             <div class="logo-d">D</div>
@@ -233,12 +401,26 @@
     </aside>
 
     <div class="wrapper">
-        <header style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px;">
-            <div>
-                <h1 style="font-size: 34px; font-weight: 800; letter-spacing: -1px;">Inicio</h1>
-                <p style="color: var(--texto-suave); font-weight: 600;">Bienvenido de nuevo, {{ usuario_logueado.nombre_usuario }}</p>
+        <header style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px; flex-wrap: wrap; gap: 15px; background: white; padding: 20px 28px; border-radius: 16px; border: 1px solid var(--gris-borde); box-shadow: var(--sombra);">
+            <div style="display: flex; align-items: center; gap: 10px;">
+                <button id="hamburger-btn" class="hamburger-btn" style="display: none;">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="3" y1="12" x2="21" y2="12"></line>
+                        <line x1="3" y1="6" x2="21" y2="6"></line>
+                        <line x1="3" y1="18" x2="21" y2="18"></line>
+                    </svg>
+                </button>
+                <div>
+                    <h1 style="font-size: 24px; font-weight: 800; color: #0f172a; margin: 0;">Constructora DYCO</h1>
+                    <p style="color: var(--texto-suave); font-weight: 500; font-size: 13px; margin: 0;">Inicio &bull; Bienvenido de nuevo, {{ usuario_logueado.nombre_usuario }}</p>
+                </div>
             </div>
-            <a href="{% url 'contactos' %}" class="btn-banner">Registrar Contacto</a>
+            <div style="display: flex; align-items: center; gap: 15px;">
+                <a href="{% url 'contactos' %}" class="btn-banner">Registrar Contacto</a>
+                <div style="width: 44px; height: 44px; background: #e2e8f0; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; color: #334155; font-size: 15px;" title="{{ usuario_logueado.nombre_usuario }}">
+                    {{ usuario_logueado.nombre_usuario|make_list|first|upper }}
+                </div>
+            </div>
         </header>
 
         <!-- KPI Grid Removed or modified -->
@@ -252,7 +434,7 @@
                     <div class="pie-chart-wrapper">
                         <canvas id="contactosChart"></canvas>
                         <div class="pie-center-label">
-                            <div class="pie-center-val">{{ total_contactos }}</div>
+                            <div class="pie-center-val" id="val-total-contactos">{{ total_contactos }}</div>
                             <div class="pie-center-text">Total</div>
                         </div>
                     </div>
@@ -260,11 +442,11 @@
                     <div class="pie-legend">
                         <div class="legend-item">
                             <div class="legend-header"><div class="dot" style="background: #EE1D23;"></div> Naturales</div>
-                            <div class="legend-perc">{{ natural_count }} ({{ natural_perc|floatformat:1 }}%)</div>
+                            <div class="legend-perc" id="val-natural-perc">{{ natural_count }} ({{ natural_perc|floatformat:1 }}%)</div>
                         </div>
                         <div class="legend-item">
                             <div class="legend-header"><div class="dot" style="background: #B7B0A8;"></div> Jurídicas</div>
-                            <div class="legend-perc">{{ juridica_count }} ({{ juridica_perc|floatformat:1 }}%)</div>
+                            <div class="legend-perc" id="val-juridica-perc">{{ juridica_count }} ({{ juridica_perc|floatformat:1 }}%)</div>
                         </div>
                     </div>
                 </div>
@@ -278,7 +460,7 @@
                     <div class="pie-chart-wrapper">
                         <canvas id="usuariosChart"></canvas>
                         <div class="pie-center-label">
-                            <div class="pie-center-val">{{ total_usuarios }}</div>
+                            <div class="pie-center-val" id="val-total-usuarios">{{ total_usuarios }}</div>
                             <div class="pie-center-text">Usuarios</div>
                         </div>
                     </div>
@@ -286,11 +468,11 @@
                     <div class="pie-legend">
                         <div class="legend-item">
                             <div class="legend-header"><div class="dot" style="background: #EE1D23;"></div> Activos</div>
-                            <div class="legend-perc">{{ usuarios_activos }} ({{ usuarios_activos_perc|floatformat:1 }}%)</div>
+                            <div class="legend-perc" id="val-usuarios-activos-perc">{{ usuarios_activos }} ({{ usuarios_activos_perc|floatformat:1 }}%)</div>
                         </div>
                         <div class="legend-item">
                             <div class="legend-header"><div class="dot" style="background: #B7B0A8;"></div> Inactivos</div>
-                            <div class="legend-perc">{{ usuarios_inactivos }} ({{ usuarios_inactivos_perc|floatformat:1 }}%)</div>
+                            <div class="legend-perc" id="val-usuarios-inactivos-perc">{{ usuarios_inactivos }} ({{ usuarios_inactivos_perc|floatformat:1 }}%)</div>
                         </div>
                     </div>
                 </div>
@@ -316,7 +498,7 @@
             <!-- 4. TARJETA: Contactos con más Interacciones -->
             <div class="chart-card" style="grid-column: span 2;">
                 <h3 class="chart-title">Contactos con más Frecuencia</h3>
-                <div class="top-list">
+                <div class="top-list" id="top-contactos-container">
                     {% for c in top_contactos %}
                     <div class="top-item">
                         <div class="item-avatar">{{ c.nombre|make_list|first|upper|default:c.razon_social|make_list|first|upper }}</div>
@@ -331,7 +513,29 @@
             </div>
         </div>
     </div>
-<script>
+    <!-- JSON de estadísticas del Dashboard -->
+    <script id="dashboard-data-json" type="application/json">
+    {
+        "total_contactos": {{ total_contactos }},
+        "natural_count": {{ natural_count|default:0 }},
+        "juridica_count": {{ juridica_count|default:0 }},
+        "natural_perc": {{ natural_perc|default:0 }},
+        "juridica_perc": {{ juridica_perc|default:0 }},
+        "total_usuarios": {{ total_usuarios|default:0 }},
+        "usuarios_activos": {{ usuarios_activos|default:0 }},
+        "usuarios_inactivos": {{ usuarios_inactivos|default:0 }},
+        "usuarios_activos_perc": {{ usuarios_activos_perc|default:0 }},
+        "usuarios_inactivos_perc": {{ usuarios_inactivos_perc|default:0 }},
+        "acciones_labels": {{ acciones_labels|safe }},
+        "acciones_counts": {{ acciones_counts|safe }},
+        "tendencia_labels": {{ tendencia_labels|safe }},
+        "tendencia_counts": {{ tendencia_counts|safe }}
+    }
+    </script>
+
+    <script>
+        window.myCharts = window.myCharts || {};
+
         document.addEventListener('DOMContentLoaded', function() {
             const ctx = document.getElementById('contactosChart');
             if (!ctx) return;
@@ -340,13 +544,13 @@
             const countJ = Number("{{ juridica_count|default:0 }}");
             const total = countN + countJ;
             
-            new Chart(ctx, {
+            window.myCharts['contactosChart'] = new Chart(ctx, {
                 type: 'doughnut',
                 data: {
                     labels: ['Naturales', 'Jurídicas'],
                     datasets: [{
                         data: total === 0 ? [1, 1] : [countN, countJ],
-                        backgroundColor: total === 0 ? ['#E9EDF7', '#EDF2F7'] : ['#EE1D23', '#B7B0A8'],
+                        backgroundColor: total === 0 ? ['#E9EDF7', '#EDF2F7'] : ['#a82e2e', '#335d80'],
                         borderWidth: 0,
                         hoverOffset: 12
                     }]
@@ -383,13 +587,13 @@
                 const countInact = Number("{{ usuarios_inactivos|default:0 }}");
                 const totalU = countAct + countInact;
                 
-                new Chart(ctxUsers, {
+                window.myCharts['usuariosChart'] = new Chart(ctxUsers, {
                     type: 'doughnut',
                     data: {
                         labels: ['Activos', 'Inactivos'],
                         datasets: [{
                             data: totalU === 0 ? [1, 1] : [countAct, countInact],
-                            backgroundColor: totalU === 0 ? ['#E9EDF7', '#EDF2F7'] : ['#EE1D23', '#B7B0A8'],
+                            backgroundColor: totalU === 0 ? ['#E9EDF7', '#EDF2F7'] : ['#a82e2e', '#335d80'],
                             borderWidth: 0,
                             hoverOffset: 12
                         }]
@@ -426,14 +630,14 @@
                 const labelsAcciones = {{ acciones_labels|safe }};
                 const countsAcciones = {{ acciones_counts|safe }};
                 
-                new Chart(ctxBarras, {
+                window.myCharts['actividadesChart'] = new Chart(ctxBarras, {
                     type: 'bar',
                     data: {
                         labels: labelsAcciones,
                         datasets: [{
                             label: 'Actividades',
                             data: countsAcciones,
-                            backgroundColor: ['#EE1D23', '#B7B0A8', '#D1CDC7'],
+                            backgroundColor: ['#a82e2e', '#335d80', '#9ac5e6'],
                             borderRadius: 8,
                             barThickness: 30
                         }]
@@ -471,7 +675,7 @@
                 const labelsTendencia = {{ tendencia_labels|safe }};
                 const countsTendencia = {{ tendencia_counts|safe }};
 
-                new Chart(ctxLinea, {
+                window.myCharts['tendenciaChart'] = new Chart(ctxLinea, {
                     type: 'line',
                     data: {
                         labels: labelsTendencia,
@@ -479,11 +683,11 @@
                             label: 'Interacciones',
                             data: countsTendencia,
                             fill: true,
-                            backgroundColor: 'rgba(211, 47, 47, 0.1)',
-                            borderColor: '#D32F2F',
+                            backgroundColor: 'rgba(168, 46, 46, 0.08)',
+                            borderColor: '#a82e2e',
                             borderWidth: 3,
                             pointBackgroundColor: '#fff',
-                            pointBorderColor: '#D32F2F',
+                            pointBorderColor: '#a82e2e',
                             pointRadius: 4,
                             tension: 0.4
                         }]
@@ -513,6 +717,102 @@
                         },
                         animation: { duration: 2000, easing: 'easeOutQuart' }
                     }
+                });
+            }
+        });
+
+        // Periodic background update for dashboard page
+        function fetchDashboardUpdate() {
+            fetch(window.location.href)
+                .then(res => {
+                    if (!res.ok) throw new Error("Network response not ok");
+                    return res.text();
+                })
+                .then(htmlText => {
+                    const parser = new DOMParser();
+                    const doc = parser.parseFromString(htmlText, 'text/html');
+
+                    // 1. Get new JSON data
+                    const newJsonEl = doc.getElementById('dashboard-data-json');
+                    if (!newJsonEl) return;
+                    let data = {};
+                    try {
+                        data = JSON.parse(newJsonEl.textContent);
+                    } catch (e) {
+                        return;
+                    }
+
+                    // 2. Update text values if elements exist
+                    const totalC = document.getElementById('val-total-contactos');
+                    if (totalC) totalC.textContent = data.total_contactos;
+
+                    const totalU = document.getElementById('val-total-usuarios');
+                    if (totalU) totalU.textContent = data.total_usuarios;
+
+                    const natPerc = document.getElementById('val-natural-perc');
+                    if (natPerc) natPerc.textContent = `${data.natural_count} (${parseFloat(data.natural_perc).toFixed(1)}%)`;
+
+                    const jurPerc = document.getElementById('val-juridica-perc');
+                    if (jurPerc) jurPerc.textContent = `${data.juridica_count} (${parseFloat(data.juridica_perc).toFixed(1)}%)`;
+
+                    const uActPerc = document.getElementById('val-usuarios-activos-perc');
+                    if (uActPerc) uActPerc.textContent = `${data.usuarios_activos} (${parseFloat(data.usuarios_activos_perc).toFixed(1)}%)`;
+
+                    const uInactPerc = document.getElementById('val-usuarios-inactivos-perc');
+                    if (uInactPerc) uInactPerc.textContent = `${data.usuarios_inactivos} (${parseFloat(data.usuarios_inactivos_perc).toFixed(1)}%)`;
+
+                    // 3. Update Chart.js charts dynamically
+                    if (window.myCharts['contactosChart']) {
+                        const total = data.natural_count + data.juridica_count;
+                        window.myCharts['contactosChart'].data.datasets[0].data = total === 0 ? [1, 1] : [data.natural_count, data.juridica_count];
+                        window.myCharts['contactosChart'].options.plugins.tooltip.enabled = total > 0;
+                        window.myCharts['contactosChart'].update();
+                    }
+
+                    if (window.myCharts['usuariosChart']) {
+                        const totalU = data.usuarios_activos + data.usuarios_inactivos;
+                        window.myCharts['usuariosChart'].data.datasets[0].data = totalU === 0 ? [1, 1] : [data.usuarios_activos, data.usuarios_inactivos];
+                        window.myCharts['usuariosChart'].options.plugins.tooltip.enabled = totalU > 0;
+                        window.myCharts['usuariosChart'].update();
+                    }
+
+                    if (window.myCharts['actividadesChart']) {
+                        window.myCharts['actividadesChart'].data.labels = data.acciones_labels;
+                        window.myCharts['actividadesChart'].data.datasets[0].data = data.acciones_counts;
+                        window.myCharts['actividadesChart'].update();
+                    }
+
+                    if (window.myCharts['tendenciaChart']) {
+                        window.myCharts['tendenciaChart'].data.labels = data.tendencia_labels;
+                        window.myCharts['tendenciaChart'].data.datasets[0].data = data.tendencia_counts;
+                        window.myCharts['tendenciaChart'].update();
+                    }
+
+                    // 4. Update top list container
+                    const newTop = doc.getElementById('top-contactos-container');
+                    const currentTop = document.getElementById('top-contactos-container');
+                    if (newTop && currentTop && newTop.innerHTML.trim() !== currentTop.innerHTML.trim()) {
+                        currentTop.innerHTML = newTop.innerHTML;
+                    }
+                })
+                .catch(err => console.error("Error updating dashboard data:", err));
+        }
+        setInterval(fetchDashboardUpdate, 10000);
+
+        // Mobile Sidebar Toggle
+        document.addEventListener('DOMContentLoaded', function() {
+            const btn = document.getElementById('hamburger-btn');
+            const sidebar = document.querySelector('.barra-lateral');
+            const overlay = document.getElementById('sidebar-overlay');
+            if (btn && sidebar && overlay) {
+                btn.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    sidebar.classList.toggle('activo');
+                    overlay.classList.toggle('activo');
+                });
+                overlay.addEventListener('click', function() {
+                    sidebar.classList.remove('activo');
+                    overlay.classList.remove('activo');
                 });
             }
         });

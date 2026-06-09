@@ -71,6 +71,46 @@ class Contacto(models.Model):
     def __str__(self):
         return self.razon_social if self.razon_social else f"{self.nombre} {self.apellido}"
 
+    @property
+    def bell_count(self):
+        from .models import Interaccion
+        calls = Interaccion.objects.filter(contacto=self, tipo_interaccion__nombre_tipo='Llamada', estado='Programada').count()
+        emails = Interaccion.objects.filter(contacto=self, tipo_interaccion__nombre_tipo='Correo', tipo_comunicacion='Entrante').count()
+        meetings = Interaccion.objects.filter(contacto=self, tipo_interaccion__nombre_tipo='Reunión', estado='Programada').count()
+        return calls + emails + meetings
+
+    @property
+    def clock_count(self):
+        from .models import Interaccion
+        from datetime import datetime, time
+        from django.utils import timezone
+        
+        scheduled = Interaccion.objects.filter(
+            contacto=self, 
+            tipo_interaccion__nombre_tipo__in=['Llamada', 'Reunión'], 
+            estado='Programada',
+            fecha_reunion__isnull=False
+        )
+        
+        now = timezone.localtime(timezone.now())
+        count = 0
+        
+        for inter in scheduled:
+            f = inter.fecha_reunion
+            h = inter.hora_reunion or time(0, 0)
+            
+            try:
+                event_dt = timezone.make_aware(datetime.combine(f, h), timezone.get_current_timezone())
+                diff = event_dt - now
+                diff_hours = diff.total_seconds() / 3600.0
+                
+                if diff_hours <= 24:
+                    count += 1
+            except Exception:
+                pass
+                
+        return count
+
 class Interaccion(models.Model):
     contacto = models.ForeignKey(Contacto, on_delete=models.CASCADE)
     usuario_responsable = models.ForeignKey(Usuario, on_delete=models.CASCADE, null=True)
@@ -91,7 +131,14 @@ class Interaccion(models.Model):
     fecha_reunion = models.DateField(null=True, blank=True)
     hora_reunion = models.TimeField(null=True, blank=True)
     direccion = models.CharField(max_length=300, blank=True, null=True)
+    enlace_reunion = models.URLField(max_length=500, blank=True, null=True)
+    parent = models.ForeignKey('self', on_delete=models.CASCADE, null=True, blank=True, related_name='sub_interacciones')
     historial_cambios = models.TextField(blank=True, null=True)
+
+    # Nuevos campos obligatorios para estadísticas analíticas
+    canal_comunicacion = models.ForeignKey(TipoInteraccion, on_delete=models.SET_NULL, null=True, blank=True, related_name='interacciones_canal')
+    duracion_minutos = models.PositiveIntegerField(null=True, blank=True)
+    temperatura_emocional = models.PositiveIntegerField(null=True, blank=True, choices=[(i, str(i)) for i in range(1, 6)])
 
 class Compromiso(models.Model):
     ESTADO_CHOICES = [
@@ -105,4 +152,25 @@ class Compromiso(models.Model):
     descripcion_compromiso = models.TextField()
     estado = models.CharField(max_length=20, choices=ESTADO_CHOICES, default='Pendiente')
     fecha_limite = models.DateField()
+
+class FirmaDigital(models.Model):
+    usuario = models.OneToOneField(Usuario, on_delete=models.CASCADE, related_name='firma_digital')
+    html_content = models.TextField(blank=True, null=True)
+    pdf_attachment = models.FileField(upload_to='firmas_pdf/', blank=True, null=True)
+
+    def __str__(self):
+        return f"Firma de {self.usuario.nombre_usuario}"
+
+class MensajeWhatsApp(models.Model):
+    contacto = models.ForeignKey(Contacto, on_delete=models.CASCADE, related_name='mensajes_whatsapp')
+    remitente_usuario = models.ForeignKey(Usuario, on_delete=models.SET_NULL, null=True, blank=True)
+    texto = models.TextField()
+    fecha_envio = models.DateTimeField(auto_now_add=True)
+    direccion = models.CharField(max_length=10, choices=[('Entrante', 'Entrante'), ('Saliente', 'Saliente')])
+    whatsapp_id = models.CharField(max_length=255, blank=True, null=True)
+    estado = models.CharField(max_length=20, default='enviado')
+
+    def __str__(self):
+        return f"Mensaje to/from {self.contacto}: {self.texto[:30]}"
+
 

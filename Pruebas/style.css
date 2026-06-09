@@ -97,7 +97,105 @@ body {
     display: flex;
     align-items: center;
     gap: 12px;
+}
+                            /* Right side icons in sub-navigation */
+.sub-nav-right {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-left: auto;
+}
+
+/* Notification bell and clock wrappers */
+.bell-wrapper,
+.clock-wrapper {
+    position: relative;
+}
+
+.bell-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--texto-secundario);
+    padding: 4px;
+    border-radius: 8px;
     transition: var(--transicion);
+}
+.bell-btn:hover {
+    background-color: #f0f0f0;
+}
+
+/* Badge */
+.row-badge {
+    position: absolute;
+    top: -4px;
+    right: -4px;
+    min-width: 16px;
+    height: 16px;
+    background-color: var(--rojo-primario);
+    color: var(--blanco);
+    border-radius: 50%;
+    font-size: 0.65rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Dropdown */
+.row-dropdown {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    background: var(--blanco);
+    border: 1px solid var(--gris-borde);
+    border-radius: 8px;
+    box-shadow: var(--sombra-suave);
+    width: 260px;
+    max-height: 300px;
+    overflow-y: auto;
+    z-index: 2000;
+    display: none;
+    margin-top: 6px;
+}
+.row-dropdown.show {
+    display: block;
+}
+
+.notif-row-header,
+.clock-row-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 12px;
+    border-bottom: 1px solid var(--gris-borde);
+    font-weight: 600;
+}
+
+.notif-row-list,
+.clock-list {
+    padding: 8px 12px;
+}
+                                <div class="notif-row-header">
+                                    <span>Notificaciones</span>
+                                    <button class="notif-row-clear" onclick="clearAllNotifications()">Borrar todo</button>
+                                </div>
+                                <div class="notif-row-list" id="notif-list"></div>
+                            </div>
+                        </div>
+                        <div class="clock-wrapper" style="margin-left: 12px;">
+                            <button class="bell-btn" onclick="toggleClockDropdown()">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                                <span class="row-badge clock-badge" id="clock-badge"></span>
+                            </button>
+                            <div class="row-dropdown clock-dropdown" id="clock-dropdown">
+                                <div class="notif-row-header">
+                                    <span>Recordatorios</span>
+                                    <button class="notif-row-clear" onclick="clearAllClockReminders()">Borrar todo</button>
+                                </div>
+                                <div class="notif-row-list" id="clock-list"></div>
+                            </div>
+                        </div>
+                    </div>on);
 }
 
 .avatar-circular {

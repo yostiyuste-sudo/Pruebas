@@ -9,22 +9,27 @@
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-principal: #F8F9FA;
-            --bg-accent: #FEE7E7;
-            --primario: #D32F2F;
-            --secundario: #4B5563;
-            --destacado: #E67E22;
+            --bg-principal: #f8fafc;
+            --primario: #a82e2e;
+            --primario-soft: rgba(168, 46, 46, 0.1);
+            --secundario: #335d80;
+            --destacado: #01B574;
+            --texto: #0f172a;
+            --texto-suave: #64748b;
             --blanco: #FFFFFF;
-            --texto: #1F2937;
-            --texto-suave: #6B7280;
-            --sombra: 0 10px 40px rgba(0, 0, 0, 0.04);
-            --transicion: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            --sombra: 0 4px 20px rgba(0, 0, 0, 0.04);
+            --transicion: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --gris-fondo: #f8fafc;
+            --gris-borde: #e2e8f0;
+            --texto-principal: #0f172a;
+            --texto-secundario: #64748b;
+            --bg-accent: rgba(168, 46, 46, 0.1);
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
-            font-family: 'Outfit', sans-serif;
+            font-family: 'Inter', sans-serif;
             background-color: var(--bg-principal);
             color: var(--texto);
             display: flex;
@@ -34,61 +39,85 @@
         /* --- SIDEBAR --- */
         .barra-lateral {
             position: fixed; top: 0; left: 0; height: 100vh;
-            width: 90px; background-color: var(--blanco); border-right: 1px solid #F0F0F0;
+            width: 90px; background-color: #1a2232; border-right: 1px solid #111827;
             display: flex; flex-direction: column; z-index: 1000;
             transition: var(--transicion); overflow: hidden;
+            align-items: center;
         }
-        .barra-lateral:hover { width: 280px; box-shadow: 10px 0 50px rgba(0,0,0,0.03); }
-        .barra-cabecera { padding: 25px; display: flex; align-items: center; gap: 18px; }
-        .logo-d { 
-            min-width: 45px; height: 45px; 
-            background: linear-gradient(135deg, var(--primario), var(--secundario));
-            color: white; display: flex; align-items: center; justify-content: center;
-            border-radius: 12px; font-weight: 800; font-size: 22px; 
-        }
-        .logo-texto { font-weight: 800; font-size: 22px; color: var(--primario); white-space: nowrap; opacity: 0; transition: 0.3s opacity; }
-        .barra-lateral:hover .logo-texto { opacity: 1; }
-
-        .perfil-sidebar { padding: 15px; margin: 15px; border-radius: 20px; background: var(--bg-accent); display: flex; align-items: center; gap: 15px; overflow: hidden; }
-        .avatar-s { min-width: 45px; height: 45px; background: white; border: 2px solid var(--primario); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; color: var(--primario); font-size: 18px; }
-        .p-info { opacity: 0; white-space: nowrap; transition: 0.3s opacity; }
-        .barra-lateral:hover .p-info { opacity: 1; }
-        .p-nombre { block-size: auto; font-weight: 600; font-size: 15px; }
-        .p-rol { font-size: 12px; color: var(--texto-suave); }
-
-        .navegacion { flex: 1; padding: 15px; display: flex; flex-direction: column; gap: 8px; }
-        .nav-enlace { display: flex; align-items: center; gap: 20px; padding: 14px 18px; text-decoration: none; color: var(--texto-suave); border-radius: 16px; transition: 0.2s; white-space: nowrap; }
-        .nav-enlace:hover { background: var(--bg-accent); color: var(--primario); }
-        .nav-enlace.activo { background: var(--primario); color: white; }
+        .barra-lateral:hover { width: 290px; align-items: stretch; }
+        .barra-cabecera { padding: 40px 0; display: flex; align-items: center; justify-content: center; gap: 12px; width: 100%; transition: 0.3s; }
+        .barra-lateral:hover .barra-cabecera { padding: 40px 25px; justify-content: flex-start; }
         
-        .nav-text { font-size: 15px; font-weight: 600; display: none; }
-        .barra-lateral:hover .nav-text { display: block; }
+        .logo-d { 
+            min-width: 48px; height: 48px; 
+            background: #a82e2e; color: white; display: flex; align-items: center; justify-content: center;
+            border-radius: 14px; font-weight: 800; font-size: 24px;
+        }
+        .logo-texto { font-weight: 800; font-size: 22px; color: #ffffff; letter-spacing: -0.5px; opacity: 0; transition: 0.3s; white-space: nowrap; display: none; margin-left: 5px; }
+        .barra-lateral:hover .logo-texto { opacity: 1; display: block; }
+
+        .perfil-sidebar { 
+            width: 60px; height: 60px; margin-bottom: 30px; border-radius: 20px; 
+            background: rgba(255, 255, 255, 0.03); display: flex; align-items: center; justify-content: center; 
+            transition: 0.3s; overflow: hidden;
+        }
+        .barra-lateral:hover .perfil-sidebar { width: 250px; height: auto; padding: 18px 20px; margin: 0 20px 40px 20px; border-radius: 24px; justify-content: flex-start; gap: 15px; background: rgba(255,255,255,0.05); }
+        
+        .avatar-s { 
+            min-width: 48px; height: 48px; background: #a82e2e; border: 1.5px solid rgba(255,255,255,0.1); 
+            border-radius: 50%; display: flex; align-items: center; justify-content: center; 
+            font-weight: 800; color: white; font-size: 17px;
+        }
+        .p-info { opacity: 0; transition: 0.3s; white-space: nowrap; display: none; }
+        .barra-lateral:hover .p-info { opacity: 1; display: block; }
+        .p-nombre { font-weight: 800; font-size: 17px; color: #ffffff; display: block; line-height: 1.2; }
+        .p-rol { font-size: 14px; color: #94a3b8; font-weight: 500; }
+
+        .navegacion { flex: 1; width: 100%; padding: 0 15px; display: flex; flex-direction: column; align-items: center; gap: 8px; }
+        .barra-lateral:hover .navegacion { align-items: stretch; padding: 0 20px; }
+        
+        .nav-enlace { 
+            display: flex; align-items: center; justify-content: center; width: 56px; min-height: 56px; 
+            text-decoration: none; color: #94a3b8; border-radius: 16px; 
+            transition: 0.3s; font-weight: 700; font-size: 16px; white-space: nowrap;
+        }
+        .barra-lateral:hover .nav-enlace { width: 100%; justify-content: flex-start; padding: 16px 22px; border-radius: 20px; gap: 18px; }
+        
+        .nav-enlace:hover { background: rgba(255, 255, 255, 0.05); color: #ffffff; }
+        .nav-enlace.activo { 
+            background: rgba(168, 46, 46, 0.15); color: #ffffff !important; 
+            border-left: 4px solid #a82e2e;
+            border-radius: 20px 0 0 20px;
+        }
+        .nav-enlace.activo svg { stroke: #a82e2e; }
+        .nav-text { opacity: 0; transition: 0.3s; display: none; }
+        .barra-lateral:hover .nav-text { opacity: 1; display: block; }
 
         /* --- CONTENT --- */
         .wrapper {
-            margin-left: 90px; flex: 1; padding: 50px;
+            margin-left: 90px; flex: 1; padding: 40px;
             transition: var(--transicion); width: calc(100% - 90px);
         }
-        .barra-lateral:hover ~ .wrapper { margin-left: 280px; width: calc(100% - 280px); }
+        .barra-lateral:hover ~ .wrapper { margin-left: 290px; width: calc(100% - 290px); }
 
         .header-section { margin-bottom: 40px; display: flex; justify-content: space-between; align-items: center; }
-        .title-h1 { font-size: 32px; font-weight: 800; }
+        .title-h1 { font-size: 32px; font-weight: 800; color: var(--texto-principal); }
 
         .calendar-grid {
-            background: white; border-radius: 40px; padding: 40px;
-            box-shadow: var(--sombra);
+            background: white; border-radius: 16px; padding: 24px;
+            box-shadow: var(--sombra); border: 1px solid var(--gris-borde);
         }
         .calendar-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
-        .month-title { font-size: 24px; font-weight: 800; }
+        .month-title { font-size: 24px; font-weight: 800; color: var(--texto-principal); }
 
         .days-header { display: grid; grid-template-columns: repeat(7, 1fr); gap: 10px; margin-bottom: 20px; text-align: center; font-weight: 800; color: var(--texto-suave); }
         .days-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 15px; }
         .day-cell {
-            aspect-ratio: 1; background: #fafafa; border-radius: 20px;
+            aspect-ratio: 1; background: #f8fafc; border-radius: 12px;
             padding: 15px; display: flex; flex-direction: column; gap: 10px;
-            transition: 0.3s; position: relative; border: 1px solid transparent;
+            transition: 0.3s; position: relative; border: 1px solid var(--gris-borde);
         }
-        .day-cell:hover { background: white; border-color: var(--primario); transform: translateY(-5px); box-shadow: var(--sombra); }
+        .day-cell:hover { background: white; border-color: var(--primario); transform: translateY(-3px); box-shadow: var(--sombra); }
         .day-number { font-size: 18px; font-weight: 800; }
         .day-cell.today { background: var(--bg-accent); border-color: var(--primario); }
         .day-cell.today .day-number { color: var(--primario); }
@@ -100,26 +129,195 @@
         
         .events-list { margin-top: 50px; }
         .event-card {
-            background: white; padding: 25px; border-radius: 25px;
+            background: white; padding: 20px 24px; border-radius: 16px;
             box-shadow: var(--sombra); display: flex; align-items: center; gap: 20px;
-            margin-bottom: 15px; transition: 0.3s;
+            margin-bottom: 15px; transition: 0.3s; border: 1px solid var(--gris-borde);
+            border-left: 4px solid var(--primario);
         }
-        .event-card:hover { transform: translateX(10px); }
+        .event-card:hover { transform: translateX(8px); }
         .event-time { font-weight: 800; color: var(--primario); font-size: 16px; min-width: 80px; }
-        .event-info h4 { font-weight: 800; font-size: 18px; }
-        .event-info p { color: var(--texto-suave); font-size: 14px; font-weight: 500; }
+        .event-info h4 { font-weight: 800; font-size: 16px; color: var(--texto-principal); }
+        .event-info p { color: var(--texto-secundario); font-size: 14px; font-weight: 500; }
         
         .btn-back {
-            text-decoration: none; background: var(--primario); color: white; border-radius: 18px;
-            padding: 12px 28px; font-weight: 800; font-size: 14px;
+            text-decoration: none; background: #1e293b; color: white; border-radius: 8px;
+            padding: 10px 20px; font-weight: 700; font-size: 14px;
             display: inline-flex; align-items: center; gap: 10px; margin-bottom: 30px;
-            transition: 0.3s; box-shadow: 0 10px 25px rgba(211, 47, 47, 0.2);
+            transition: 0.3s; border: none;
         }
-        .btn-back:hover { transform: translateY(-3px); box-shadow: 0 15px 35px rgba(211, 47, 47, 0.3); }
+        .btn-back:hover { background: #0f172a; transform: translateY(-2px); }
+        
+        /* --- RESPONSIVE STYLES --- */
+        .hamburger-btn {
+            display: none;
+        }
+        .sidebar-overlay {
+            display: none;
+        }
+
+        @media (max-width: 768px) {
+            .barra-lateral {
+                width: 280px !important;
+                position: fixed !important;
+                left: -280px !important;
+                height: 100vh !important;
+                transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), left 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
+                z-index: 10000 !important;
+            }
+            .barra-lateral.activo {
+                left: 0 !important;
+                box-shadow: 15px 0 50px rgba(0,0,0,0.15) !important;
+            }
+            .barra-lateral:hover {
+                width: 280px !important;
+            }
+            .barra-lateral:hover .logo-texto {
+                display: block !important;
+                opacity: 1 !important;
+            }
+            .barra-lateral:hover .p-info {
+                display: block !important;
+                opacity: 1 !important;
+            }
+            .barra-lateral:hover .nav-text {
+                display: block !important;
+                opacity: 1 !important;
+            }
+            .barra-lateral:hover ~ .wrapper {
+                margin-left: 0 !important;
+                width: 100% !important;
+            }
+            
+            .wrapper {
+                margin-left: 0 !important;
+                width: 100% !important;
+                padding: 16px !important;
+            }
+            
+            .hamburger-btn {
+                display: flex !important;
+                align-items: center;
+                justify-content: center;
+                background: white;
+                border: 1px solid #e2e8f0;
+                border-radius: 12px;
+                width: 44px;
+                height: 44px;
+                color: #1e293b;
+                cursor: pointer;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+                z-index: 1001;
+                outline: none;
+                flex-shrink: 0;
+            }
+            .hamburger-btn svg {
+                stroke: var(--primario);
+            }
+            
+            .sidebar-overlay {
+                display: none;
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100vw;
+                height: 100vh;
+                background: rgba(0, 0, 0, 0.4);
+                backdrop-filter: blur(4px);
+                z-index: 9999;
+            }
+            .sidebar-overlay.activo {
+                display: block;
+            }
+            
+            .perfil-sidebar {
+                width: 240px !important;
+                height: auto !important;
+                padding: 18px 20px !important;
+                margin: 0 20px 40px 20px !important;
+                border-radius: 24px !important;
+                justify-content: flex-start !important;
+                gap: 15px !important;
+            }
+            .p-info {
+                display: block !important;
+                opacity: 1 !important;
+            }
+            .nav-enlace {
+                width: 100% !important;
+                justify-content: flex-start !important;
+                padding: 16px 22px !important;
+                border-radius: 20px !important;
+                gap: 18px !important;
+            }
+            .nav-text {
+                display: block !important;
+                opacity: 1 !important;
+            }
+
+            .header-section {
+                flex-direction: row !important;
+                justify-content: flex-start !important;
+                gap: 15px !important;
+                margin-bottom: 25px !important;
+            }
+            .title-h1 {
+                font-size: 24px !important;
+            }
+            .calendar-grid {
+                padding: 15px !important;
+                border-radius: 20px !important;
+            }
+            .calendar-header {
+                margin-bottom: 20px !important;
+            }
+            .month-title {
+                font-size: 18px !important;
+            }
+            .days-header {
+                gap: 5px !important;
+                font-size: 11px !important;
+                margin-bottom: 10px !important;
+            }
+            .days-grid {
+                gap: 5px !important;
+            }
+            .day-cell {
+                padding: 6px !important;
+                border-radius: 10px !important;
+                gap: 4px !important;
+            }
+            .day-number {
+                font-size: 13px !important;
+            }
+            .event-dot {
+                width: 6px !important;
+                height: 6px !important;
+            }
+            .event-card {
+                flex-direction: column !important;
+                align-items: flex-start !important;
+                gap: 8px !important;
+                padding: 15px !important;
+                border-radius: 18px !important;
+            }
+            .event-time {
+                min-width: auto !important;
+                font-size: 14px !important;
+            }
+            .event-info h4 {
+                font-size: 16px !important;
+            }
+            .btn-back {
+                padding: 10px 20px !important;
+                font-size: 13px !important;
+                margin-bottom: 20px !important;
+            }
+        }
     </style>
 </head>
 
 <body>
+    <div id="sidebar-overlay" class="sidebar-overlay"></div>
     <aside class="barra-lateral">
         <div class="barra-cabecera">
             <div class="logo-d">D</div>
@@ -161,7 +359,14 @@
         </a>
         
         <header class="header-section">
-            <h1 class="title-h1">Mi Calendario</h1>
+            <button id="hamburger-btn" class="hamburger-btn" style="display: none;">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="3" y1="12" x2="21" y2="12"></line>
+                    <line x1="3" y1="6" x2="21" y2="6"></line>
+                    <line x1="3" y1="18" x2="21" y2="18"></line>
+                </svg>
+            </button>
+            <h1 class="title-h1" style="margin: 0;">Mi Calendario</h1>
         </header>
 
         <section class="calendar-grid">
@@ -176,7 +381,7 @@
                 <span>Lun</span><span>Mar</span><span>Mié</span><span>Jue</span><span>Vie</span><span>Sab</span><span>Dom</span>
             </div>
             
-            <div class="days-grid">
+            <div class="days-grid" id="days-grid-container">
                 <!-- Grid for April 2026 -->
                 <div class="day-cell" style="opacity: 0.3;"><span class="day-number">30</span></div>
                 <div class="day-cell" style="opacity: 0.3;"><span class="day-number">31</span></div>
@@ -223,7 +428,7 @@
             </div>
         </section>
 
-        <section class="events-list">
+        <section class="events-list" id="events-list-container">
             <h3 style="margin-bottom: 25px; font-size: 24px; font-weight: 800;">Próximas Actividades</h3>
             
             {% for i in interacciones %}
@@ -242,5 +447,54 @@
             {% endfor %}
         </section>
     </div>
+
+    <script>
+        function fetchCalendarUpdate() {
+            fetch(window.location.href)
+                .then(res => {
+                    if (!res.ok) throw new Error("Network response not ok");
+                    return res.text();
+                })
+                .then(htmlText => {
+                    const parser = new DOMParser();
+                    const doc = parser.parseFromString(htmlText, 'text/html');
+
+                    // 1. Update days grid
+                    const newGrid = doc.getElementById('days-grid-container');
+                    const currentGrid = document.getElementById('days-grid-container');
+                    if (newGrid && currentGrid && newGrid.innerHTML.trim() !== currentGrid.innerHTML.trim()) {
+                        currentGrid.innerHTML = newGrid.innerHTML;
+                    }
+
+                    // 2. Update events list
+                    const newList = doc.getElementById('events-list-container');
+                    const currentList = document.getElementById('events-list-container');
+                    if (newList && currentList && newList.innerHTML.trim() !== currentList.innerHTML.trim()) {
+                        currentList.innerHTML = newList.innerHTML;
+                    }
+                })
+                .catch(err => console.error("Error updating calendar:", err));
+        }
+        setInterval(fetchCalendarUpdate, 10000);
+    </script>
+    <script>
+        // Mobile Sidebar Toggle
+        document.addEventListener('DOMContentLoaded', function() {
+            const btn = document.getElementById('hamburger-btn');
+            const sidebar = document.querySelector('.barra-lateral');
+            const overlay = document.getElementById('sidebar-overlay');
+            if (btn && sidebar && overlay) {
+                btn.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    sidebar.classList.toggle('activo');
+                    overlay.classList.toggle('activo');
+                });
+                overlay.addEventListener('click', function() {
+                    sidebar.classList.remove('activo');
+                    overlay.classList.remove('activo');
+                });
+            }
+        });
+    </script>
 </body>
 </html>

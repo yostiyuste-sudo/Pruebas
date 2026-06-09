@@ -9,20 +9,21 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-principal: #F4F7FE;
-            --primario: #D32F2F;
-            --primario-soft: rgba(211, 47, 47, 0.1);
-            --secundario: #4318FF;
+            --bg-principal: #f8fafc;
+            --primario: #a82e2e;
+            --primario-soft: rgba(168, 46, 46, 0.1);
+            --secundario: #335d80;
             --destacado: #01B574;
-            --texto: #1B2559;
-            --texto-suave: #A3AED0;
+            --texto: #0f172a;
+            --texto-suave: #64748b;
             --blanco: #FFFFFF;
-            --sombra: 0 20px 50px rgba(0, 0, 0, 0.05);
-            --transicion: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            --gris-fondo: #F8F9FA;
-            --gris-borde: #E0E0E0;
-            --texto-principal: #333333;
-            --texto-secundario: #757575;
+            --sombra: 0 4px 20px rgba(0, 0, 0, 0.04);
+            --transicion: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --gris-fondo: #f8fafc;
+            --gris-borde: #e2e8f0;
+            --texto-principal: #0f172a;
+            --texto-secundario: #64748b;
+            --sombra-suave: 0 4px 20px rgba(0, 0, 0, 0.04);
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -38,7 +39,7 @@
         /* --- SIDEBAR --- */
         .barra-lateral {
             position: fixed; top: 0; left: 0; height: 100vh;
-            width: 90px; background-color: var(--blanco); border-right: 1px solid #E9EDF7;
+            width: 90px; background-color: #1a2232; border-right: 1px solid #111827;
             display: flex; flex-direction: column; z-index: 1000;
             transition: var(--transicion); padding-bottom: 30px; overflow: hidden;
             align-items: center;
@@ -50,62 +51,63 @@
         
         .logo-d { 
             min-width: 48px; height: 48px; 
-            background: #D32F2F; color: white; display: flex; align-items: center; justify-content: center;
+            background: #a82e2e; color: white; display: flex; align-items: center; justify-content: center;
             border-radius: 14px; font-weight: 800; font-size: 24px;
         }
-        .logo-texto { font-weight: 800; font-size: 22px; color: #D32F2F; letter-spacing: -0.5px; opacity: 0; transition: 0.3s; white-space: nowrap; display: none; margin-left: 5px; }
+        .logo-texto { font-weight: 800; font-size: 22px; color: #ffffff; letter-spacing: -0.5px; opacity: 0; transition: 0.3s; white-space: nowrap; display: none; margin-left: 5px; }
         .barra-lateral:hover .logo-texto { opacity: 1; display: block; }
 
         .perfil-sidebar { 
             width: 60px; height: 60px; margin-bottom: 30px; border-radius: 20px; 
-            background: #FFF5F5; display: flex; align-items: center; justify-content: center; 
+            background: rgba(255, 255, 255, 0.03); display: flex; align-items: center; justify-content: center; 
             transition: 0.3s; overflow: hidden;
         }
-        .barra-lateral:hover .perfil-sidebar { width: 250px; height: auto; padding: 18px 20px; margin: 0 20px 40px 20px; border-radius: 24px; justify-content: flex-start; gap: 15px; }
+        .barra-lateral:hover .perfil-sidebar { width: 250px; height: auto; padding: 18px 20px; margin: 0 20px 40px 20px; border-radius: 24px; justify-content: flex-start; gap: 15px; background: rgba(255,255,255,0.05); }
         
         .avatar-s { 
-            min-width: 48px; height: 48px; background: white; border: 1.5px solid #D32F2F; 
+            min-width: 48px; height: 48px; background: #a82e2e; border: 1.5px solid rgba(255,255,255,0.1); 
             border-radius: 50%; display: flex; align-items: center; justify-content: center; 
-            font-weight: 800; color: #D32F2F; font-size: 17px;
+            font-weight: 800; color: white; font-size: 17px;
         }
         .p-info { opacity: 0; transition: 0.3s; white-space: nowrap; display: none; }
         .barra-lateral:hover .p-info { opacity: 1; display: block; }
-        .p-nombre { font-weight: 800; font-size: 17px; color: #344054; display: block; line-height: 1.2; }
-        .p-rol { font-size: 14px; color: #667085; font-weight: 500; }
+        .p-nombre { font-weight: 800; font-size: 17px; color: #ffffff; display: block; line-height: 1.2; }
+        .p-rol { font-size: 14px; color: #94a3b8; font-weight: 500; }
 
         .navegacion { flex: 1; width: 100%; padding: 0 15px; display: flex; flex-direction: column; align-items: center; gap: 8px; }
         .barra-lateral:hover .navegacion { align-items: stretch; padding: 0 20px; }
         
         .nav-enlace { 
             display: flex; align-items: center; justify-content: center; width: 56px; min-height: 56px; 
-            text-decoration: none; color: #475467; border-radius: 16px; 
+            text-decoration: none; color: #94a3b8; border-radius: 16px; 
             transition: 0.3s; font-weight: 700; font-size: 16px; white-space: nowrap;
         }
         .barra-lateral:hover .nav-enlace { width: 100%; justify-content: flex-start; padding: 16px 22px; border-radius: 20px; gap: 18px; }
         
-        .nav-enlace:hover { background: #F9FAFB; color: #D32F2F; }
+        .nav-enlace:hover { background: rgba(255, 255, 255, 0.05); color: #ffffff; }
         .nav-enlace.activo { 
-            background: #D32F2F; color: white !important; 
-            box-shadow: 0 10px 20px rgba(211, 47, 47, 0.15); 
+            background: rgba(168, 46, 46, 0.15); color: #ffffff !important; 
+            border-left: 4px solid #a82e2e;
+            border-radius: 20px 0 0 20px;
         }
-        .nav-enlace.activo svg { stroke: white; }
+        .nav-enlace.activo svg { stroke: #a82e2e; }
         .nav-text { opacity: 0; transition: 0.3s; display: none; }
         .barra-lateral:hover .nav-text { opacity: 1; display: block; }
 
         .cerrar-sesion-cont { 
-            margin-top: auto; width: 100%; border-top: 1px solid #F2F4F7;
+            margin-top: auto; width: 100%; border-top: 1px solid rgba(255, 255, 255, 0.05);
             display: flex; justify-content: center;
         }
         .barra-lateral:hover .cerrar-sesion-cont { padding: 10px 20px 0 20px; justify-content: flex-start; }
         
         .btn-cerrar {
             display: flex; align-items: center; justify-content: center; width: 56px; height: 75px;
-            text-decoration: none; color: #475467; font-weight: 700; font-size: 16px;
+            text-decoration: none; color: #94a3b8; font-weight: 700; font-size: 16px;
             transition: 0.3s; white-space: nowrap;
         }
         .barra-lateral:hover .btn-cerrar { width: 100%; justify-content: flex-start; padding: 0 20px; gap: 18px; }
         
-        .btn-cerrar:hover { color: #D32F2F; }
+        .btn-cerrar:hover { color: #ffffff; }
         .btn-cerrar span { opacity: 0; transition: 0.3s; display: none; }
         .barra-lateral:hover .btn-cerrar span { opacity: 1; display: block; }
 
@@ -124,24 +126,35 @@
 
         .tarjeta-blanca {
             background: var(--blanco);
-            padding: 30px;
-            border-radius: 20px;
+            padding: 24px;
+            border-radius: 16px;
             box-shadow: var(--sombra);
-            margin-bottom: 20px;
+            border: 1px solid var(--gris-borde);
+            margin-bottom: 25px;
+            position: relative;
+            overflow: visible;
         }
 
         .tarjeta-blanca h2 {
-            font-size: 18px;
-            margin-bottom: 25px;
-            color: var(--texto);
+            background: #a82e2e;
+            color: white !important;
+            margin: -24px -24px 24px -24px !important;
+            padding: 14px 20px;
+            font-size: 15px;
+            font-weight: 700;
+            border-top-left-radius: 16px;
+            border-top-right-radius: 16px;
             display: flex;
+            justify-content: space-between;
             align-items: center;
-            gap: 10px;
+        }
+        .tarjeta-blanca h2 svg {
+            stroke: white !important;
         }
 
         .tabla-contenedor {
             width: 100%;
-            overflow-x: auto;
+            overflow: visible;
         }
 
         .tabla-directorio {
@@ -192,11 +205,483 @@
             font-size: 14px;
             border: 1px solid #FFCDD2;
         }
+
+        /* --- ESTILOS CAMPANA Y RELOJ DE NOTIFICACIONES --- */
+        .bell-wrapper, .clock-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .bell-btn {
+            background: none;
+            border: none;
+            padding: 6px;
+            border-radius: 10px;
+            cursor: pointer;
+            color: #4a5568;
+            position: relative;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .bell-btn:hover {
+            background: #f1f5f9;
+            color: var(--primario);
+        }
+        .row-badge {
+            position: absolute;
+            top: -4px;
+            right: -4px;
+            background: #e11d48;
+            color: white;
+            border-radius: 50%;
+            font-size: 9px;
+            font-weight: 800;
+            width: 15px;
+            height: 15px;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            border: 1.5px solid white;
+            box-shadow: 0 2px 4px rgba(225, 29, 72, 0.2);
+        }
+        .row-dropdown {
+            display: none;
+            position: absolute;
+            top: calc(100% + 8px);
+            right: 0;
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.08), 0 8px 16px -6px rgba(0, 0, 0, 0.04);
+            z-index: 1000;
+            width: 280px;
+            padding: 15px;
+            font-family: inherit;
+        }
+        .notif-row-header {
+            font-weight: 800;
+            color: #1e293b;
+            font-size: 13px;
+            margin-bottom: 10px;
+            border-bottom: 1px solid #f1f5f9;
+            padding-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .notif-row-clear {
+            background: none;
+            border: none;
+            color: #ef4444;
+            cursor: pointer;
+            font-size: 11px;
+            font-weight: 700;
+            padding: 0;
+            transition: color 0.15s;
+        }
+        .notif-row-clear:hover {
+            color: #b91c1c;
+        }
+        .notif-row-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            max-height: 220px;
+            overflow-y: auto;
+            padding-right: 2px;
+        }
+        .notif-row-list::-webkit-scrollbar {
+            width: 4px;
+        }
+        .notif-row-list::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+        .notif-row-item {
+            padding: 8px 10px;
+            border-radius: 10px;
+            background: #f8fafc;
+            border-left: 3px solid #64748b;
+            font-size: 11.5px;
+            color: #334155;
+            transition: all 0.2s;
+            position: relative;
+            cursor: pointer;
+        }
+        .notif-row-item:hover {
+            background: #f1f5f9;
+        }
+        .notif-row-item.correo { border-left-color: #10b981; }
+        .notif-row-item.llamada { border-left-color: #f43f5e; }
+        .notif-row-item.reunion { border-left-color: #8b5cf6; }
+        
+        .notif-row-item-title {
+            font-weight: 700;
+            color: #0f172a;
+            margin-bottom: 3px;
+            font-size: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .notif-row-item-desc {
+            line-height: 1.4;
+            color: #475569;
+        }
+        .notif-row-no-data {
+            color: #94a3b8;
+            text-align: center;
+            padding: 15px 0;
+            font-style: italic;
+        }
+        
+        /* --- RESPONSIVE STYLES --- */
+        .hamburger-btn {
+            display: none;
+        }
+        .sidebar-overlay {
+            display: none;
+        }
+
+        @media (max-width: 768px) {
+            .barra-lateral {
+                width: 280px !important;
+                position: fixed !important;
+                left: -280px !important;
+                height: 100vh !important;
+                transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), left 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
+                z-index: 10000 !important;
+            }
+            .barra-lateral.activo {
+                left: 0 !important;
+                box-shadow: 15px 0 50px rgba(0,0,0,0.15) !important;
+            }
+            .barra-lateral:hover {
+                width: 280px !important;
+            }
+            .barra-lateral:hover .logo-texto {
+                display: block !important;
+                opacity: 1 !important;
+            }
+            .barra-lateral:hover .p-info {
+                display: block !important;
+                opacity: 1 !important;
+            }
+            .barra-lateral:hover .nav-text {
+                display: block !important;
+                opacity: 1 !important;
+            }
+            .barra-lateral:hover .btn-cerrar span {
+                display: block !important;
+                opacity: 1 !important;
+            }
+            .barra-lateral:hover ~ .contenido-principal {
+                margin-left: 0 !important;
+                width: 100% !important;
+            }
+            
+            .contenido-principal {
+                margin-left: 0 !important;
+                width: 100% !important;
+                padding: 20px !important;
+            }
+            
+            .cuadricula-dashboard {
+                grid-template-columns: 1fr !important;
+                gap: 20px !important;
+            }
+            
+            /* Collapse two columns layout forms */
+            div[style*="grid-template-columns: 1fr 1fr"] {
+                grid-template-columns: 1fr !important;
+                gap: 12px !important;
+            }
+            
+            .hamburger-btn {
+                display: flex !important;
+                align-items: center;
+                justify-content: center;
+                background: white;
+                border: 1px solid #e2e8f0;
+                border-radius: 12px;
+                width: 44px;
+                height: 44px;
+                color: #1e293b;
+                cursor: pointer;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+                z-index: 1001;
+                margin-right: 15px;
+                outline: none;
+                flex-shrink: 0;
+            }
+            .hamburger-btn svg {
+                stroke: var(--rojo-primario);
+            }
+            
+            .sidebar-overlay {
+                display: none;
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100vw;
+                height: 100vh;
+                background: rgba(0, 0, 0, 0.4);
+                backdrop-filter: blur(4px);
+                z-index: 9999;
+            }
+            .sidebar-overlay.activo {
+                display: block;
+            }
+            
+            .perfil-sidebar {
+                width: 240px !important;
+                height: auto !important;
+                padding: 18px 20px !important;
+                margin: 0 20px 40px 20px !important;
+                border-radius: 24px !important;
+                justify-content: flex-start !important;
+                gap: 15px !important;
+            }
+            .p-info {
+                display: block !important;
+                opacity: 1 !important;
+            }
+            .nav-enlace {
+                width: 100% !important;
+                justify-content: flex-start !important;
+                padding: 16px 22px !important;
+                border-radius: 20px !important;
+                gap: 18px !important;
+            }
+            .nav-text {
+                display: block !important;
+                opacity: 1 !important;
+            }
+            .cerrar-sesion-cont {
+                padding: 10px 20px 0 20px !important;
+                justify-content: flex-start !important;
+            }
+            .btn-cerrar {
+                width: 100% !important;
+                justify-content: flex-start !important;
+                padding: 0 20px !important;
+                gap: 18px !important;
+            }
+            .btn-cerrar span {
+                display: block !important;
+                opacity: 1 !important;
+            }
+        }
+
+        /* Toggle Switch Premium */
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 34px;
+            height: 18px;
+            vertical-align: middle;
+        }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 20px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 14px;
+            width: 14px;
+            left: 2px;
+            bottom: 2px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked+.slider {
+            background-color: #2E7D32;
+        }
+
+        input:checked+.slider:before {
+            transform: translateX(16px);
+        }
+
+        /* NEW BUTTON STYLE */
+        .btn-banner {
+            background-color: #1e293b;
+            color: white;
+            text-decoration: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 14px;
+            transition: var(--transicion);
+            display: inline-flex;
+            align-items: center;
+            border: none;
+        }
+        .btn-banner:hover {
+            background-color: #0f172a;
+            transform: translateY(-2px);
+        }
+
+        /* --- LAYOUT DETALLE (CRM STYLE) --- */
+        .crm-layout {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 24px;
+            flex: 1;
+            align-items: start;
+            min-height: calc(100vh - 180px);
+            margin-top: 20px;
+        }
+
+        @media (max-width: 992px) {
+            .crm-layout {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .panel-izquierdo {
+            background: var(--blanco);
+            border-radius: 16px;
+            box-shadow: var(--sombra-suave);
+            padding: 24px;
+            border: 1px solid var(--gris-borde);
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .perfil-cabecera {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--gris-borde);
+        }
+        .avatar-grande {
+            width: 54px; height: 54px;
+            background: linear-gradient(135deg, #a82e2e 0%, #d32f2f 100%);
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 20px; font-weight: 800; color: white;
+            flex-shrink: 0;
+            box-shadow: 0 4px 12px rgba(168, 46, 46, 0.2);
+        }
+        .perfil-datos h2 { font-size: 16px; font-weight: 800; color: var(--texto-principal); margin-bottom: 3px; }
+        .perfil-datos p { font-size: 12px; color: var(--texto-secundario); font-weight: 600; }
+        
+        .acciones-circulares {
+            display: flex;
+            justify-content: space-between;
+            padding-bottom: 15px;
+            border-bottom: 1px solid var(--gris-borde);
+        }
+        .accion-btn {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+            text-decoration: none;
+            color: var(--texto-secundario);
+            font-size: 11px;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            background: none;
+            transition: all 0.2s ease;
+        }
+        .accion-btn .circulo {
+            width: 42px; height: 42px;
+            border-radius: 50%;
+            border: 1px solid var(--gris-borde);
+            display: flex; align-items: center; justify-content: center;
+            background: white;
+            color: var(--texto-secundario);
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .accion-btn:hover .circulo {
+            background: linear-gradient(135deg, #FFF5F5 0%, #FEEBEB 100%);
+            border-color: var(--rojo-primario);
+            color: var(--rojo-primario);
+            transform: scale(1.1);
+            box-shadow: 0 4px 10px rgba(168, 46, 46, 0.1);
+        }
+        .accion-btn:hover { color: var(--rojo-primario); }
+
+        .seccion-info { display: flex; flex-direction: column; gap: 15px; }
+        .seccion-titulo {
+            font-size: 13px; font-weight: 700; color: var(--texto-secundario); display: flex; align-items: center; gap: 8px; text-transform: uppercase; letter-spacing: 0.5px;
+        }
+        .info-item { display: flex; flex-direction: column; gap: 4px; }
+        .info-label { font-size: 11px; color: var(--texto-secundario); font-weight: 600; }
+        .info-valor { font-size: 13.5px; color: var(--texto-principal); font-weight: 700; }
+
+        .panel-derecho {
+            background: var(--blanco); border-radius: 16px; box-shadow: var(--sombra-suave); border: 1px solid var(--gris-borde); overflow: hidden; display: flex; flex-direction: column; min-height: 500px;
+        }
+        .tabs-primarias { display: flex; border-bottom: 1px solid var(--gris-borde); background: #fcfdfd; }
+        .tab-btn { padding: 16px 28px; border: none; background: transparent; font-size: 13.5px; font-weight: 700; color: var(--texto-secundario); cursor: pointer; border-bottom: 3px solid transparent; transition: all 0.2s; }
+        .tab-btn.activa { color: var(--rojo-primario); border-bottom-color: var(--rojo-primario); background: white; }
+        .tab-btn:hover:not(.activa) { background: #f8fafc; color: var(--texto-principal); }
+
+        .tabs-secundarias { display: flex; gap: 20px; padding: 15px 24px 0 24px; border-bottom: 1px solid var(--gris-borde); font-size: 12.5px; background: white; overflow-x: auto; }
+        .subtab-btn { padding-bottom: 12px; border: none; background: transparent; font-weight: 700; color: var(--texto-secundario); cursor: pointer; border-bottom: 2px solid transparent; white-space: nowrap; transition: 0.2s; }
+        .subtab-btn.activa { color: var(--texto-principal); border-bottom-color: var(--texto-principal); }
+        .subtab-btn:hover:not(.activa) { color: var(--texto-principal); }
+
+        .crear-interaccion-form { padding: 24px; background: #fafbfc; border-bottom: 1px solid var(--gris-borde); }
+        
+        .timeline-container { padding: 24px; flex: 1; overflow-y: auto; background: white; }
+        .timeline-mes { font-size: 13.5px; font-weight: 700; color: var(--texto-secundario); margin-bottom: 20px; display: flex; align-items: center; gap: 8px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .interaccion-item { background: white; border: 1px solid var(--gris-borde); border-radius: 12px; padding: 18px; margin-bottom: 16px; position: relative; transition: all 0.2s; }
+        .interaccion-item:hover { border-color: #cbd5e1; box-shadow: 0 4px 12px rgba(0,0,0,0.02); }
+        .interaccion-header { display: flex; justify-content: space-between; margin-bottom: 10px; align-items: center; flex-wrap: wrap; gap: 8px; }
+        .interaccion-titulo { font-size: 13.5px; font-weight: 700; color: var(--texto-principal); }
+        .interaccion-fecha { font-size: 11.5px; color: var(--texto-secundario); font-weight: 500; }
+        
+        .badge-estado { display: inline-flex; align-items: center; gap: 4px; font-size: 11px; font-weight: 700; padding: 4px 8px; border-radius: 8px; margin-bottom: 10px; }
+        .estado-verde { background: #E8F5E9; color: #2E7D32; }
+        .estado-naranja { background: #FFF3E0; color: #EF6C00; }
+        
+        .interaccion-detalle { font-size: 13px; color: #334155; line-height: 1.6; word-break: break-word; }
+        
+        .estado-contacto-badge { display: inline-block; padding: 4px 8px; border-radius: 6px; font-size: 10px; font-weight: 800; background: #E8F5E9; color: #2E7D32; letter-spacing: 0.5px; }
+        .estado-inactivo { background: #FFEBEE; color: #C62828; }
+        
+        .entrada-texto {
+            outline: none;
+            transition: all 0.2s ease;
+        }
+        .entrada-texto:focus {
+            border-color: var(--rojo-primario) !important;
+            box-shadow: 0 0 0 3px rgba(168, 46, 46, 0.15);
+        }
     </style>
     <script src="{% static 'js/validaciones.js' %}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 
 <body>
+    <div id="sidebar-overlay" class="sidebar-overlay"></div>
     <aside class="barra-lateral">
         <div class="barra-cabecera">
             <div class="logo-d">D</div>
@@ -247,11 +732,26 @@
          CONTENIDO PRINCIPAL
     ════════════════════════════════════════════ -->
     <main class="contenido-principal">
-        <header style="margin-bottom: 40px;">
-            <h1 style="font-size: 28px; font-weight: 800; color: #1a1a1a;">Gestión de Interacciones</h1>
-            <p style="color: var(--texto-secundario); font-size: 15px; margin-top: 5px;">
-                Seguimiento detallado de la comunicación con tus clientes comerciales.
-            </p>
+        <header style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px; flex-wrap: wrap; gap: 15px; background: white; padding: 20px 28px; border-radius: 16px; border: 1px solid var(--gris-borde); box-shadow: var(--sombra);">
+            <div style="display: flex; align-items: center; gap: 10px;">
+                <button id="hamburger-btn" class="hamburger-btn" style="display: none;">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="3" y1="12" x2="21" y2="12"></line>
+                        <line x1="3" y1="6" x2="21" y2="6"></line>
+                        <line x1="3" y1="18" x2="21" y2="18"></line>
+                    </svg>
+                </button>
+                <div>
+                    <h1 style="font-size: 24px; font-weight: 800; color: #0f172a; margin: 0;">Constructora DYCO</h1>
+                    <p style="color: var(--texto-suave); font-weight: 500; font-size: 13px; margin: 0;">Interacciones &bull; Bienvenido de nuevo, {{ usuario_logueado.nombre_usuario }}</p>
+                </div>
+            </div>
+            <div style="display: flex; align-items: center; gap: 15px;">
+                <a href="{% url 'contactos' %}" class="btn-banner">Registrar Contacto</a>
+                <div style="width: 44px; height: 44px; background: #e2e8f0; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; color: #334155; font-size: 15px;" title="{{ usuario_logueado.nombre_usuario }}">
+                    {{ usuario_logueado.nombre_usuario|make_list|first|upper }}
+                </div>
+            </div>
         </header>
 
         {% if error %}
@@ -269,102 +769,778 @@
 
         <div id="msgJS" class="alerta-error" style="display:none;"></div>
 
-        <div class="cuadricula-dashboard" style="display: block;">
-            <!-- DIRECTORIO DE CONTACTOS -->
-            <section class="tarjeta-blanca">
-                <h2>
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
-                        stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                        <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
-                        <line x1="3" y1="10" x2="21" y2="10"></line>
-                        <line x1="9" y1="22" x2="9" y2="10"></line>
-                        <line x1="8" y1="4" x2="8" y2="2"></line>
-                        <line x1="16" y1="4" x2="16" y2="2"></line>
-                    </svg>
-                    Contactos Registrados
-                </h2>
+        <div class="crm-layout">
 
-                <div class="tabla-contenedor">
-                    <table class="tabla-directorio">
-                        <thead>
-                            <tr>
-                                <th>Identificación</th>
-                                <th>Tipo</th>
-                                <th>Nombre / Empresa</th>
-                                <th>Acciones</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for c in contactos %}
-                            <tr>
-                                <td style="font-weight: 700; color: var(--primario);">{{ c.documento_nit }}</td>
-                                <td>
-                                    {% if c.nombre %}
-                                    <span class="badge badge-natural">NATURAL</span>
-                                    {% else %}
-                                    <span class="badge badge-juridica">JURÍDICA</span>
+            <!-- PANEL DERECHO -->
+            <div class="panel-derecho">
+                <!-- VISTA GLOBAL (Cuando no hay contacto seleccionado) -->
+                <div id="vistaGlobal" style="padding: 24px; height: 100%; overflow-y: auto;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; flex-wrap: wrap; gap: 15px;">
+                        <div>
+                            <h2 style="font-size: 18px; font-weight: 800; color: var(--texto-principal); margin: 0;">Directorio de Clientes</h2>
+                            <p style="color: var(--texto-secundario); font-size: 12.5px; margin-top: 2px;">Gestiona tus contactos comerciales y registra su actividad.</p>
+                        </div>
+                        <div style="background: #FFF5F5; border: 1px solid var(--rojo-primario); padding: 6px 14px; border-radius: 8px; font-size: 12px; font-weight: 700; color: var(--rojo-primario); box-shadow: 0 2px 6px rgba(168,46,46,0.05);">
+                            {{ contactos|length }} Contactos Activos
+                        </div>
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px;">
+                        {% for c in contactos %}
+                        <div onclick="window.location.href='/contacto/{{ c.id }}/?from=interacciones';" 
+                             style="position: relative; background: white; border: 1px solid var(--gris-borde); padding: 20px; border-radius: 16px; cursor: pointer; transition: all 0.2s ease; box-shadow: var(--sombra);"
+                             onmouseover="this.style.borderColor='var(--rojo-primario)'; this.style.transform='translateY(-3px)'; this.style.boxShadow='0 10px 20px rgba(168,46,46,0.06)';" 
+                             onmouseout="this.style.borderColor='var(--gris-borde)'; this.style.transform='translateY(0)'; this.style.boxShadow='var(--sombra)';" 
+                        >
+                            <!-- Action buttons (Edit, Bell, Clock) -->
+                            <div style="position: absolute; top: 15px; right: 15px; display: flex; gap: 6px; align-items: center;">
+                                <!-- Edit Button -->
+                                <button onclick="event.stopPropagation(); window.location.href='/edit/{{ c.id }}/';" 
+                                        title="Editar Contacto" 
+                                        style="color: #64748b; background: #f1f5f9; border: none; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s; outline: none;"
+                                        onmouseover="this.style.color='var(--rojo-primario)'; this.style.background='#FFF5F5';"
+                                        onmouseout="this.style.color='#64748b'; this.style.background='#f1f5f9';">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
+                                </button>
+                                
+                                <!-- Bell Icon (Indicador de Interacciones: Llamadas, Correos Recibidos y Reuniones) -->
+                                <button onclick="event.stopPropagation(); mostrarAlertasCard({{ c.id }}, 'bell');" 
+                                        title="Llamadas, correos recibidos y reuniones" 
+                                        style="color: #64748b; background: #f1f5f9; border: none; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; position: relative; transition: all 0.2s; outline: none;"
+                                        onmouseover="this.style.color='var(--rojo-primario)'; this.style.background='#FFF5F5';"
+                                        onmouseout="this.style.color='#64748b'; this.style.background='#f1f5f9';">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
+                                    {% if c.bell_count > 0 %}
+                                    <span style="position: absolute; top: -5px; right: -5px; background: var(--rojo-primario); color: white; font-size: 9px; font-weight: 800; border-radius: 50%; width: 14px; height: 14px; display: flex; align-items: center; justify-content: center; border: 1px solid white;">{{ c.bell_count }}</span>
                                     {% endif %}
-                                </td>
-                                <td>
-                                    <div style="font-weight: 600;">
-                                        <a href="/contacto/{{ c.id }}/" style="color: inherit; text-decoration: none;">
-                                            {% if c.nombre %}
-                                            {{ c.nombre }} {{ c.apellido }}
-                                            {% else %}
-                                            {{ c.razon_social }}
-                                            {% endif %}
-                                        </a>
+                                </button>
+
+                                <!-- Clock Icon (Recordatorios Programados en las próximas 24h) -->
+                                <button onclick="event.stopPropagation(); mostrarAlertasCard({{ c.id }}, 'clock');" 
+                                        title="Llamadas y reuniones programadas próximas" 
+                                        style="color: #64748b; background: #f1f5f9; border: none; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; position: relative; transition: all 0.2s; outline: none;"
+                                        onmouseover="this.style.color='#3b82f6'; this.style.background='#eff6ff';"
+                                        onmouseout="this.style.color='#64748b'; this.style.background='#f1f5f9';">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                                    {% if c.clock_count > 0 %}
+                                    <span style="position: absolute; top: -5px; right: -5px; background: #3b82f6; color: white; font-size: 9px; font-weight: 800; border-radius: 50%; width: 14px; height: 14px; display: flex; align-items: center; justify-content: center; border: 1px solid white;">{{ c.clock_count }}</span>
+                                    {% endif %}
+                                </button>
+                            </div>
+
+                            <div style="display: flex; gap: 15px; align-items: center; margin-bottom: 15px; padding-right: 90px;">
+                                <div style="width: 46px; height: 46px; background: {% if c.nombre %}#FFF5F5{% else %}#FDF4FF{% endif %}; color: {% if c.nombre %}var(--rojo-primario){% else %}#a21caf{% endif %}; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 16px; border: 1px solid {% if c.nombre %}#fee2e2{% else %}#f3e8ff{% endif %};">
+                                    {% if c.nombre %}{{ c.nombre|make_list|first|upper }}{% else %}{{ c.razon_social|make_list|first|upper }}{% endif %}
+                                </div>
+                                <div>
+                                    <div style="font-weight: 800; color: var(--texto-principal); font-size: 13.5px; line-height: 1.3;">
+                                        {% if c.nombre %}{{ c.nombre }} {{ c.apellido }}{% else %}{{ c.razon_social }}{% endif %}
                                     </div>
-                                    <div style="font-size: 11px; color: var(--texto-suave);">
-                                        {{ c.correo|default:"Sin correo" }}
-                                    </div>
-                                </td>
-                                <td>
-                                    <div style="display: flex; gap: 10px;">
-                                        <a href="/edit/{{ c.id }}/" title="Editar"
-                                            style="color: #666; text-decoration: none;">
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18"
-                                                viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                                                stroke-linecap="round" stroke-linejoin="round">
-                                                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7">
-                                                </path>
-                                                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z">
-                                                </path>
-                                            </svg>
-                                        </a>
-                                        <label class="switch" title="Desactivar">
-                                            <input type="checkbox" checked
-                                                onchange="window.location.href='/status/{{ c.id }}/'">
-                                            <span class="slider"></span>
-                                        </label>
-                                    </div>
-                                </td>
-                            </tr>
-                            {% empty %}
-                            <tr>
-                                <td colspan="4"
-                                    style="text-align:center; padding: 60px; color: var(--texto-suave);">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24"
-                                        fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
-                                        stroke-linejoin="round"
-                                        style="opacity: 0.3; margin-bottom: 10px; display: block; margin-left: auto; margin-right: auto;">
-                                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
-                                        <circle cx="9" cy="7" r="4"></circle>
-                                        <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
-                                        <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
-                                    </svg>
-                                    No se encontraron contactos registrados.
-                                </td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
+                                    <div style="font-size: 11px; color: var(--texto-secundario); margin-top: 3px; font-weight: 600;">{{ c.documento_nit }}</div>
+                                </div>
+                            </div>
+                            
+                            <div style="display: flex; flex-direction: column; gap: 8px; border-top: 1px dashed var(--gris-borde); padding-top: 15px;">
+                                <div style="display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--texto-principal); font-weight: 500;">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color: var(--texto-secundario);"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+                                    <span style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ c.correo|default:"-" }}</span>
+                                </div>
+                                <div style="display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--texto-principal); font-weight: 500;">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color: var(--texto-secundario);"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
+                                    {{ c.celular|default:"-" }}
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
                 </div>
-            </section>
+
+                <!-- VISTA DETALLE (Cuando se selecciona un contacto) -->
+                <div id="vistaDetalle" style="display: none; height: 100%; flex-direction: column;">
+                    <div class="tabs-primarias">
+                        <button class="tab-btn" onclick="cambiarTab(this, 'descripcion-panel')">Descripción</button>
+                        <button class="tab-btn activa" onclick="cambiarTab(this, 'actividades-panel')">Actividades</button>
+                    </div>
+                    
+                    <div id="actividades-panel" style="display: flex; flex-direction: column; flex: 1;">
+                        <div class="tabs-secundarias">
+                            <button class="subtab-btn activa" onclick="clickSubtab(this, 'Actividad')">Actividad</button>
+                            <button class="subtab-btn" onclick="clickSubtab(this, 'Nota')">Notas</button>
+                            <button class="subtab-btn" onclick="clickSubtab(this, 'Correo')">Correos</button>
+                            <button class="subtab-btn" onclick="clickSubtab(this, 'Llamada')">Llamadas</button>
+                            <button class="subtab-btn" onclick="clickSubtab(this, 'Tarea')">Tareas</button>
+                            <button class="subtab-btn" onclick="clickSubtab(this, 'Reunión')">Reuniones</button>
+                        </div>
+
+                        <!-- Formulario para registrar interacción -->
+                        <div class="crear-interaccion-form" id="areaForm">
+                            <form method="POST" onsubmit="return validarInter()">
+                                {% csrf_token %}
+                                <input type="hidden" name="contacto" id="contacto_hidden">
+                                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px; margin-bottom: 15px;">
+                                    <div class="grupo-campo" style="margin: 0;">
+                                        <label style="font-size: 11px; font-weight: 700; color: var(--texto-secundario); text-transform: uppercase;">Medio de Registro</label>
+                                        <select id="tipoInterId" name="tipo_interaccion" class="entrada-texto" style="width: 100%; border: 1.5px solid var(--gris-borde); border-radius: 8px; padding: 10px; font-size: 13px;" required>
+                                            <option value="">Seleccione el medio...</option>
+                                            {% for t in tipos %}
+                                            <option value="{{ t.id }}">{{ t.nombre_tipo }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                    <div class="grupo-campo" style="margin: 0;">
+                                        <label style="font-size: 11px; font-weight: 700; color: var(--texto-secundario); text-transform: uppercase;">Canal de Comunicación</label>
+                                        <select id="canalComId" name="canal_comunicacion" class="entrada-texto" style="width: 100%; border: 1.5px solid var(--gris-borde); border-radius: 8px; padding: 10px; font-size: 13px;" required>
+                                            <option value="">Seleccione el canal...</option>
+                                            {% for t in tipos %}
+                                            {% if t.nombre_tipo == 'Correo' or t.nombre_tipo == 'Llamada' or t.nombre_tipo == 'Reunión' or t.nombre_tipo == 'Nota' %}
+                                            <option value="{{ t.id }}">{{ t.nombre_tipo }}</option>
+                                            {% endif %}
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                    <div class="grupo-campo" style="margin: 0;">
+                                        <label style="font-size: 11px; font-weight: 700; color: var(--texto-secundario); text-transform: uppercase;">Duración (minutos)</label>
+                                        <input type="number" name="duracion_minutos" min="1" placeholder="Ej: 15" class="entrada-texto" style="width: 100%; border: 1.5px solid var(--gris-borde); border-radius: 8px; padding: 10px; font-size: 13px;" required>
+                                    </div>
+                                    <div class="grupo-campo" style="margin: 0;">
+                                        <label style="font-size: 11px; font-weight: 700; color: var(--texto-secundario); text-transform: uppercase;">Interés / Temperatura</label>
+                                        <select name="temperatura_emocional" class="entrada-texto" style="width: 100%; border: 1.5px solid var(--gris-borde); border-radius: 8px; padding: 10px; font-size: 13px;" required>
+                                            <option value="">Seleccione nivel...</option>
+                                            <option value="1">1 - Muy Bajo</option>
+                                            <option value="2">2 - Bajo</option>
+                                            <option value="3">3 - Medio</option>
+                                            <option value="4">4 - Alto</option>
+                                            <option value="5">5 - Muy Alto</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                                    <div style="display:flex; align-items:center; gap:8px;">
+                                        <input type="checkbox" id="exito" name="es_exitosa" style="cursor: pointer; width: 16px; height: 16px;">
+                                        <label for="exito" style="font-size:13px; font-weight:600; cursor: pointer; color: var(--texto-principal);">La interacción fue exitosa</label>
+                                    </div>
+                                </div>
+                                <textarea id="detId" name="detalle" placeholder="Escribe un resumen o detalle de la interacción realizada con el cliente..." style="width: 100%; border: 1.5px solid var(--gris-borde); border-radius: 8px; padding: 12px; font-family: inherit; font-size: 13px; margin-bottom: 15px; resize: vertical; min-height: 100px;" required></textarea>
+                                <div style="text-align: right;">
+                                    <button type="submit" class="btn-guardar" style="background: var(--rojo-primario); color: white; border: none; padding: 10px 24px; border-radius: 8px; font-weight: 700; font-size: 14px; cursor: pointer; transition: 0.2s; box-shadow: 0 4px 12px rgba(168, 46, 46, 0.2);">
+                                        Guardar Actividad
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+
+                        <!-- Timeline del contacto -->
+                        <div class="timeline-container">
+                            <div style="border-left: 2px solid var(--gris-borde); padding-left: 20px; position: relative;">
+                                <div class="timeline-mes">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                                    Historial de Actividad
+                                </div>
+                                
+                                <div id="noInteracciones" style="display:none; text-align: center; color: var(--texto-secundario); padding: 40px; font-size: 14px;">
+                                    No hay interacciones para mostrar para este contacto.
+                                </div>
+
+                                {% for inter in interacciones %}
+                                <div class="interaccion-item inter-card" data-contacto-id="{{ inter.contacto.id }}" data-tipo="{{ inter.tipo_interaccion.nombre_tipo }}">
+                                    <div class="interaccion-header">
+                                        <span class="interaccion-titulo">
+                                            {{ inter.tipo_interaccion.nombre_tipo }} - por {{ inter.usuario_responsable.nombre_usuario }}
+                                        </span>
+                                        <span class="interaccion-fecha">{{ inter.fecha_interaccion|date:"d M, Y - h:i a" }}</span>
+                                    </div>
+                                    
+                                    {% if inter.es_exitosa %}
+                                        <div class="badge-estado estado-verde">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                                            Exitosa
+                                        </div>
+                                    {% else %}
+                                        <div class="badge-estado estado-naranja">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+                                            Pendiente / No confirmada
+                                        </div>
+                                    {% endif %}
+                                    
+                                    <div class="interaccion-detalle">
+                                        {{ inter.detalle_actividad|linebreaksbr }}
+                                    </div>
+                                    
+                                    {% if inter.duracion_minutos or inter.temperatura_emocional %}
+                                    <div style="display: flex; gap: 15px; margin-top: 10px; font-size: 11.5px; color: var(--texto-secundario); font-weight: 600; background: #fafbfc; padding: 6px 12px; border-radius: 6px; border: 1px solid var(--gris-borde); width: fit-content;">
+                                        {% if inter.duracion_minutos %}
+                                        <span>⏱ Duración: {{ inter.duracion_minutos }} min</span>
+                                        {% endif %}
+                                        {% if inter.temperatura_emocional %}
+                                        <span>🔥 Interés: {{ inter.temperatura_emocional }}/5</span>
+                                        {% endif %}
+                                    </div>
+                                    {% endif %}
+                                    
+                                    <div style="margin-top: 10px; text-align: right;">
+                                        <a href="/inter_del/{{ inter.id }}/" onclick="return confirm('¿Deseas eliminar este registro de actividad?')" style="color: var(--texto-secundario); transition: 0.2s; font-size: 11px; text-decoration: none;">Eliminar</a>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Panel de Descripción (para mostrar KPIs de estadísticas comerciales) -->
+                    <div id="descripcion-panel" style="display: none; padding: 24px; overflow-y: auto; flex: 1; flex-direction: column;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                            <h3 style="font-size: 16px; font-weight: 800; color: var(--texto-principal); margin: 0;">Estadísticas del Contacto</h3>
+                            <a id="btnIrPerfil" href="#" class="btn-banner" style="font-size: 12px; padding: 6px 14px;">Ver Perfil Completo ↗</a>
+                        </div>
+                        <div id="statsContainer">
+                            <div id="statsPlaceholder" style="text-align: center; color: var(--texto-secundario); padding: 40px; border: 1px dashed var(--gris-borde); border-radius: 12px; font-size: 13.5px;">
+                                <p style="margin-bottom: 10px; font-weight: 700;">Panel Estadístico del Cliente</p>
+                                <p style="font-size: 12px; line-height: 1.4;">Selecciona un cliente para cargar e interactuar con sus analíticas comerciales de comunicación.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </main>
 
 
+    <script>
+        // Variable para rastrear el ID del contacto seleccionado
+        let seleccionadoId = null;
+        let activeSubtab = 'Actividad'; // 'Actividad' significa Todas
+
+        function seleccionarContacto() {
+            const select = document.getElementById('selectContacto');
+            const contactId = select.value;
+            if (contactId) {
+                window.location.href = `/contacto/${contactId}/?from=interacciones`;
+            }
+        }
+
+        function clickSubtab(btn, subtabName) {
+            const subtabs = document.querySelectorAll('.subtab-btn');
+            subtabs.forEach(b => b.classList.remove('activa'));
+            btn.classList.add('activa');
+            activeSubtab = subtabName;
+            
+            // Re-filtrar timeline
+            filtrarTimeline();
+        }
+
+        function filtrarTimeline() {
+            if (!seleccionadoId) return;
+            
+            let visibleCount = 0;
+            const timelineItems = document.querySelectorAll('.interaccion-item');
+            timelineItems.forEach(item => {
+                const itemContactId = item.getAttribute('data-contacto-id');
+                const itemTipo = item.getAttribute('data-tipo');
+                
+                const matchesContact = (itemContactId == seleccionadoId);
+                let matchesTipo = false;
+                
+                if (activeSubtab === 'Actividad') {
+                    matchesTipo = true;
+                } else {
+                    matchesTipo = (itemTipo === activeSubtab);
+                }
+                
+                if (matchesContact && matchesTipo) {
+                    item.style.display = 'block';
+                    visibleCount++;
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+
+            const noInteracciones = document.getElementById('noInteracciones');
+            if (visibleCount === 0) {
+                noInteracciones.style.display = 'block';
+            } else {
+                noInteracciones.style.display = 'none';
+            }
+        }
+
+        // Chart instances for selected contact stats
+        let canalesChartInstance = null;
+        let duracionChartInstance = null;
+        let tendenciaChartInstance = null;
+
+        function cambiarTab(btn, panelId) {
+            // Manejar botones activos
+            const tabButtons = document.querySelectorAll('.tab-btn');
+            tabButtons.forEach(b => b.classList.remove('activa'));
+            btn.classList.add('activa');
+
+            // Manejar paneles visibles
+            const paneles = ['actividades-panel', 'descripcion-panel'];
+            paneles.forEach(p => {
+                const el = document.getElementById(p);
+                if (el) el.style.display = (p === panelId) ? 'flex' : 'none';
+            });
+
+            // Cargar estadísticas si se selecciona Descripción
+            if (panelId === 'descripcion-panel' && seleccionadoId) {
+                cargarEstadisticas(seleccionadoId);
+            }
+        }
+
+        function cargarEstadisticas(contactId) {
+            const statsContainer = document.getElementById('statsContainer');
+            if (!statsContainer) return;
+            
+            // Mostrar cargando
+            statsContainer.innerHTML = `
+                <div style="text-align: center; color: var(--texto-secundario); padding: 60px 20px;">
+                    <div style="margin-bottom: 15px; font-weight: 600;">Cargando estadísticas comerciales...</div>
+                    <div style="display: inline-block; width: 32px; height: 32px; border: 3px solid rgba(168,46,46,0.1); border-radius: 50%; border-top-color: var(--rojo-primario); animation: spin 1s ease-in-out infinite;"></div>
+                </div>
+                <style>
+                    @keyframes spin { to { transform: rotate(360deg); } }
+                </style>
+            `;
+
+            fetch(`/contacto/${contactId}/?ajax_stats=1`)
+                .then(res => {
+                    if (!res.ok) throw new Error("Error fetching stats");
+                    return res.json();
+                })
+                .then(data => {
+                    // Generar estructura de KPIs y contenedores de gráficas
+                    statsContainer.innerHTML = `
+                        <!-- Grid de KPIs -->
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 15px; margin-bottom: 25px;">
+                            <div style="background: #FFF5F5; border: 1px solid #fee2e2; border-radius: 12px; padding: 15px; text-align: center; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.01);">
+                                <div style="font-size: 10px; color: var(--rojo-primario); font-weight: 700; text-transform: uppercase; margin-bottom: 5px; letter-spacing: 0.5px;">Total Interacciones</div>
+                                <div style="font-size: 24px; font-weight: 800; color: var(--texto-principal);">${data.total_interacciones_count || 0}</div>
+                            </div>
+                            <div style="background: #F0FDFA; border: 1px solid #ccfbf1; border-radius: 12px; padding: 15px; text-align: center; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.01);">
+                                <div style="font-size: 10px; color: #0d9488; font-weight: 700; text-transform: uppercase; margin-bottom: 5px; letter-spacing: 0.5px;">Canal Preferido</div>
+                                <div style="font-size: 15px; font-weight: 800; color: var(--texto-principal); margin-top: 8px;">${data.canal_preferido || '-'}</div>
+                            </div>
+                            <div style="background: #F8FAFC; border: 1px solid var(--gris-borde); border-radius: 12px; padding: 15px; text-align: center; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.01);">
+                                <div style="font-size: 10px; color: var(--texto-secundario); font-weight: 700; text-transform: uppercase; margin-bottom: 5px; letter-spacing: 0.5px;">Tiempo Acumulado</div>
+                                <div style="font-size: 15px; font-weight: 800; color: var(--texto-principal); margin-top: 8px;">${data.total_tiempo_str || '0 min'}</div>
+                            </div>
+                        </div>
+
+                        <!-- Fila de Gráficas de Canales y Duración -->
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px; margin-bottom: 25px;">
+                            <!-- Gráfica de Canales (Doughnut) -->
+                            <div style="background: white; border: 1px solid var(--gris-borde); border-radius: 12px; padding: 20px; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 265px; box-shadow: var(--sombra);">
+                                <h4 style="font-size: 12px; font-weight: 800; color: var(--texto-principal); margin-bottom: 15px; text-transform: uppercase; letter-spacing: 0.5px; width: 100%; text-align: left;">Distribución de Canales</h4>
+                                <div style="width: 130px; height: 130px; position: relative;">
+                                    <canvas id="contactoCanalesChart"></canvas>
+                                </div>
+                                <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin-top: 15px; font-size: 10px; font-weight: 700;">
+                                    <span style="display: flex; align-items: center; gap: 4px;"><span style="width: 8px; height: 8px; border-radius: 50%; background: #a82e2e; display: inline-block;"></span>Correos (${data.emails_count || 0})</span>
+                                    <span style="display: flex; align-items: center; gap: 4px;"><span style="width: 8px; height: 8px; border-radius: 50%; background: #335d80; display: inline-block;"></span>Llamadas (${data.calls_count || 0})</span>
+                                    <span style="display: flex; align-items: center; gap: 4px;"><span style="width: 8px; height: 8px; border-radius: 50%; background: #01B574; display: inline-block;"></span>Reuniones (${data.meetings_count || 0})</span>
+                                </div>
+                            </div>
+
+                            <!-- Gráfica de Duración Promedio (Bar) -->
+                            <div style="background: white; border: 1px solid var(--gris-borde); border-radius: 12px; padding: 20px; display: flex; flex-direction: column; min-height: 265px; box-shadow: var(--sombra);">
+                                <h4 style="font-size: 12px; font-weight: 800; color: var(--texto-principal); margin-bottom: 15px; text-transform: uppercase; letter-spacing: 0.5px; width: 100%; text-align: left;">Duración Promedio (min)</h4>
+                                <div style="flex: 1; position: relative; height: 130px; width: 100%;">
+                                    <canvas id="contactoDuracionChart"></canvas>
+                                </div>
+                                <div style="margin-top: 15px; text-align: center; font-size: 11px; color: var(--texto-secundario); border-top: 1px dashed var(--gris-borde); padding-top: 10px; width: 100%;">
+                                    Promedio General: <strong>${data.overall_avg_min || 0} min</strong> por interacción
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Gráfica de Tendencia de Horas Acumuladas (Line) -->
+                        <div style="background: white; border: 1px solid var(--gris-borde); border-radius: 12px; padding: 20px; box-shadow: var(--sombra); margin-bottom: 15px;">
+                            <h4 style="font-size: 12px; font-weight: 800; color: var(--texto-principal); margin-bottom: 15px; text-transform: uppercase; letter-spacing: 0.5px;">Tendencia de Horas Acumuladas</h4>
+                            <div style="position: relative; height: 160px; width: 100%;">
+                                <canvas id="contactoTendenciaChart"></canvas>
+                            </div>
+                        </div>
+                    `;
+
+                    // Instanciar Gráficas
+                    // 1. Canales Doughnut
+                    const ctxCanales = document.getElementById('contactoCanalesChart');
+                    if (ctxCanales) {
+                        const totalCh = (data.emails_count || 0) + (data.calls_count || 0) + (data.meetings_count || 0);
+                        if (canalesChartInstance) canalesChartInstance.destroy();
+                        canalesChartInstance = new Chart(ctxCanales, {
+                            type: 'doughnut',
+                            data: {
+                                labels: ['Correos', 'Llamadas', 'Reuniones'],
+                                datasets: [{
+                                    data: totalCh === 0 ? [1, 1, 1] : [data.emails_count || 0, data.calls_count || 0, data.meetings_count || 0],
+                                    backgroundColor: totalCh === 0 ? ['#F1F5F9', '#E2E8F0', '#CBD5E1'] : ['#a82e2e', '#335d80', '#01B574'],
+                                    borderWidth: 0,
+                                    hoverOffset: 8
+                                }]
+                            },
+                            options: {
+                                cutout: '70%',
+                                responsive: true,
+                                maintainAspectRatio: false,
+                                plugins: {
+                                    legend: { display: false },
+                                    tooltip: {
+                                        backgroundColor: '#1a2232',
+                                        titleFont: { family: 'Inter', size: 12, weight: 'bold' },
+                                        bodyFont: { family: 'Inter', size: 11 },
+                                        padding: 8,
+                                        cornerRadius: 8,
+                                        displayColors: false
+                                    }
+                                }
+                            }
+                        });
+                    }
+
+                    // 2. Duración Promedio Bar
+                    const ctxDuracion = document.getElementById('contactoDuracionChart');
+                    if (ctxDuracion) {
+                        if (duracionChartInstance) duracionChartInstance.destroy();
+                        duracionChartInstance = new Chart(ctxDuracion, {
+                            type: 'bar',
+                            data: {
+                                labels: ['Llamadas', 'Reuniones'],
+                                datasets: [{
+                                    label: 'Minutos',
+                                    data: [data.avg_call_min || 0, data.avg_meeting_min || 0],
+                                    backgroundColor: ['#335d80', '#01B574'],
+                                    borderRadius: 6,
+                                    barThickness: 25
+                                }]
+                            },
+                            options: {
+                                responsive: true,
+                                maintainAspectRatio: false,
+                                scales: {
+                                    y: {
+                                        beginAtZero: true,
+                                        grid: { color: '#f1f5f9' },
+                                        ticks: { font: { family: 'Inter', size: 10 } }
+                                    },
+                                    x: {
+                                        grid: { display: false },
+                                        ticks: { font: { family: 'Inter', size: 10 } }
+                                    }
+                                },
+                                plugins: {
+                                    legend: { display: false },
+                                    tooltip: {
+                                        backgroundColor: '#1a2232',
+                                        padding: 8,
+                                        cornerRadius: 8,
+                                        displayColors: false
+                                    }
+                                }
+                            }
+                        });
+                    }
+
+                    // 3. Tendencia Line
+                    const ctxTendencia = document.getElementById('contactoTendenciaChart');
+                    if (ctxTendencia && data.cumulative_labels && data.cumulative_labels.length > 0) {
+                        if (tendenciaChartInstance) tendenciaChartInstance.destroy();
+                        
+                        // Crear gradiente premium
+                        const ctx = ctxTendencia.getContext('2d');
+                        const gradient = ctx.createLinearGradient(0, 0, 0, 150);
+                        gradient.addColorStop(0, 'rgba(168, 46, 46, 0.2)');
+                        gradient.addColorStop(1, 'rgba(168, 46, 46, 0.0)');
+
+                        tendenciaChartInstance = new Chart(ctxTendencia, {
+                            type: 'line',
+                            data: {
+                                labels: data.cumulative_labels,
+                                datasets: [{
+                                    label: 'Horas Acumuladas',
+                                    data: data.cumulative_data,
+                                    borderColor: '#a82e2e',
+                                    borderWidth: 2.5,
+                                    backgroundColor: gradient,
+                                    fill: true,
+                                    tension: 0.3,
+                                    pointBackgroundColor: '#a82e2e',
+                                    pointBorderColor: '#ffffff',
+                                    pointBorderWidth: 1.5,
+                                    pointRadius: 4,
+                                    pointHoverRadius: 6
+                                }]
+                            },
+                            options: {
+                                responsive: true,
+                                maintainAspectRatio: false,
+                                scales: {
+                                    y: {
+                                        beginAtZero: true,
+                                        grid: { color: '#f1f5f9' },
+                                        ticks: { font: { family: 'Inter', size: 10 } }
+                                    },
+                                    x: {
+                                        grid: { display: false },
+                                        ticks: { font: { family: 'Inter', size: 10 } }
+                                    }
+                                },
+                                plugins: {
+                                    legend: { display: false },
+                                    tooltip: {
+                                        backgroundColor: '#1a2232',
+                                        padding: 8,
+                                        cornerRadius: 8,
+                                        displayColors: false
+                                    }
+                                }
+                            }
+                        });
+                    }
+                })
+                .catch(err => {
+                    console.error("Error fetching stats:", err);
+                    statsContainer.innerHTML = `
+                        <div style="text-align: center; color: #b91c1c; padding: 40px; border: 1px dashed #fee2e2; border-radius: 12px;">
+                            <p style="font-weight: 700;">Error al cargar las estadísticas</p>
+                            <p style="font-size: 12px; margin-top: 5px;">Por favor, intente de nuevo más tarde o verifique los datos en el perfil detallado del cliente.</p>
+                        </div>
+                    `;
+                });
+        }
+
+        function coordinarActividad(tipo) {
+            // 1. Switch to Actividades tab
+            const tabBtn = Array.from(document.querySelectorAll('.tab-btn')).find(b => b.textContent.trim().includes('Actividades'));
+            if (tabBtn) {
+                cambiarTab(tabBtn, 'actividades-panel');
+            }
+
+            // 2. Map and select the subtab
+            let subtabName = tipo;
+            if (tipo === 'Llamar') subtabName = 'Llamada';
+            
+            // Find the subtab button
+            const subtabBtn = Array.from(document.querySelectorAll('.subtab-btn')).find(b => {
+                const text = b.textContent.trim().toLowerCase();
+                if (subtabName === 'Nota') return text.includes('nota');
+                if (subtabName === 'Correo') return text.includes('correo');
+                if (subtabName === 'Llamada') return text.includes('llamada');
+                if (subtabName === 'Tarea') return text.includes('tarea');
+                if (subtabName === 'Reunión') return text.includes('reunión');
+                return text.includes(subtabName.toLowerCase());
+            });
+            
+            if (subtabBtn) {
+                clickSubtab(subtabBtn, subtabName);
+            }
+
+            // 3. Update Form fields (Medio de Registro)
+            const selectMedio = document.getElementById('tipoInterId');
+            if (selectMedio) {
+                const optText = (tipo === 'Llamar') ? 'Llamada' : tipo;
+                const optionToSelect = Array.from(selectMedio.options).find(opt => opt.text.trim().toLowerCase() === optText.toLowerCase());
+                if (optionToSelect) {
+                    selectMedio.value = optionToSelect.value;
+                }
+            }
+
+            // 4. Update Canal de Comunicación
+            const selectCanal = document.getElementById('canalComId');
+            if (selectCanal) {
+                const targetCanal = (tipo === 'Llamar') ? 'Llamada' : (tipo === 'Tarea') ? 'Nota' : tipo; 
+                const optionToSelect = Array.from(selectCanal.options).find(opt => opt.text.trim().toLowerCase() === targetCanal.toLowerCase());
+                if (optionToSelect) {
+                    selectCanal.value = optionToSelect.value;
+                }
+            }
+
+            // 5. Scroll smoothly to form and focus
+            const areaForm = document.getElementById('areaForm');
+            if (areaForm) {
+                areaForm.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                // Pulse feedback effect
+                areaForm.style.transition = 'background-color 0.4s ease';
+                areaForm.style.backgroundColor = '#FFF5F5';
+                setTimeout(() => {
+                    areaForm.style.backgroundColor = '#fafbfc';
+                }, 800);
+            }
+
+            const detInput = document.getElementById('detId');
+            if (detInput) {
+                setTimeout(() => {
+                    detInput.focus();
+                }, 400);
+            }
+        }
+
+        function calcularPorcentaje(val, total) {
+            if (!total || !val) return 0;
+            return Math.min(100, Math.round((val / total) * 100));
+        }
+
+        function validarInter() {
+            const selectContacto = document.getElementById('selectContacto');
+            const tipoInter = document.getElementById('tipoInterId');
+            const canalCom = document.getElementById('canalComId');
+            const det = document.getElementById('detId');
+            const msgJS = document.getElementById('msgJS');
+
+            if (selectContacto && !selectContacto.value) {
+                mostrarErrorJS("Por favor, seleccione un contacto.");
+                return false;
+            }
+            if (tipoInter && !tipoInter.value) {
+                mostrarErrorJS("Por favor, seleccione el medio de registro.");
+                return false;
+            }
+            if (canalCom && !canalCom.value) {
+                mostrarErrorJS("Por favor, seleccione el canal de comunicación.");
+                return false;
+            }
+            if (det && !det.value.trim()) {
+                mostrarErrorJS("Por favor, describa la interacción.");
+                return false;
+            }
+
+            if (msgJS) msgJS.style.display = 'none';
+            return true;
+        }
+
+        function mostrarErrorJS(msg) {
+            const msgJS = document.getElementById('msgJS');
+            if (msgJS) {
+                msgJS.textContent = msg;
+                msgJS.style.display = 'block';
+            }
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function mostrarAlertasCard(idContacto, tipoAlerta) {
+            const modal = document.getElementById('modalAlertasCard');
+            const iconSpan = document.getElementById('alertas-modal-icon');
+            const titleSpan = document.getElementById('alertas-modal-title');
+            const listContainer = document.getElementById('alertas-modal-list');
+            
+            if (!modal || !listContainer) return;
+            
+            if (tipoAlerta === 'bell') {
+                iconSpan.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--rojo-primario)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>`;
+                titleSpan.innerText = "Interacciones del Contacto";
+            } else {
+                iconSpan.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>`;
+                titleSpan.innerText = "Recordatorios Próximos (24h)";
+            }
+            
+            listContainer.innerHTML = `
+                <div style="text-align: center; padding: 40px 20px; color: #94a3b8;">
+                    <div style="display: inline-block; width: 20px; height: 20px; border: 2.5px solid rgba(0,0,0,0.05); border-radius: 50%; border-top-color: var(--rojo-primario); animation: spin 1s linear infinite; margin-bottom: 10px;"></div>
+                    <div>Cargando datos...</div>
+                </div>
+            `;
+            modal.style.display = 'flex';
+            
+            fetch(`/contacto/${idContacto}/alertas/`)
+                .then(res => res.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        const items = tipoAlerta === 'bell' ? data.bell_list : data.clock_list;
+                        listContainer.innerHTML = '';
+                        
+                        if (items.length === 0) {
+                            listContainer.innerHTML = `
+                                <div style="text-align: center; color: #94a3b8; padding: 40px 20px; font-size: 13.5px; font-weight: 600;">
+                                    No hay ${tipoAlerta === 'bell' ? 'notificaciones' : 'recordatorios'} pendientes para este contacto.
+                                </div>
+                            `;
+                        } else {
+                            items.forEach(item => {
+                                let iconSvg = '';
+                                let iconBg = '';
+                                let iconColor = '';
+                                if (item.tipo === 'Correo') {
+                                    iconSvg = `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>`;
+                                    iconBg = '#ecfdf5';
+                                    iconColor = '#10b981';
+                                } else if (item.tipo === 'Llamada') {
+                                    iconSvg = `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>`;
+                                    iconBg = '#eff6ff';
+                                    iconColor = '#3b82f6';
+                                } else if (item.tipo === 'Reunión') {
+                                    iconSvg = `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>`;
+                                    iconBg = '#fff7ed';
+                                    iconColor = '#f97316';
+                                }
+                                
+                                listContainer.innerHTML += `
+                                    <div style="display: flex; align-items: flex-start; gap: 12px; padding: 12px; border-radius: 12px; border: 1px solid #f1f5f9; background: #ffffff; text-align: left;">
+                                        <div style="background-color: ${iconBg}; color: ${iconColor}; border-radius: 8px; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 2px;">
+                                            ${iconSvg}
+                                        </div>
+                                        <div style="flex-grow: 1;">
+                                            <div style="font-size: 13px; font-weight: 700; color: #1e293b; margin-bottom: 2px;">${item.title}</div>
+                                            <div style="font-size: 12px; color: #64748b; line-height: 1.4; word-break: break-word;">${item.body}</div>
+                                        </div>
+                                    </div>
+                                `;
+                            });
+                        }
+                    } else {
+                        listContainer.innerHTML = `<div style="color: var(--rojo-primario); text-align: center; padding: 20px;">Error al cargar datos.</div>`;
+                    }
+                })
+                .catch(err => {
+                    console.error(err);
+                    listContainer.innerHTML = `<div style="color: var(--rojo-primario); text-align: center; padding: 20px;">Error de red.</div>`;
+                });
+        }
+        
+        function cerrarAlertasCard() {
+            const modal = document.getElementById('modalAlertasCard');
+            if (modal) modal.style.display = 'none';
+        }
+
+        document.addEventListener("DOMContentLoaded", function() {
+            // Parsear parámetros de URL (contacto_id)
+            const urlParams = new URLSearchParams(window.location.search);
+            const contactId = urlParams.get('contacto_id');
+            if (contactId) {
+                window.location.href = `/contacto/${contactId}/?from=interacciones`;
+            }
+
+            // Mobile menu toggle
+            const btn = document.getElementById('hamburger-btn');
+            const sidebar = document.querySelector('.barra-lateral');
+            const overlay = document.getElementById('sidebar-overlay');
+            if (btn && sidebar && overlay) {
+                btn.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    sidebar.classList.toggle('activo');
+                    overlay.classList.toggle('activo');
+                });
+                overlay.addEventListener('click', function() {
+                    sidebar.classList.remove('activo');
+                    overlay.classList.remove('activo');
+                });
+            }
+        });
+    </script>
+
+    <!-- Modal para Alertas y Recordatorios del Contacto -->
+    <div id="modalAlertasCard" class="modal-historial" onclick="cerrarAlertasCard()" style="display: none; align-items: center; justify-content: center; z-index: 15000;">
+        <div class="modal-historial-contenido" style="max-width: 500px; min-height: 250px;" onclick="event.stopPropagation()">
+            <div class="modal-historial-header" style="display: flex; justify-content: space-between; width: 100%; align-items: center; padding-bottom: 15px; margin-bottom: 15px; border-bottom: 1px solid #f1f5f9;">
+                <h3 style="margin: 0; font-size: 16px; font-weight: 800; color: #1e293b; display: flex; align-items: center; gap: 10px;">
+                    <span id="alertas-modal-icon"></span>
+                    <span id="alertas-modal-title">Alertas</span>
+                </h3>
+                <button onclick="cerrarAlertasCard()" style="background:none; border:none; font-size:24px; color:#cbd5e1; cursor:pointer; padding: 5px;">&times;</button>
+            </div>
+            <div id="alertas-modal-list" style="display: flex; flex-direction: column; gap: 10px; max-height: 400px; overflow-y: auto; padding-right: 5px;">
+                <!-- Se llena dinámicamente -->
+            </div>
+        </div>
+    </div>
 </body>
 
 </html>
