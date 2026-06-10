@@ -1,0 +1,553 @@
+{% load custom_filters %}
+<style>
+/* Dropdown overrides for indexing */
+.barra-lateral { overflow: visible !important; }
+.pd-menu { overflow: visible !important; }
+
+.pd-submenu { 
+    display: none; position: absolute; left: calc(100% + 8px); bottom: 0px; 
+    width: 220px; background: #fff; border-radius: 12px; 
+    box-shadow: 0 10px 40px rgba(0,0,0,0.18); border: 1px solid #f1f5f9; 
+    z-index: 10000; animation: fadeInFlyout 0.2s ease-out; cursor: default;
+}
+@keyframes fadeInFlyout {
+    from { transform: translateX(-10px); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+}
+.pd-item { position: relative; }
+.pd-item:hover .pd-submenu { display: block; }
+.pd-item:hover { background: #f8fafc; }
+.pd-item-lang { padding: 10px 20px; font-size: 13px; color: #334155; cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
+.pd-item-lang:hover { background: #f1f5f9; }
+
+/* Modal overlay */
+.mc-overlay {
+    display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+    background: rgba(15, 23, 42, 0.4); backdrop-filter: blur(4px); z-index: 99999;
+    align-items: center; justify-content: center; opacity: 0; transition: opacity 0.3s;
+}
+.mc-overlay.visible { display: flex; opacity: 1; }
+.mc-modal {
+    background: #ffffff; width: 900px; max-width: 90%; height: 600px; max-height: 90vh;
+    border-radius: 16px; display: flex; overflow: hidden; transform: scale(0.95); transition: transform 0.3s;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+}
+.mc-overlay.visible .mc-modal { transform: scale(1); }
+
+.mc-sidebar { width: 250px; background: #f8fafc; padding: 30px 15px; border-right: 1px solid #e2e8f0; }
+</style>
+
+<!-- Widget de Google Translate Invisible -->
+<div id="google_translate_element" style="display:none;"></div>
+
+<div class="pd-bottom" id="perfilTrigger" onclick="togglePerfilMenu(event)" style="margin-top: auto; border-top: 1px solid rgba(255,255,255,0.07); padding: 16px 20px; cursor: pointer; display: flex; align-items: center; gap: 12px; transition: 0.3s;">
+    <div class="avatar-s" style="position: relative; overflow: hidden; min-width:38px; height:38px; font-size:15px; background:#e11d48; color:white; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:bold;">
+        {{ usuario_logueado.nombre_usuario|make_list|first|upper|default:"U" }}
+        <img src="{{ usuario_logueado.email|gravatar_url:40 }}" alt="Avatar" style="position: absolute; top:0; left:0; width:100%; height:100%; border-radius:50%; object-fit:cover;" onerror="this.style.display='none';">
+    </div>
+    <div class="p-info" style="flex:1; overflow:hidden; display: flex; flex-direction: column;">
+        <span class="p-nombre" style="font-size:14px; font-weight:600; color:#fff; text-overflow:ellipsis; white-space:nowrap; overflow:hidden;">{{ usuario_logueado.nombre_usuario }}</span>
+        <span class="p-rol" style="font-size:12px; color:#94a3b8; text-overflow:ellipsis; white-space:nowrap; overflow:hidden;">{{ usuario_logueado.email }}</span>
+    </div>
+    <svg class="chevron-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"></polyline></svg>
+</div>
+
+<!-- Dropdown menu -->
+<div id="perfilMenu" class="pd-menu" style="display:none; position:absolute; bottom:80px; left:20px; width:300px; background:#fff; border-radius:16px; box-shadow:0 10px 40px rgba(0,0,0,0.18); z-index:9999;">
+    
+    <!-- MAIN VIEW -->
+    <div id="pdMainView">
+        <div class="pd-menu-header" style="padding:20px; display:flex; align-items:center; gap:12px; border-bottom:1px solid #f1f5f9;">
+            <div class="avatar-s" style="position: relative; overflow: hidden; min-width:44px; height:44px; font-size:17px; background:#e11d48; color:white; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:bold;">
+                {{ usuario_logueado.nombre_usuario|make_list|first|upper|default:"U" }}
+                <img src="{{ usuario_logueado.email|gravatar_url:80 }}" alt="Avatar" style="position: absolute; top:0; left:0; width:100%; height:100%; border-radius:50%; object-fit:cover;" onerror="this.style.display='none';">
+            </div>
+            <div style="overflow:hidden;">
+                <div id="pdMenuName" style="font-weight:700; font-size:14px; color:#0f172a; text-overflow:ellipsis; white-space:nowrap; overflow:hidden;">{{ usuario_logueado.nombre_usuario }}</div>
+                <div id="pdMenuEmail" style="font-size:12px; color:#64748b; text-overflow:ellipsis; white-space:nowrap; overflow:hidden;">{{ usuario_logueado.email }}</div>
+            </div>
+        </div>
+        <div style="padding:10px 0;">
+            <div class="pd-item" onclick="abrirConfigModal()" style="padding:12px 20px; cursor:pointer; font-size:14px; color:#334155; transition:0.2s;">
+                Cuenta y actualización de datos
+            </div>
+            
+            <div class="pd-item" style="padding:12px 20px; cursor:pointer; font-size:14px; color:#334155; transition:0.2s; display:flex; justify-content:space-between; align-items:center;">
+                <div>
+                    <div>Apariencia</div>
+                    <div style="font-size:12px; color:#64748b;" id="lblAparienciaActual">Claro</div>
+                </div>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                
+                <!-- SUBMENU: APARIENCIA -->
+                <div class="pd-submenu">
+                    <div style="padding:10px 0;">
+                        <div class="pd-item" onclick="cambiarApariencia('Modo Claro', event)" style="padding:12px 20px; cursor:pointer; font-size:14px; color:#334155; display:flex; justify-content:space-between; align-items:center;">
+                            <div style="display:flex; align-items:center; gap:8px;">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+                                Claro
+                            </div>
+                            <span class="check-apariencia" id="checkClaro" style="display:none;color:#0f172a;font-weight:bold;">✓</span>
+                        </div>
+                        <div class="pd-item" onclick="cambiarApariencia('Modo Oscuro', event)" style="padding:12px 20px; cursor:pointer; font-size:14px; color:#334155; display:flex; justify-content:space-between; align-items:center;">
+                            <div style="display:flex; align-items:center; gap:8px;">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+                                Oscuro
+                            </div>
+                            <span class="check-apariencia" id="checkOscuro" style="display:none;color:#0f172a;font-weight:bold;">✓</span>
+                        </div>
+                        <div class="pd-item" onclick="cambiarApariencia('Modo Sistema', event)" style="padding:12px 20px; cursor:pointer; font-size:14px; color:#334155; display:flex; justify-content:space-between; align-items:center;">
+                            <div style="display:flex; align-items:center; gap:8px;">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>
+                                Sistema
+                            </div>
+                            <span class="check-apariencia" id="checkSistema" style="display:none;color:#0f172a;font-weight:bold;">✓</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pd-item" style="padding:12px 20px; cursor:pointer; font-size:14px; color:#334155; transition:0.2s; display:flex; justify-content:space-between; align-items:center;">
+                <div>
+                    <div>Idioma</div>
+                    <div style="font-size:12px; color:#64748b;" id="lblIdiomaActual">Español</div>
+                </div>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                
+                <!-- SUBMENU: IDIOMA -->
+                <div class="pd-submenu" style="bottom: auto; top: 0; width: 280px; padding: 10px 0;">
+                    <div style="padding:0 15px 10px 15px; border-bottom: 1px solid #f1f5f9;">
+                        <input type="text" id="idiomaSearch" placeholder="Buscar idioma..." style="width:100%; padding:8px 12px; border:1px solid #e2e8f0; border-radius:8px; font-size:13px; outline:none; box-sizing:border-box;">
+                    </div>
+                    <div id="listaIdiomas" style="max-height:250px; overflow-y:auto;">
+                        <!-- JS lo llena -->
+                    </div>
+                </div>
+            </div>
+
+            <div style="height:1px; background:#f1f5f9; margin:5px 0;"></div>
+            
+            <a href="{% url 'logout' %}" class="pd-item" style="padding:12px 20px; cursor:pointer; font-size:14px; color:#334155; transition:0.2s; text-decoration:none; display:block;">
+                Cerrar sesión
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL CONFIGURACIONES -->
+<div class="mc-overlay" id="modalConfiguraciones">
+    <div class="mc-modal">
+        <!-- Sidebar -->
+        <div class="mc-sidebar">
+            <div class="mc-sidebar-title" style="font-size:12px; font-weight:700; color:#94a3b8; letter-spacing:1px; margin-bottom:15px; padding:0 15px;">CONFIGURACIONES</div>
+            <button class="mc-tab-btn activo" style="width:100%; text-align:left; padding:12px 15px; border:none; background:#fff; border-radius:8px; display:flex; align-items:center; gap:10px; cursor:pointer; font-weight:500;">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                Cuenta
+            </button>
+        </div>
+        
+        <!-- Content -->
+        <div class="mc-content" style="flex:1; padding:40px; overflow-y:auto; position:relative; background:#fff;">
+            <button class="mc-close-btn" onclick="cerrarConfigModal()" style="position:absolute; top:20px; right:20px; background:#f1f5f9; border:none; border-radius:50%; width:32px; height:32px; display:flex; align-items:center; justify-content:center; cursor:pointer; font-size:16px;">✕</button>
+            
+            <h2 style="font-size:24px; font-weight:700; margin-bottom:30px; color:#0f172a;">Cuenta</h2>
+            
+            <!-- Perfil Principal -->
+            <div style="display:flex; align-items:center; gap:20px; margin-bottom:40px;">
+                <div class="mc-big-avatar" style="position:relative; overflow:hidden; width:80px; height:80px; border-radius:50%; background:#e11d48; color:white; display:flex; align-items:center; justify-content:center; font-size:32px; font-weight:bold;">
+                    {{ usuario_logueado.nombre_usuario|make_list|first|upper|default:"U" }}
+                    <img src="{{ usuario_logueado.email|gravatar_url:150 }}" alt="Avatar" style="position:absolute; top:0; left:0; width:100%; height:100%; object-fit:cover;" onerror="this.style.display='none';">
+                </div>
+                <div>
+                    <div style="font-size:18px; font-weight:700; color:#0f172a;" id="mcProfileName">{{ usuario_logueado.nombre_usuario }}</div>
+                    <div style="font-size:14px; color:#64748b;" id="mcProfileUsername">{{ usuario_logueado.nombre_usuario }}</div>
+                </div>
+            </div>
+            
+            <div style="height:1px; background:#f1f5f9; margin-bottom:30px;"></div>
+            
+            <!-- Campos Editables -->
+            <!-- Nombre -->
+            <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:30px; flex-wrap:wrap; gap:15px;">
+                <div style="flex:1;">
+                    <div style="font-size:14px; font-weight:600; color:#0f172a; margin-bottom:5px;">Nombre de usuario</div>
+                    <div id="valNombreUsuario" style="font-size:14px; color:#64748b;">{{ usuario_logueado.nombre_usuario }}</div>
+                    
+                    <div id="editNombreUsuario" style="display:none; margin-top:10px;">
+                        <input type="text" id="inputNombreUsuario" value="{{ usuario_logueado.nombre_usuario }}" style="width:100%; max-width:300px; padding:10px; border:1px solid #cbd5e1; border-radius:6px; font-size:14px; outline:none;">
+                        <div style="margin-top:10px; display:flex; gap:10px;">
+                            <button onclick="guardarCampo('nombre_usuario')" style="background:#0f172a; color:white; border:none; padding:8px 16px; border-radius:6px; font-size:13px; font-weight:500; cursor:pointer;">Guardar</button>
+                            <button onclick="cancelarEdicion('nombre_usuario')" style="background:#f1f5f9; color:#475569; border:none; padding:8px 16px; border-radius:6px; font-size:13px; font-weight:500; cursor:pointer;">Cancelar</button>
+                        </div>
+                    </div>
+                    <div id="errorNombreUsuario" style="color:#ef4444; font-size:13px; margin-top:5px; display:none;"></div>
+                </div>
+                <button id="btnEditNombreUsuario" onclick="iniciarEdicion('nombre_usuario')" style="background:#fff; border:1px solid #cbd5e1; padding:8px 16px; border-radius:6px; font-size:13px; font-weight:500; color:#334155; cursor:pointer;">Cambiar nombre de usuario</button>
+            </div>
+            
+            <div style="height:1px; background:#f1f5f9; margin-bottom:30px;"></div>
+            
+            <!-- Email -->
+            <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:30px; flex-wrap:wrap; gap:15px;">
+                <div style="flex:1;">
+                    <div style="font-size:14px; font-weight:600; color:#0f172a; margin-bottom:5px;">E-mail</div>
+                    <div id="valEmail" style="font-size:14px; color:#64748b;">{{ usuario_logueado.email }}</div>
+                    
+                    <div id="editEmail" style="display:none; margin-top:10px;">
+                        <input type="email" id="inputEmail" value="{{ usuario_logueado.email }}" style="width:100%; max-width:300px; padding:10px; border:1px solid #cbd5e1; border-radius:6px; font-size:14px; outline:none;">
+                        <div style="margin-top:10px; display:flex; gap:10px;">
+                            <button onclick="guardarCampo('email')" style="background:#0f172a; color:white; border:none; padding:8px 16px; border-radius:6px; font-size:13px; font-weight:500; cursor:pointer;">Guardar</button>
+                            <button onclick="cancelarEdicion('email')" style="background:#f1f5f9; color:#475569; border:none; padding:8px 16px; border-radius:6px; font-size:13px; font-weight:500; cursor:pointer;">Cancelar</button>
+                        </div>
+                    </div>
+                    <div id="errorEmail" style="color:#ef4444; font-size:13px; margin-top:5px; display:none;"></div>
+
+                    <!-- Email PIN Verification -->
+                    <div id="emailVerificationBlock" style="display:none; margin-top: 15px; padding: 15px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px;">
+                        <div style="font-size:13px; font-weight:600; margin-bottom:8px; color:#0f172a;">Verificación requerida</div>
+                        <div style="font-size:13px; color:#64748b; margin-bottom:12px;">Ingresa el código de 6 dígitos enviado a tu nuevo correo. <span id="pinTimer" style="color:#ef4444; font-weight:bold;">05:00</span></div>
+                        <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
+                            <input type="text" id="inputPinEmail" placeholder="000000" maxlength="6" style="width:120px; padding:8px; text-align:center; letter-spacing:3px; font-size:16px; border:1px solid #cbd5e1; border-radius:6px; outline:none;">
+                            <button onclick="verificarCodigoEmail()" style="background:#0f172a; color:white; border:none; padding:8px 16px; border-radius:6px; font-size:13px; font-weight:500; cursor:pointer;">Verificar</button>
+                            <button id="btnReenviarPin" onclick="reenviarCodigoEmail()" style="display:none; background:#fff; border:1px solid #cbd5e1; padding:8px 16px; border-radius:6px; font-size:13px; font-weight:500; color:#334155; cursor:pointer;">Reenviar código</button>
+                            <button onclick="cancelarEdicion('email')" style="background:#f1f5f9; color:#475569; border:none; padding:8px 16px; border-radius:6px; font-size:13px; font-weight:500; cursor:pointer;">Cancelar</button>
+                        </div>
+                        <div id="errorPinEmail" style="color:#ef4444; font-size:13px; margin-top:8px; display:none;"></div>
+                    </div>
+                </div>
+                <button id="btnEditEmail" onclick="iniciarEdicion('email')" style="background:#fff; border:1px solid #cbd5e1; padding:8px 16px; border-radius:6px; font-size:13px; font-weight:500; color:#334155; cursor:pointer;">Cambiar e-mail</button>
+            </div>
+            
+            <div style="height:1px; background:#f1f5f9; margin-bottom:30px;"></div>
+            
+            <h3 style="font-size:18px; font-weight:700; color:#0f172a; margin-bottom:20px;">Sistema</h3>
+            
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+                <div style="font-size:14px; color:#334155;">Has iniciado sesión como <strong id="lblLoggedUser">{{ usuario_logueado.nombre_usuario }}</strong></div>
+                <a href="{% url 'logout' %}" style="background:#fff; border:1px solid #cbd5e1; padding:8px 16px; border-radius:6px; font-size:13px; font-weight:500; color:#334155; text-decoration:none; display:inline-block;">Cerrar sesión</a>
+            </div>
+            
+            <div style="height:1px; background:#f1f5f9; margin-bottom:20px;"></div>
+            
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+                <div>
+                    <div style="font-size:14px; font-weight:600; color:#0f172a; margin-bottom:4px;">Cerrar sesión en todas las sesiones</div>
+                    <div style="font-size:12px; color:#64748b;">Dispositivos o navegadores donde estás conectado</div>
+                </div>
+                <a href="{% url 'logout' %}" style="background:#fff; border:1px solid #cbd5e1; padding:8px 16px; border-radius:6px; font-size:13px; font-weight:500; color:#334155; text-decoration:none; display:inline-block;">Cerrar sesión en todas las sesiones</a>
+            </div>
+            
+            <div style="height:1px; background:#f1f5f9; margin-bottom:30px;"></div>
+
+        </div>
+    </div>
+</div>
+
+<script>
+    // --- DROPDOWN LOGIC ---
+    function togglePerfilMenu(e) {
+        if(e) e.stopPropagation();
+        const menu = document.getElementById('perfilMenu');
+        if (menu.style.display === 'none') {
+            menu.style.display = 'block';
+            closeSubmenu(); // Reset to main view
+        } else {
+            menu.style.display = 'none';
+        }
+    }
+
+    document.addEventListener('click', function(e) {
+        const menu = document.getElementById('perfilMenu');
+        const trigger = document.getElementById('perfilTrigger');
+        if (menu && trigger && !trigger.contains(e.target) && !menu.contains(e.target)) {
+            menu.style.display = 'none';
+        }
+    });
+
+    function closeSubmenu() {
+        // Obsolete, submenus are CSS-based flyouts now
+    }
+
+    // --- MODAL LOGIC ---
+    function abrirConfigModal() {
+        document.getElementById('perfilMenu').style.display = 'none';
+        
+        // Append to body to avoid clipping
+        const modal = document.getElementById('modalConfiguraciones');
+        if(modal.parentNode !== document.body) {
+            document.body.appendChild(modal);
+        }
+        
+        modal.classList.add('visible');
+    }
+
+    function cerrarConfigModal() {
+        document.getElementById('modalConfiguraciones').classList.remove('visible');
+    }
+
+    // --- THEME LOGIC ---
+    const savedTheme = localStorage.getItem('temaApp') || 'Modo Sistema';
+    cambiarApariencia(savedTheme, false);
+
+    function cambiarApariencia(tema, e = null) {
+        if(e) e.stopPropagation();
+        localStorage.setItem('temaApp', tema);
+        document.getElementById('lblAparienciaActual').textContent = tema === 'Modo Claro' ? 'Claro' : (tema === 'Modo Oscuro' ? 'Oscuro' : 'Sistema');
+        
+        // Checks
+        document.querySelectorAll('.check-apariencia').forEach(el => el.style.display = 'none');
+        if(tema === 'Modo Claro') document.getElementById('checkClaro').style.display = 'inline';
+        if(tema === 'Modo Oscuro') document.getElementById('checkOscuro').style.display = 'inline';
+        if(tema === 'Modo Sistema') document.getElementById('checkSistema').style.display = 'inline';
+
+        let themeToApply = 'light';
+        if (tema === 'Modo Oscuro') {
+            themeToApply = 'dark';
+        } else if (tema === 'Modo Sistema') {
+            themeToApply = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+        }
+        document.documentElement.setAttribute('data-theme', themeToApply);
+    }
+
+    // --- LANGUAGE LOGIC ---
+    const idiomasDelMundo = [
+        { code: 'default', name: 'Por defecto', native: 'Por defecto' },
+        { code: 'es', name: 'Spanish', native: 'Español' },
+        { code: 'en', name: 'English', native: 'English' },
+        { code: 'fr', name: 'French', native: 'Français' },
+        { code: 'de', name: 'German', native: 'Deutsch' },
+        { code: 'it', name: 'Italian', native: 'Italiano' },
+        { code: 'pt', name: 'Portuguese', native: 'Português' },
+        { code: 'ru', name: 'Russian', native: 'Русский' },
+        { code: 'zh-CN', name: 'Chinese (Simplified)', native: '中文' },
+        { code: 'ja', name: 'Japanese', native: '日本語' },
+        { code: 'ko', name: 'Korean', native: '한국어' }
+    ];
+
+    let idiomaActivo = localStorage.getItem('idiomaSeleccionado') || 'default';
+    
+    // Inject Google Translate script
+    const gtScript = document.createElement('script');
+    gtScript.type = 'text/javascript';
+    gtScript.src = 'https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit';
+    document.body.appendChild(gtScript);
+
+    window.googleTranslateElementInit = function() {
+        new google.translate.TranslateElement({pageLanguage: 'es', autoDisplay: false}, 'google_translate_element');
+        setTimeout(() => {
+            if(idiomaActivo !== 'default') {
+                cambiarIdioma(idiomasDelMundo.find(l => l.code === idiomaActivo), false);
+            } else {
+                updateIdiomaLabel('default');
+            }
+        }, 1000);
+    };
+
+    function renderLanguages(filterText = "") {
+        const container = document.getElementById('listaIdiomas');
+        container.innerHTML = '';
+        const term = filterText.toLowerCase();
+
+        idiomasDelMundo.forEach(lang => {
+            if (lang.name.toLowerCase().includes(term) || lang.native.toLowerCase().includes(term)) {
+                const isActivo = idiomaActivo === lang.code;
+                const div = document.createElement('div');
+                div.className = 'pd-item-lang';
+                div.onclick = () => cambiarIdioma(lang);
+                
+                const span = document.createElement('span');
+                span.textContent = lang.code === 'default' ? 'Por defecto' : (lang.native ? `${lang.native} (${lang.name})` : lang.name);
+                div.appendChild(span);
+
+                if(isActivo) {
+                    const check = document.createElement('span');
+                    check.textContent = '✓';
+                    check.style.color = '#0f172a';
+                    check.style.fontWeight = 'bold';
+                    div.appendChild(check);
+                }
+
+                container.appendChild(div);
+            }
+        });
+    }
+
+    document.getElementById('idiomaSearch').addEventListener('input', (e) => renderLanguages(e.target.value));
+
+    function updateIdiomaLabel(code) {
+        const lang = idiomasDelMundo.find(l => l.code === code);
+        if(lang) {
+            document.getElementById('lblIdiomaActual').textContent = lang.code === 'default' ? 'Español' : (lang.native || lang.name);
+        }
+    }
+
+    function cambiarIdioma(lang, userAction = true) {
+        idiomaActivo = lang.code;
+        localStorage.setItem('idiomaSeleccionado', lang.code);
+        updateIdiomaLabel(lang.code);
+        renderLanguages(document.getElementById('idiomaSearch').value);
+
+        if(userAction) closeSubmenu();
+
+        function tryTranslate() {
+            const frame = document.querySelector('.goog-te-combo');
+            if (frame) {
+                frame.value = lang.code === 'default' ? 'es' : lang.code;
+                frame.dispatchEvent(new Event('change'));
+            } else {
+                setTimeout(tryTranslate, 500);
+            }
+        }
+        tryTranslate();
+    }
+
+    // Init language list
+    renderLanguages();
+    updateIdiomaLabel(idiomaActivo);
+
+    // --- INLINE EDITING LOGIC ---
+    function capitalize(s) {
+        if(s === 'nombre_usuario') return 'NombreUsuario';
+        if(s === 'email') return 'Email';
+        return s;
+    }
+
+    function iniciarEdicion(campo) {
+        document.getElementById(`val${capitalize(campo)}`).style.display = 'none';
+        document.getElementById(`edit${capitalize(campo)}`).style.display = 'block';
+        document.getElementById(`btnEdit${capitalize(campo)}`).style.display = 'none';
+        document.getElementById(`error${capitalize(campo)}`).style.display = 'none';
+    }
+
+    function cancelarEdicion(campo) {
+        document.getElementById(`val${capitalize(campo)}`).style.display = 'block';
+        document.getElementById(`edit${capitalize(campo)}`).style.display = 'none';
+        document.getElementById(`btnEdit${capitalize(campo)}`).style.display = 'block';
+        document.getElementById(`error${capitalize(campo)}`).style.display = 'none';
+        document.getElementById(`input${capitalize(campo)}`).value = document.getElementById(`val${capitalize(campo)}`).textContent;
+
+        if (campo === 'email') {
+            document.getElementById('emailVerificationBlock').style.display = 'none';
+            detenerTimer();
+        }
+    }
+
+    let pinTimerInterval;
+    function iniciarTimer(duracion) {
+        let timer = duracion, minutes, seconds;
+        const display = document.getElementById('pinTimer');
+        document.getElementById('btnReenviarPin').style.display = 'none';
+        
+        clearInterval(pinTimerInterval);
+        pinTimerInterval = setInterval(function () {
+            minutes = parseInt(timer / 60, 10);
+            seconds = parseInt(timer % 60, 10);
+            minutes = minutes < 10 ? "0" + minutes : minutes;
+            seconds = seconds < 10 ? "0" + seconds : seconds;
+
+            display.textContent = minutes + ":" + seconds;
+
+            if (--timer < 0) {
+                clearInterval(pinTimerInterval);
+                display.textContent = "Expirado";
+                document.getElementById('btnReenviarPin').style.display = 'inline-block';
+            }
+        }, 1000);
+    }
+    
+    function detenerTimer() {
+        clearInterval(pinTimerInterval);
+        document.getElementById('pinTimer').textContent = "05:00";
+    }
+
+    function verificarCodigoEmail() {
+        const pin = document.getElementById('inputPinEmail').value.trim();
+        const errorEl = document.getElementById('errorPinEmail');
+        
+        if(pin.length !== 6) {
+            errorEl.textContent = 'Ingresa el código de 6 dígitos';
+            errorEl.style.display = 'block';
+            return;
+        }
+
+        const formData = new FormData();
+        formData.append('pin', pin);
+
+        fetch('/verificar-cambio-email/', { method: 'POST', body: formData })
+        .then(response => response.json())
+        .then(data => {
+            if(data.ok) {
+                window.location.reload(); 
+            } else {
+                errorEl.textContent = data.error;
+                errorEl.style.display = 'block';
+            }
+        })
+        .catch(err => {
+            errorEl.textContent = 'Error de red';
+            errorEl.style.display = 'block';
+        });
+    }
+
+    function reenviarCodigoEmail() {
+        fetch('/reenviar-codigo-email/', { method: 'POST' })
+        .then(response => response.json())
+        .then(data => {
+            if(data.ok) {
+                iniciarTimer(300);
+                document.getElementById('errorPinEmail').style.display = 'none';
+            } else {
+                document.getElementById('errorPinEmail').textContent = data.error;
+                document.getElementById('errorPinEmail').style.display = 'block';
+            }
+        });
+    }
+
+    function guardarCampo(campo) {
+        const valor = document.getElementById(`input${capitalize(campo)}`).value.trim();
+        const errorEl = document.getElementById(`error${capitalize(campo)}`);
+        
+        if(!valor) {
+            errorEl.textContent = 'El campo no puede estar vacío';
+            errorEl.style.display = 'block';
+            return;
+        }
+
+        const formData = new FormData();
+        formData.append('campo', campo);
+        formData.append('valor', valor);
+
+        fetch('/actualizar-perfil/', { method: 'POST', body: formData })
+        .then(response => response.json())
+        .then(data => {
+            if(data.ok) {
+                if(data.requiere_verificacion) {
+                    document.getElementById('editEmail').style.display = 'none';
+                    document.getElementById('emailVerificationBlock').style.display = 'block';
+                    document.getElementById('inputPinEmail').value = '';
+                    document.getElementById('errorPinEmail').style.display = 'none';
+                    iniciarTimer(300);
+                    return;
+                }
+
+                document.getElementById(`val${capitalize(campo)}`).textContent = data.valor;
+                
+                if(campo === 'nombre_usuario') {
+                    document.getElementById('mcProfileName').textContent = data.valor;
+                    document.getElementById('mcProfileUsername').textContent = data.valor;
+                    document.getElementById('lblLoggedUser').textContent = data.valor;
+                    document.querySelector('.p-nombre').textContent = data.valor;
+                    document.getElementById('pdMenuName').textContent = data.valor;
+                }
+                cancelarEdicion(campo);
+            } else {
+                errorEl.textContent = data.error || 'Error al guardar';
+                errorEl.style.display = 'block';
+            }
+        })
+        .catch(err => {
+            errorEl.textContent = 'Error de conexión';
+            errorEl.style.display = 'block';
+        });
+    }
+</script>

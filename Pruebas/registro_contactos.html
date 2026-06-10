@@ -1,0 +1,127 @@
+<!-- ═══ INFORMACIÓN DEL PROYECTO ═══ -->
+<div style="margin-top: 18px; border-top: 1px solid var(--gris-borde); padding-top: 18px;">
+    <p style="font-size: 13px; font-weight: 700; color: var(--rojo-primario); margin-bottom: 12px; text-transform: uppercase; letter-spacing: 0.5px;">
+        Información del Proyecto
+    </p>
+
+    <div class="grupo-campo">
+        <label>Tipo de Proyecto / Servicio</label>
+        <select name="tipo_proyecto" id="tipoProyectoSelect" class="entrada-texto" onchange="mostrarCamposProyecto()">
+            <option value="">Selecciona el tipo de proyecto</option>
+            <option value="Construcción desde cero en terreno propio">Construcción desde cero en terreno propio</option>
+            <option value="Diseño y construcción de casas personalizadas">Diseño y construcción de casas personalizadas</option>
+            <option value="Trámites legales y licencias">Trámites legales y licencias</option>
+            <option value="Adecuaciones o remodelaciones">Adecuaciones o remodelaciones</option>
+            <option value="Apartamento">Apartamento</option>
+        </select>
+    </div>
+
+    <div id="camposApartamento" style="display:none; margin-top: 12px; padding: 15px; border: 1px dashed var(--gris-borde); border-radius: 8px;">
+        <div class="grupo-campo">
+            <label>Conjunto / Proyecto</label>
+            <select name="proyecto" id="proyectoSelect" class="entrada-texto">
+                <option value="">Selecciona un conjunto</option>
+                {% for p in proyectos %}
+                <option value="{{ p.id }}">{{ p.nombre_proyecto }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 12px;">
+            <div class="grupo-campo">
+                <label>Torre</label>
+                <input type="text" name="torre" class="entrada-texto" placeholder="Ej: Torre A"
+                    oninput="this.value = this.value.replace(/[^0-9A-Za-záéíóúÁÉÍÓÚñÑ\s]/g, '')">
+            </div>
+            <div class="grupo-campo">
+                <label>N° Apartamento</label>
+                <input type="text" name="apartamento" class="entrada-texto" placeholder="Ej: 501"
+                    oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+            </div>
+        </div>
+        <div class="grupo-campo" style="margin-top: 12px;">
+            <label>Motivo</label>
+            <select name="tipo_contrato" class="entrada-texto">
+                <option value="">Selecciona</option>
+                <option value="Comprar">Comprar</option>
+                <option value="Arrendar">Arrendar</option>
+            </select>
+        </div>
+    </div>
+
+    <!-- Información laboral / personal -->
+    <div style="margin-top: 18px; border-top: 1px solid var(--gris-borde); padding-top: 18px;">
+        <p style="font-size: 13px; font-weight: 700; color: var(--rojo-primario); margin-bottom: 12px; text-transform: uppercase; letter-spacing: 0.5px;">
+            Información Personal y Laboral
+        </p>
+        <div class="grupo-campo">
+            <label>Ocupación / Trabajo</label>
+            <select name="ocupacion" id="ocupacionSelect" class="entrada-texto" onchange="mostrarOtraOcupacion()">
+                <option value="">Selecciona una ocupación</option>
+                <option value="Dirección y Gerencia">Dirección y Gerencia</option>
+                <option value="Área de la Salud">Área de la Salud</option>
+                <option value="Educación y Ciencias">Educación y Ciencias</option>
+                <option value="Tecnología e Informática">Tecnología e Informática</option>
+                <option value="Administración, Negocios y Finanzas">Administración, Negocios y Finanzas</option>
+                <option value="Artes, Diseño y Comunicación">Artes, Diseño y Comunicación</option>
+                <option value="Servicios, Ventas y Hostelería">Servicios, Ventas y Hostelería</option>
+                <option value="Oficios Manuales y Operativos">Oficios Manuales y Operativos</option>
+                <option value="Ingeniería, Construcción y Arquitectura">Ingeniería, Construcción y Arquitectura</option>
+                <option value="Agricultura y Medio Ambiente">Agricultura y Medio Ambiente</option>
+                <option value="Otra ocupación">Otra ocupación</option>
+            </select>
+        </div>
+        <div class="grupo-campo" id="campoOtraOcupacion" style="display:none; margin-top: 12px;">
+            <label>Especifique la ocupación</label>
+            <input type="text" name="otra_ocupacion" class="entrada-texto" placeholder="¿A qué se dedica?"
+                oninput="this.value = this.value.replace(/[0-9]/g, '')">
+        </div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 12px;">
+            <div class="grupo-campo">
+                <label>Fecha de Nacimiento</label>
+                <input type="date" id="fechaNacimiento" name="fecha_nacimiento" class="entrada-texto" onchange="calcularEdad()">
+            </div>
+            <div class="grupo-campo">
+                <label>Edad (años)</label>
+                <input type="number" id="edadCalculada" name="edad" class="entrada-texto" placeholder="Calculada automáticamente" readonly style="background-color: #f1f5f9; cursor: not-allowed;">
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function mostrarCamposProyecto() {
+        var sel = document.getElementById("tipoProyectoSelect");
+        var campos = document.getElementById("camposApartamento");
+        if (sel && sel.value === "Apartamento") {
+            campos.style.display = "block";
+        } else {
+            campos.style.display = "none";
+        }
+    }
+
+    function mostrarOtraOcupacion() {
+        var sel = document.getElementById("ocupacionSelect");
+        var campo = document.getElementById("campoOtraOcupacion");
+        if (sel && sel.value === "Otra ocupación") {
+            campo.style.display = "block";
+        } else {
+            campo.style.display = "none";
+        }
+    }
+
+    function calcularEdad() {
+        var fechaInput = document.getElementById("fechaNacimiento").value;
+        if (fechaInput) {
+            var hoy = new Date();
+            var fechaNac = new Date(fechaInput);
+            var edad = hoy.getFullYear() - fechaNac.getFullYear();
+            var m = hoy.getMonth() - fechaNac.getMonth();
+            if (m < 0 || (m === 0 && hoy.getDate() < fechaNac.getDate())) {
+                edad--;
+            }
+            document.getElementById("edadCalculada").value = edad >= 0 ? edad : 0;
+        } else {
+            document.getElementById("edadCalculada").value = "";
+        }
+    }
+</script>

@@ -431,11 +431,23 @@ def contactos(request):
             Q(correo__icontains=query)
         )
 
+    # Lista estática de proyectos activos
+    proyectos = [
+        {"id": 1, "nombre_proyecto": "Satori (Ibagué)"},
+        {"id": 2, "nombre_proyecto": "Mandala (Ibagué)"},
+        {"id": 3, "nombre_proyecto": "Selvia (Armenia)"},
+        {"id": 4, "nombre_proyecto": "Ícono 60 (Ibagué)"},
+        {"id": 5, "nombre_proyecto": "Ática (Ibagué)"},
+        {"id": 6, "nombre_proyecto": "Vivalto (Ibagué)"},
+        {"id": 7, "nombre_proyecto": "Morada Pinaos (Ibagué)"},
+    ]
+
     return render(request, "index.html", {
         "activos": activos,
         "inactivos": Contacto.objects.filter(activo=False),
         "tipos_contacto": TipoContacto.objects.all(),
         "tipos_doc": TipoIdentificacion.objects.all(),
+        "proyectos": proyectos,
         "error": error,
         "usuario_logueado": usuario_logueado,
         "query": query
@@ -2421,3 +2433,132 @@ def obtener_notificaciones_contacto(request, id_contacto):
         'clock_list': clock_list
     })
 
+from django.core.mail import send_mail
+from django.utils import timezone
+
+@csrf_exempt
+def actualizar_perfil(request):
+    if request.method != "POST":
+        return JsonResponse({"ok": False, "error": "Método no permitido"}, status=405)
+
+    user_id = request.session.get("user_id")
+    if not user_id:
+        return JsonResponse({"ok": False, "error": "No autenticado"}, status=401)
+
+    u = Usuario.objects.get(id=user_id)
+    campo = request.POST.get("campo", "")
+    valor = request.POST.get("valor", "").strip()
+
+    if not valor:
+        return JsonResponse({"ok": False, "error": "El valor no puede estar vacío"})
+
+    if campo == "nombre_usuario":
+        if Usuario.objects.filter(nombre_usuario=valor).exclude(id=u.id).exists():
+            return JsonResponse({"ok": False, "error": "Ese nombre de usuario ya está en uso"})
+        u.nombre_usuario = valor
+        u.save()
+        request.session['user_name'] = valor
+        return JsonResponse({"ok": True, "valor": valor})
+
+    elif campo == "email":
+        if Usuario.objects.filter(email=valor).exclude(id=u.id).exists():
+            return JsonResponse({"ok": False, "error": "Ese correo ya está registrado por otro usuario"})
+            
+        if valor == u.email:
+            return JsonResponse({"ok": True, "valor": valor})
+            
+        import random
+        from datetime import timedelta
+        pin = f"{random.randint(0, 999999):06d}"
+        
+        u.nuevo_email_pendiente = valor
+        u.token_cambio_email = pin
+        u.token_cambio_email_expiracion = timezone.now() + timedelta(minutes=5)
+        u.save()
+        
+        try:
+            send_mail(
+                'Código de Verificación - Cambio de Correo',
+                f'Hola {u.nombre_usuario},\n\nHas solicitado cambiar tu correo electrónico. Tu código de verificación es: {pin}\n\nEste código expirará en 5 minutos.',
+                None,
+                [valor],
+                fail_silently=False,
+            )
+            print(f"\n[SOPORTE] Código de cambio de correo para {u.nombre_usuario} a {valor}: {pin}\n")
+            return JsonResponse({"ok": True, "requiere_verificacion": True, "mensaje": "Se ha enviado un código de 6 dígitos a tu nuevo correo."})
+        except Exception as e:
+            u.nuevo_email_pendiente = None
+            u.token_cambio_email = None
+            u.token_cambio_email_expiracion = None
+            u.save()
+            return JsonResponse({"ok": False, "error": f"Error al enviar el correo: {str(e)}"})
+
+    return JsonResponse({"ok": False, "error": "Campo no válido"})
+
+@csrf_exempt
+def verificar_cambio_email(request):
+    if request.method != "POST":
+        return JsonResponse({"ok": False, "error": "Método no permitido"}, status=405)
+
+    user_id = request.session.get("user_id")
+    if not user_id:
+        return JsonResponse({"ok": False, "error": "No autenticado"}, status=401)
+
+    u = Usuario.objects.get(id=user_id)
+    pin = request.POST.get("pin", "").strip()
+
+    if not pin:
+        return JsonResponse({"ok": False, "error": "Debes ingresar un código"})
+
+    if not u.token_cambio_email or not u.token_cambio_email_expiracion or not u.nuevo_email_pendiente:
+        return JsonResponse({"ok": False, "error": "No hay una solicitud de cambio de correo pendiente"})
+
+    if timezone.now() > u.token_cambio_email_expiracion:
+        return JsonResponse({"ok": False, "error": "El código ha expirado"})
+
+    if pin != u.token_cambio_email:
+        return JsonResponse({"ok": False, "error": "Código incorrecto"})
+
+    nuevo_email = u.nuevo_email_pendiente
+    u.email = nuevo_email
+    u.nuevo_email_pendiente = None
+    u.token_cambio_email = None
+    u.token_cambio_email_expiracion = None
+    u.save()
+
+    return JsonResponse({"ok": True, "valor": nuevo_email, "mensaje": "Correo actualizado correctamente"})
+
+@csrf_exempt
+def reenviar_codigo_email(request):
+    if request.method != "POST":
+        return JsonResponse({"ok": False, "error": "Método no permitido"}, status=405)
+
+    user_id = request.session.get("user_id")
+    if not user_id:
+        return JsonResponse({"ok": False, "error": "No autenticado"}, status=401)
+
+    u = Usuario.objects.get(id=user_id)
+
+    if not u.nuevo_email_pendiente:
+        return JsonResponse({"ok": False, "error": "No hay un correo pendiente"})
+
+    import random
+    from datetime import timedelta
+    pin = f"{random.randint(0, 999999):06d}"
+    
+    u.token_cambio_email = pin
+    u.token_cambio_email_expiracion = timezone.now() + timedelta(minutes=5)
+    u.save()
+    
+    try:
+        send_mail(
+            'Código de Verificación (Reenvío) - Cambio de Correo',
+            f'Hola {u.nombre_usuario},\n\nTu nuevo código de verificación es: {pin}\n\nEste código expirará en 5 minutos.',
+            None,
+            [u.nuevo_email_pendiente],
+            fail_silently=False,
+        )
+        print(f"\n[SOPORTE] Nuevo código de cambio de correo para {u.nombre_usuario} a {u.nuevo_email_pendiente}: {pin}\n")
+        return JsonResponse({"ok": True, "mensaje": "Código reenviado correctamente"})
+    except Exception as e:
+        return JsonResponse({"ok": False, "error": f"Error al enviar el correo: {str(e)}"})

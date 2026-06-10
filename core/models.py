@@ -18,6 +18,10 @@ class Usuario(models.Model):
     token_verificacion = models.CharField(max_length=100, null=True, blank=True)
     token_password = models.CharField(max_length=100, blank=True, null=True)
 
+    # Campos para actualización de correo electrónico
+    nuevo_email_pendiente = models.EmailField(null=True, blank=True)
+    token_cambio_email = models.CharField(max_length=6, null=True, blank=True)
+    token_cambio_email_expiracion = models.DateTimeField(null=True, blank=True)
 
     def __str__(self):
         return self.nombre_usuario

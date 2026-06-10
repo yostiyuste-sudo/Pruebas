@@ -365,13 +365,7 @@
             <div class="logo-d">D</div>
             <div class="logo-texto">CONSTRUCTORA</div>
         </div>
-        <div class="perfil-sidebar">
-            <div class="avatar-s">{{ usuario_logueado.nombre_usuario|make_list|first|upper }}</div>
-            <div class="p-info">
-                <span class="p-nombre">{{ usuario_logueado.nombre_usuario }}</span>
-                <p class="p-rol">{{ usuario_logueado.rol.nombre_rol }}</p>
-            </div>
-        </div>
+
         <nav class="navegacion">
             <a href="{% url 'dashboard' %}" class="nav-enlace activo">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
@@ -392,12 +386,7 @@
             </a>
             {% endif %}
         </nav>
-        <div class="cerrar-sesion-cont">
-            <a href="{% url 'logout' %}" class="btn-cerrar">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
-                <span>Cerrar Sesión</span>
-            </a>
-        </div>
+        {% include 'configuraciones.html' %}
     </aside>
 
     <div class="wrapper">
