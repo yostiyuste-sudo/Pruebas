@@ -1,10 +1,4 @@
-Contacto: Isabella Gonzales
-Total interacciones: 8
-ID: 1 | Tipo: Actividad | Canal: None | Duracion: None | Temp: None | Estado: Finalizada
-ID: 2 | Tipo: Llamada | Canal: Llamada | Duracion: 1 | Temp: 4 | Estado: Finalizada
-ID: 3 | Tipo: Correo | Canal: Correo | Duracion: 1 | Temp: 3 | Estado: Finalizada
-ID: 4 | Tipo: Correo | Canal: Correo | Duracion: 1 | Temp: None | Estado: Finalizada
-ID: 5 | Tipo: Reunión | Canal: Reunión | Duracion: 145 | Temp: 5 | Estado: Finalizada
-ID: 6 | Tipo: Correo | Canal: Correo | Duracion: 1 | Temp: 3 | Estado: Finalizada
-ID: 7 | Tipo: Llamada | Canal: Llamada | Duracion: 1 | Temp: 1 | Estado: Finalizada
-ID: 41 | Tipo: Reunión | Canal: Reunión | Duracion: None | Temp: None | Estado: Programada
+Contacto: Isabella Torres 
+Total interacciones: 2
+ID: 1 | Tipo: Actividad | Canal: None | Duracion: None | Temp: None | Estado: Abierta
+ID: 2 | Tipo: Reunión | Canal: Reunión | Duracion: None | Temp: None | Estado: Programada

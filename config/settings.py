@@ -10,6 +10,8 @@ https://docs.djangoproject.com/en/6.0/ref/settings/
 """
 
 from pathlib import Path
+import os
+import dj_database_url
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -19,14 +21,29 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-9nqyhnj14&rheqfwrhkt#7*&d#o3oqm$^!-c)cn3i+ky=c60n-'
+SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-9nqyhnj14&rheqfwrhkt#7*&d#o3oqm$^!-c)cn3i+ky=c60n-')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.getenv('DEBUG', 'False') == 'True'
 
-ALLOWED_HOSTS = ['127.0.0.1', 'localhost', '10.6.76.127', '.ngrok-free.dev']
-NGROK_URL = 'https://karly-nonwarrantable-letty.ngrok-free.dev'
+# ALLOWED_HOSTS = ['127.0.0.1', 'localhost', '10.6.76.127', '.ngrok-free.dev']
+ALLOWED_HOSTS = [
+    '127.0.0.1',
+    'localhost',
+    '.ngrok-free.dev',
+    '.onrender.com',
+]
+
+RENDER_EXTERNAL_HOST = os.getenv('RENDER_EXTERNAL_HOST')
+if RENDER_EXTERNAL_HOST:
+    ALLOWED_HOSTS.append(RENDER_EXTERNAL_HOST)
+
+NGROK_URL = os.getenv('NGROK_URL', 'https://karly-nonwarrantable-letty.ngrok-free.dev')
+
 CSRF_TRUSTED_ORIGINS = [NGROK_URL, 'https://*.ngrok-free.dev']
+RENDER_EXTERNAL_URL = os.getenv('RENDER_EXTERNAL_URL')
+if RENDER_EXTERNAL_URL:
+    CSRF_TRUSTED_ORIGINS.append(RENDER_EXTERNAL_URL)
 
 
 # Application definition
@@ -43,6 +60,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -70,18 +88,22 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'config.wsgi.application'
 
-
-# Database
-# https://docs.djangoproject.com/en/6.0/ref/settings/#databases
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql',
+#         'NAME': 'db_dyco',
+#         'USER': 'postgres',
+#         'PASSWORD': '1234',
+#         'HOST': 'localhost',
+#         'PORT': '5432',
+#     }
+# }
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
+    'default': dj_database_url.config(
+        default='postgresql://postgres:1234@localhost:5432/db_dyco'
+    )
 }
-# Password validation
-# https://docs.djangoproject.com/en/6.0/ref/settings/#auth-password-validators
 
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -113,6 +135,7 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [BASE_DIR / 'static']
+STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 # Configuración de Envío de Correos (Real)
 # Para usar un servidor real, cambia el BACKEND y completa los datos.
@@ -120,8 +143,8 @@ EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'  # O tu servidor SMTP
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = 'dsolutions918@gmail.com'
-EMAIL_HOST_PASSWORD = 'jjyx dxky mcta ncdd'
+EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER', 'dsolutions918@gmail.com')
+EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD', '')
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
 # Configuración IMAP (Recibir Correos)
@@ -134,8 +157,10 @@ MEDIA_ROOT = BASE_DIR / 'media'
 
 # config/settings.py
 
-WHATSAPP_ACCESS_TOKEN = 'TU_ACCESS_TOKEN_REAL_DE_META'
-WHATSAPP_PHONE_NUMBER_ID = '3194899769'
-WHATSAPP_VERIFY_TOKEN = 'mi_token_secreto_123'
+WHATSAPP_ACCESS_TOKEN = os.getenv('WHATSAPP_ACCESS_TOKEN', '')
+WHATSAPP_PHONE_NUMBER_ID = os.getenv('WHATSAPP_PHONE_NUMBER_ID', '1172312952629800')
+WHATSAPP_VERIFY_TOKEN = os.getenv('WHATSAPP_VERIFY_TOKEN', 'pato_123')
+
+
 
 

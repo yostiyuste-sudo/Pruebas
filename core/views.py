@@ -2167,6 +2167,17 @@ import uuid
 import urllib.request
 import urllib.error
 
+def _log_whatsapp_debug(message):
+    try:
+        import os
+        from django.utils import timezone
+        log_path = r"c:\Users\Jary\OneDrive\Documentos\Pruebas\scratch\whatsapp_debug.log"
+        os.makedirs(os.path.dirname(log_path), exist_ok=True)
+        with open(log_path, "a", encoding="utf-8") as f:
+            f.write(f"[{timezone.localtime(timezone.now()).strftime('%Y-%m-%d %H:%M:%S')}] {message}\n")
+    except Exception as e:
+        print(f"[Debug Log Error] {e}")
+
 def format_whatsapp_number(phone):
     if not phone:
         return ""
@@ -2194,13 +2205,17 @@ def whatsapp_webhook(request):
         token = request.GET.get('hub.verify_token')
         
         verify_token = getattr(settings, 'WHATSAPP_VERIFY_TOKEN', 'VERIFY_TOKEN_PLACEHOLDER')
+        _log_whatsapp_debug(f"Webhook GET verification request: mode={mode}, token={token}, expected={verify_token}")
         if mode == 'subscribe' and token == verify_token:
+            _log_whatsapp_debug("Webhook verification SUCCESS")
             return HttpResponse(challenge)
+        _log_whatsapp_debug("Webhook verification FAILED")
         return HttpResponse('Verification failed', status=403)
         
     elif request.method == "POST":
         try:
             data = json.loads(request.body.decode('utf-8'))
+            _log_whatsapp_debug(f"Webhook POST received: {json.dumps(data)}")
             entries = data.get('entry', [])
             for entry in entries:
                 changes = entry.get('changes', [])
@@ -2220,9 +2235,11 @@ def whatsapp_webhook(request):
                         else:
                             text_body = f"[{msg_type.upper()} message]"
                         
+                        _log_whatsapp_debug(f"Parsing message: from={from_phone}, text={text_body}")
                         if from_phone and text_body:
                             contacto = find_contact_by_phone(from_phone)
                             if contacto:
+                                _log_whatsapp_debug(f"Found matching contact: {contacto.nombre} {contacto.apellido} (ID={contacto.id})")
                                 MensajeWhatsApp.objects.create(
                                     contacto=contacto,
                                     texto=text_body,
@@ -2230,7 +2247,10 @@ def whatsapp_webhook(request):
                                     whatsapp_id=msg_id,
                                     estado='leido'
                                 )
+                            else:
+                                _log_whatsapp_debug(f"No contact found matching phone: {from_phone}")
         except Exception as e:
+            _log_whatsapp_debug(f"Webhook POST Error: {str(e)}")
             print(f"[Webhook Parse Error] {e}")
             
         return HttpResponse('EVENT_RECEIVED', status=200)
@@ -2250,16 +2270,21 @@ def enviar_mensaje_whatsapp(request, id_contacto):
             return JsonResponse({'status': 'error', 'message': 'El mensaje no puede estar vacío'}, status=400)
             
         phone_to_use = contacto.celular or contacto.telefono
+        _log_whatsapp_debug(f"Sending message to contact ID={id_contacto} ({contacto.nombre} {contacto.apellido}): raw_phone='{phone_to_use}', text='{texto}'")
         if not phone_to_use:
+            _log_whatsapp_debug(f"Error: contact ID={id_contacto} has no phone number")
             return JsonResponse({'status': 'error', 'message': 'El contacto no tiene un número de celular/teléfono registrado'}, status=400)
             
         formatted_phone = format_whatsapp_number(phone_to_use)
+        _log_whatsapp_debug(f"Formatted phone: '{formatted_phone}'")
         
         success = False
         whatsapp_id = None
         
         token = getattr(settings, 'WHATSAPP_ACCESS_TOKEN', '')
         phone_id = getattr(settings, 'WHATSAPP_PHONE_NUMBER_ID', '')
+        
+        _log_whatsapp_debug(f"Credentials status: token_exists={bool(token)}, phone_id='{phone_id}'")
         
         if token and token != 'EAAG_PLACEHOLDER' and phone_id and phone_id != 'PHONE_ID_PLACEHOLDER':
             url = f"https://graph.facebook.com/v18.0/{phone_id}/messages"
@@ -2274,6 +2299,7 @@ def enviar_mensaje_whatsapp(request, id_contacto):
                 "type": "text",
                 "text": {"preview_url": False, "body": texto}
             }
+            _log_whatsapp_debug(f"Meta request payload: {json.dumps(payload)}")
             req = urllib.request.Request(
                 url,
                 data=json.dumps(payload).encode('utf-8'),
@@ -2283,6 +2309,7 @@ def enviar_mensaje_whatsapp(request, id_contacto):
             try:
                 with urllib.request.urlopen(req, timeout=8) as response:
                     res_body = response.read().decode('utf-8')
+                    _log_whatsapp_debug(f"Meta API Success Response: status={response.status}, body={res_body}")
                     if response.status in [200, 201]:
                         res_data = json.loads(res_body)
                         whatsapp_id = res_data.get('messages', [{}])[0].get('id')
@@ -2291,12 +2318,17 @@ def enviar_mensaje_whatsapp(request, id_contacto):
                         print(f"WhatsApp Cloud API Error: {res_body}")
             except urllib.error.HTTPError as e:
                 res_body = e.read().decode('utf-8') if e.fp else str(e)
+                _log_whatsapp_debug(f"Meta API HTTP Error: code={e.code}, body={res_body}")
                 print(f"WhatsApp Cloud API Error: {res_body}")
             except Exception as e:
+                _log_whatsapp_debug(f"Meta API request exception: {str(e)}")
                 print(f"WhatsApp Request Exception: {e}")
+        else:
+            _log_whatsapp_debug("Skipping Meta request: credentials not set or placeholder.")
                 
         if not success:
             whatsapp_id = f"mock-{uuid.uuid4()}"
+            _log_whatsapp_debug(f"Falling back to mock reply: generated mock id='{whatsapp_id}'")
             
         MensajeWhatsApp.objects.create(
             contacto=contacto,
