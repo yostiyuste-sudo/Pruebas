@@ -940,9 +940,18 @@
                         </div>
                     </div>
 
+                    <!-- Barra de Búsqueda -->
+                    <div class="buscador-contenedor" style="margin-bottom: 25px; position: relative; width: 100%;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--texto-secundario); pointer-events: none; z-index: 10;">
+                            <circle cx="11" cy="11" r="8"></circle>
+                            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                        </svg>
+                        <input type="text" id="buscadorClientes" class="entrada-texto" placeholder="Buscar cliente por nombre o identificación..." style="width: 100%; padding: 12px 16px 12px 42px; border: 1.5px solid var(--gris-borde); border-radius: 12px; font-size: 14px; color: var(--texto-principal); background-color: var(--blanco); box-shadow: inset 0 1px 2px rgba(0,0,0,0.02); display: block;" onkeyup="filtrarClientes()">
+                    </div>
+
                     <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px;">
                         {% for c in contactos %}
-                        <div onclick="window.location.href='/contacto/{{ c.id }}/?from=interacciones';" 
+                        <div class="cliente-card-busca" data-search="{% if c.nombre %}{{ c.nombre|lower }} {{ c.apellido|lower }}{% else %}{{ c.razon_social|lower }}{% endif %} {{ c.documento_nit|lower }}" onclick="window.location.href='/contacto/{{ c.id }}/?from=interacciones';" 
                              style="position: relative; background: white; border: 1px solid var(--gris-borde); padding: 20px; border-radius: 16px; cursor: pointer; transition: all 0.2s ease; box-shadow: var(--sombra);"
                              onmouseover="this.style.borderColor='var(--rojo-primario)'; this.style.transform='translateY(-3px)'; this.style.boxShadow='0 0 25px rgba(168,46,46,0.15), inset 0 0 15px rgba(168,46,46,0.08)';" 
                              onmouseout="this.style.borderColor='var(--gris-borde)'; this.style.transform='translateY(0)'; this.style.boxShadow='var(--sombra)';" 
@@ -1027,6 +1036,15 @@
                             </div>
                         </div>
                         {% endfor %}
+                    </div>
+                    
+                    <!-- Empty State for Clients Search -->
+                    <div id="noResultsClientes" style="display: none; text-align: center; color: var(--texto-secundario); padding: 40px; font-size: 14px; border: 1px dashed var(--gris-borde); border-radius: 16px; background: var(--blanco); margin-top: 20px;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="opacity: 0.3; margin-bottom: 10px; display: block; margin-left: auto; margin-right: auto;">
+                            <circle cx="11" cy="11" r="8"></circle>
+                            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                        </svg>
+                        No se encontraron clientes que coincidan con la búsqueda.
                     </div>
                 </div>
 
@@ -1792,6 +1810,33 @@
         function cerrarInfoCard() {
             const modal = document.getElementById('modalInfoCard');
             if(modal) modal.style.display = 'none';
+        }
+
+        function filtrarClientes() {
+            const query = document.getElementById('buscadorClientes').value.toLowerCase().trim();
+            const cards = document.querySelectorAll('.cliente-card-busca');
+            let count = 0;
+            
+            cards.forEach(card => {
+                const val = card.getAttribute('data-search');
+                if (val) {
+                    if (val.includes(query)) {
+                        card.style.display = '';
+                        count++;
+                    } else {
+                        card.style.display = 'none';
+                    }
+                }
+            });
+            
+            const noResults = document.getElementById('noResultsClientes');
+            if (noResults) {
+                if (count === 0 && cards.length > 0) {
+                    noResults.style.display = 'block';
+                } else {
+                    noResults.style.display = 'none';
+                }
+            }
         }
     </script>
 </body>
