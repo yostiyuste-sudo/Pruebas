@@ -70,7 +70,7 @@ def registro_view(request):
                     enviar_correo_seguro(
                         'Verifica tu cuenta (reenvío) - CRM',
                         f'Hola {usuario_sin_verificar.nombre_usuario},\n\nTu nuevo código de verificación es: {pin}\n\nIntroduce este código en la web para activar tu cuenta.',
-                        [usuario_sin_verificar.correo_electronico]
+                        [usuario_sin_verificar.email]
                     )
                     print(f"\n[SOPORTE] Código de verificación (reenvío) para {usuario_sin_verificar.nombre_usuario}: {pin}\n")
                 except Exception as e:
@@ -166,7 +166,7 @@ def reenviar_pin(request):
                 enviar_correo_seguro(
                     'Nuevo código de verificación - Constructora Dyco',
                     f'Hola {u.nombre_usuario},\n\nTu nuevo código de verificación es: {pin}\n\nEste código expirará en 5 minutos.',
-                    [u.correo_electronico]
+                    [u.email]
                 )
                 print(f"\n[SOPORTE] Nuevo PIN reenviado para {u.nombre_usuario}: {pin}\n")
             except Exception as e:
