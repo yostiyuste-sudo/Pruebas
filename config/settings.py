@@ -162,8 +162,8 @@ WHATSAPP_PHONE_NUMBER_ID = os.getenv('WHATSAPP_PHONE_NUMBER_ID', '')
 WHATSAPP_VERIFY_TOKEN = os.getenv('WHATSAPP_VERIFY_TOKEN', 'pato_123')
 
 # UltraMsg para WhatsApp (alternativa simple a Meta API)
-ULTRAMSG_INSTANCE_ID = os.getenv('ULTRAMSG_INSTANCE_ID', '')
-ULTRAMSG_TOKEN = os.getenv('ULTRAMSG_TOKEN', '')
+ULTRAMSG_INSTANCE_ID = os.getenv('ULTRAMSG_INSTANCE_ID', 'instance180529')
+ULTRAMSG_TOKEN = os.getenv('ULTRAMSG_TOKEN', 'c8z7umlwaefy1agx')
 
 import sys
 if 'runserver' in sys.argv or 'gunicorn' in sys.argv:
