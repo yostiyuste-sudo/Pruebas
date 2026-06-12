@@ -2510,16 +2510,27 @@ def _enviar_ultramsg(phone, message):
 def ultramsg_webhook(request):
     """Webhook para recibir mensajes entrantes desde UltraMsg."""
     import json
+    _log_whatsapp_debug(f"UltraMsg webhook {request.method}")
     if request.method == "POST":
         try:
-            data = json.loads(request.body.decode('utf-8'))
-            _log_whatsapp_debug(f"UltraMsg webhook: {json.dumps(data)}")
-            msg_data = data.get('data', {})
+            raw = request.body.decode('utf-8')
+            _log_whatsapp_debug(f"UltraMsg raw body: {raw}")
+            data = json.loads(raw)
+
+            # UltraMsg puede enviar el mensaje directo o envuelto en {"data": {...}}
+            msg_data = data.get('data', data)
+
             from_phone = msg_data.get('from', '')
             text = msg_data.get('body', '')
             msg_id = msg_data.get('messageId', '')
-            if from_phone and text:
-                contacto = find_contact_by_phone(from_phone)
+            from_me = msg_data.get('fromMe', False)
+
+            _log_whatsapp_debug(f"UltraMsg parsed: from={from_phone}, text={text}, fromMe={from_me}")
+
+            if from_phone and text and not from_me:
+                # Limpiar números
+                raw_number = from_phone.split('@')[0].replace('+', '')
+                contacto = find_contact_by_phone(raw_number)
                 if contacto:
                     MensajeWhatsApp.objects.create(
                         contacto=contacto,
@@ -2528,7 +2539,9 @@ def ultramsg_webhook(request):
                         whatsapp_id=msg_id,
                         estado='leido'
                     )
-                    _log_whatsapp_debug(f"Saved incoming from {from_phone}")
+                    _log_whatsapp_debug(f"Saved incoming msg for contact {contacto.id}")
+                else:
+                    _log_whatsapp_debug(f"No contact found for phone: {raw_number}")
         except Exception as e:
             _log_whatsapp_debug(f"UltraMsg webhook error: {e}")
         return HttpResponse('OK', status=200)
