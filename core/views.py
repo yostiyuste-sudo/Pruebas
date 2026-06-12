@@ -2488,13 +2488,13 @@ def _enviar_ultramsg(phone, message):
         return False, None, "ULTRAMSG_INSTANCE_ID o ULTRAMSG_TOKEN no configurados"
     try:
         payload = {"token": token, "to": phone, "body": message}
-        data = urllib.parse.urlencode(payload).encode()
+        data = json.dumps(payload).encode()
         req = urllib.request.Request(
             f"https://api.ultramsg.com/{instance_id}/messages/chat",
             data=data,
             method='POST'
         )
-        req.add_header('Content-Type', 'application/x-www-form-urlencoded')
+        req.add_header('Content-Type', 'application/json')
         with urllib.request.urlopen(req, timeout=10) as resp:
             body = json.loads(resp.read().decode())
             if body.get("sent"):
