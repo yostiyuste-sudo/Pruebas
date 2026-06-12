@@ -23,6 +23,7 @@ urlpatterns = [
     path('', views.dashboard, name='dashboard'),
     path('dashboard/', views.dashboard, name='dashboard'),
     path('contactos/', views.contactos, name='contactos'),
+    path('nuevo-contacto/', views.nuevo_contacto_mobile, name='nuevo_contacto_mobile'),
     path('contacto/<int:id_contacto>/', views.detalle_contacto, name='detalle_contacto'),
     path('interacciones/', views.interacciones, name='interacciones'),
     path('edit/<int:id_contacto>/', views.editar_contacto, name='editar_contacto'),

@@ -68,6 +68,19 @@ class Contacto(models.Model):
     nombre_rep_legal = models.CharField(max_length=150, blank=True, null=True)
     id_rep_legal = models.CharField(max_length=25, blank=True, null=True)
     
+    # Nuevos atributos de Proyecto
+    tipo_proyecto = models.CharField(max_length=150, blank=True, null=True)
+    proyecto_nombre = models.CharField(max_length=150, blank=True, null=True)
+    torre = models.CharField(max_length=50, blank=True, null=True)
+    apartamento = models.CharField(max_length=50, blank=True, null=True)
+    tipo_contrato = models.CharField(max_length=50, blank=True, null=True)
+    
+    # Nuevos atributos Personales/Laborales
+    ocupacion = models.CharField(max_length=150, blank=True, null=True)
+    otra_ocupacion = models.CharField(max_length=150, blank=True, null=True)
+    fecha_nacimiento = models.DateField(blank=True, null=True)
+    edad = models.IntegerField(blank=True, null=True)
+    
     fecha_registro = models.DateTimeField(auto_now_add=True)
     activo = models.BooleanField(default=True)
     historial_cambios = models.TextField(blank=True, null=True)

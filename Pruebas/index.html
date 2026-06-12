@@ -599,13 +599,24 @@
         .sidebar-overlay {
             display: none;
         }
+        .btn-nuevo-contacto-movil {
+            display: none;
+        }
+        .bottom-nav {
+            display: none;
+        }
+        .mobile-contact-list {
+            display: none;
+        }
 
         @media (max-width: 768px) {
             .barra-lateral {
                 width: 280px !important;
                 position: fixed !important;
                 left: -280px !important;
-                height: 100vh !important;
+                height: 100dvh !important;
+                padding-bottom: 50px !important;
+                overflow-y: auto !important;
                 transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), left 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
                 z-index: 10000 !important;
             }
@@ -728,6 +739,141 @@
                 display: block !important;
                 opacity: 1 !important;
             }
+
+            .pd-bottom { width: 100% !important; justify-content: flex-start !important; padding: 16px 20px !important; gap: 12px !important; }
+            .pd-bottom .p-info { display: block !important; opacity: 1 !important; }
+            .pd-bottom .chevron-icon { display: block !important; }
+            
+            /* --- MOBILE REDESIGN STYLES --- */
+            #seccion-nuevo-contacto {
+                display: none !important;
+            }
+            .tabla-directorio {
+                display: none !important;
+            }
+            .mobile-contact-list {
+                display: flex !important;
+                flex-direction: column;
+                gap: 15px;
+            }
+            .mobile-contact-card {
+                background: white;
+                border-radius: 16px;
+                padding: 16px;
+                border: 1px solid #e2e8f0;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.02);
+            }
+            .mobile-contact-card-header {
+                display: flex;
+                align-items: flex-start;
+                gap: 12px;
+                margin-bottom: 12px;
+                padding-bottom: 12px;
+                border-bottom: 1px solid #f1f5f9;
+            }
+            .mobile-contact-avatar {
+                width: 44px;
+                height: 44px;
+                background-color: #e2e8f0;
+                border-radius: 50%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-weight: 700;
+                color: #475569;
+                font-size: 16px;
+                flex-shrink: 0;
+            }
+            .mobile-contact-info {
+                flex: 1;
+            }
+            .mobile-contact-name {
+                font-weight: 700;
+                color: #1e293b;
+                font-size: 15px;
+                margin-bottom: 2px;
+            }
+            .mobile-contact-email {
+                color: #64748b;
+                font-size: 12px;
+                margin-bottom: 6px;
+            }
+            .mobile-contact-type {
+                display: inline-block;
+                padding: 4px 8px;
+                border-radius: 6px;
+                font-size: 10px;
+                font-weight: 800;
+                letter-spacing: 0.5px;
+            }
+            .type-natural { background-color: #e0f2fe; color: #0284c7; }
+            .type-juridica { background-color: #f3e8ff; color: #9333ea; }
+            
+            .mobile-contact-actions {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+            }
+            .mobile-action-btn {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                padding: 8px;
+                border-radius: 8px;
+                color: #64748b;
+                text-decoration: none;
+                flex: 1;
+                transition: 0.2s;
+            }
+            .mobile-action-btn:active { background-color: #f1f5f9; }
+            
+            .btn-nuevo-contacto-movil {
+                display: flex !important;
+                align-items: center;
+                justify-content: center;
+                background-color: var(--rojo-primario);
+                color: white;
+                text-decoration: none;
+                padding: 10px 16px;
+                border-radius: 20px;
+                font-weight: 700;
+                font-size: 13px;
+                box-shadow: 0 4px 10px rgba(168, 46, 46, 0.3);
+            }
+            .hamburger-btn {
+                display: flex !important;
+                align-items: center;
+                justify-content: center;
+                background: white;
+                border: 1px solid #e2e8f0;
+                border-radius: 12px;
+                width: 44px;
+                height: 44px;
+                color: #1e293b;
+                cursor: pointer;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+                z-index: 1001;
+                margin-right: 15px;
+                outline: none;
+                flex-shrink: 0;
+            }
+            .hamburger-btn svg {
+                stroke: var(--primario);
+            }
+            .sidebar-overlay {
+                display: none;
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100vw;
+                height: 100vh;
+                background: rgba(0, 0, 0, 0.4);
+                backdrop-filter: blur(4px);
+                z-index: 9999;
+            }
+            .sidebar-overlay.activo {
+                display: block !important;
+            }
         }
     </style>
     <script src="{% static 'js/validaciones.js' %}"></script>
@@ -739,30 +885,17 @@
          BARRA LATERAL (SIDEBAR)
      ════════════════════════════════════════════ -->
         <!-- BARRA LATERAL -->
+        <!-- BARRA LATERAL -->
     <aside class="barra-lateral">
         <div class="barra-cabecera">
-            <div class="logo-d">D</div>
+            <img src="{% static 'img/logo_dyco.png' %}" alt="Logo DYCO" style="width: 48px; height: 48px; object-fit: contain; border-radius: 12px; background: white; padding: 4px; box-shadow: 0 2px 5px rgba(0,0,0,0.2);">
             <div class="logo-texto">CONSTRUCTORA</div>
-        </div>
-
-        <div class="perfil-sidebar">
-            <div class="avatar-s">
-                {{ usuario_logueado.nombre_usuario|make_list|first|upper }}
-            </div>
-            <div class="p-info">
-                <span class="p-nombre">{{ usuario_logueado.nombre_usuario }}</span>
-                <span class="p-rol">{{ usuario_logueado.rol.nombre_rol }}</span>
-            </div>
         </div>
 
         <nav class="navegacion">
             <a href="{% url 'dashboard' %}" class="nav-enlace">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
                 <span class="nav-text">Inicio</span>
-            </a>
-            <a href="{% url 'incidencias' %}" class="nav-enlace">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
-                <span class="nav-text">Incidencias</span>
             </a>
             <a href="{% url 'contactos' %}" class="nav-enlace activo">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
@@ -778,6 +911,10 @@
                 <span class="nav-text">Gestión de Usuarios</span>
             </a>
             {% endif %}
+            <a href="{% url 'incidencias' %}" class="nav-enlace">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+                <span class="nav-text">Incidencias</span>
+            </a>
         </nav>
 
         <!-- ── PERFIL BOTTOM (Configuraciones) ── -->
@@ -789,15 +926,20 @@
          CONTENIDO PRINCIPAL
     ════════════════════════════════════════════ -->
     <main class="contenido-principal">
-        <header style="margin-bottom: 40px; display: flex; align-items: center;">
-            <button id="hamburger-btn" class="hamburger-btn" style="display: none;">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                    <line x1="3" y1="12" x2="21" y2="12"></line>
-                    <line x1="3" y1="6" x2="21" y2="6"></line>
-                    <line x1="3" y1="18" x2="21" y2="18"></line>
-                </svg>
-            </button>
-            <h1 style="font-size: 28px; font-weight: 800; color: #1a1a1a; margin: 0;">Dyco</h1>
+        <header style="margin-bottom: 40px; display: flex; align-items: center; justify-content: space-between;">
+            <div style="display: flex; align-items: center;">
+                <button id="hamburger-btn" class="hamburger-btn" style="display: none;">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="3" y1="12" x2="21" y2="12"></line>
+                        <line x1="3" y1="6" x2="21" y2="6"></line>
+                        <line x1="3" y1="18" x2="21" y2="18"></line>
+                    </svg>
+                </button>
+                <h1 style="font-size: 28px; font-weight: 800; color: #1a1a1a; margin: 0;">Dyco</h1>
+            </div>
+            <a href="{% url 'nuevo_contacto_mobile' %}" class="btn-nuevo-contacto-movil">
+                + Nuevo Contacto
+            </a>
         </header>
 
         {% if error %}
@@ -817,7 +959,7 @@
 
         <!-- DASHBOARD GRID -->
         <div class="cuadricula-dashboard">
-            <section class="tarjeta-blanca">
+            <section class="tarjeta-blanca" id="seccion-nuevo-contacto">
                 <h2>
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
                         stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
@@ -1024,7 +1166,7 @@
                                         </a>
                                         {% endif %}
                                         <a href="javascript:void(0)" title="Ver Historial"
-                                            onclick="verHistorial('{% if c.nombre %}{{ c.nombre|escapejs }} {{ c.apellido|escapejs }}{% else %}{{ c.razon_social|escapejs }}{% endif %}', '{{ c.historial_cambios|escapejs }}', '{{ c.documento_nit|escapejs }}', '{% if c.razon_social %}{{ c.razon_social|escapejs }}{% else %}{{ c.nombre|escapejs }}{% endif %}', '{{ c.nombre_rep_legal|escapejs }}', '{{ c.correo|escapejs }}', '{{ c.celular|escapejs }}', '{{ c.ciudad|escapejs }}', '{{ c.direccion|escapejs }}', '{% if c.nombre %}Persona Natural{% else %}Persona Jurídica{% endif %}', '{{ c.tipo_doc.nombre_tipo|escapejs }}', '{{ c.fecha_registro|date:'d/m/Y H:i' }}', '{{ c.usuario_asignado.nombre_usuario|escapejs }}')"
+                                            onclick="verHistorial('{% if c.nombre %}{{ c.nombre|escapejs }} {{ c.apellido|escapejs }}{% else %}{{ c.razon_social|escapejs }}{% endif %}', '{{ c.historial_cambios|escapejs }}', '{{ c.documento_nit|escapejs }}', '{% if c.razon_social %}{{ c.razon_social|escapejs }}{% else %}{{ c.nombre|escapejs }}{% endif %}', '{{ c.nombre_rep_legal|escapejs }}', '{{ c.correo|escapejs }}', '{{ c.celular|escapejs }}', '{{ c.ciudad|escapejs }}', '{{ c.direccion|escapejs }}', '{% if c.nombre %}Persona Natural{% else %}Persona Jurídica{% endif %}', '{{ c.tipo_doc.nombre_tipo|escapejs }}', '{{ c.fecha_registro|date:'d/m/Y H:i' }}', '{{ c.usuario_asignado.nombre_usuario|escapejs }}', '{{ c.ocupacion|default:''|escapejs }}', '{{ c.fecha_nacimiento|date:'d/m/Y' }}', '{{ c.proyecto_nombre|default:''|escapejs }}', '{{ c.torre|default:''|escapejs }}', '{{ c.apartamento|default:''|escapejs }}')"
                                             style="color: #000; text-decoration: none;">
                                             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18"
                                                 viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"
@@ -1061,10 +1203,54 @@
                         </tbody>
                     </table>
                 </div>
+
+                <!-- MOBILE CONTACT CARDS (Visible only on mobile) -->
+                <div class="mobile-contact-list">
+                    {% for c in activos %}
+                    <div class="mobile-contact-card">
+                        <div class="mobile-contact-card-header">
+                            <div class="mobile-contact-avatar">
+                                {% if c.nombre %}{{ c.nombre|make_list|first|upper }}{{ c.apellido|make_list|first|upper }}{% else %}{{ c.razon_social|make_list|first|upper }}{% endif %}
+                            </div>
+                            <div class="mobile-contact-info">
+                                <div class="mobile-contact-name">{% if c.nombre %}{{ c.nombre }} {{ c.apellido }}{% else %}{{ c.razon_social }}{% endif %}</div>
+                                <div class="mobile-contact-email">{{ c.correo|default:"Sin correo" }}</div>
+                                {% if c.tipo_contacto.nombre_tipo == "Persona Natural" %}
+                                <span class="mobile-contact-type type-natural">NATURAL</span>
+                                {% else %}
+                                <span class="mobile-contact-type type-juridica">JURÍDICA</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="mobile-contact-actions">
+                            <a href="/edit/{{ c.id }}/" class="mobile-action-btn">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+                            </a>
+                            
+                            {% if c.activo %}
+                            <a href="/status/{{ c.id }}/" class="mobile-action-btn" style="color: var(--rojo-primario);">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                            </a>
+                            {% else %}
+                            <a href="/status/{{ c.id }}/" class="mobile-action-btn" style="color: #2E7D32;">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                            </a>
+                            {% endif %}
+                            
+                            <a href="javascript:void(0)" onclick="verHistorial('{% if c.nombre %}{{ c.nombre|escapejs }} {{ c.apellido|escapejs }}{% else %}{{ c.razon_social|escapejs }}{% endif %}', '{{ c.historial_cambios|escapejs }}', '{{ c.documento_nit|escapejs }}', '{% if c.razon_social %}{{ c.razon_social|escapejs }}{% else %}{{ c.nombre|escapejs }}{% endif %}', '{{ c.nombre_rep_legal|escapejs }}', '{{ c.correo|escapejs }}', '{{ c.celular|escapejs }}', '{{ c.ciudad|escapejs }}', '{{ c.direccion|escapejs }}', '{% if c.nombre %}Persona Natural{% else %}Persona Jurídica{% endif %}', '{{ c.tipo_doc.nombre_tipo|escapejs }}', '{{ c.fecha_registro|date:'d/m/Y H:i' }}', '{{ c.usuario_asignado.nombre_usuario|escapejs }}', '{{ c.ocupacion|default:''|escapejs }}', '{{ c.fecha_nacimiento|date:'d/m/Y' }}', '{{ c.proyecto_nombre|default:''|escapejs }}', '{{ c.torre|default:''|escapejs }}', '{{ c.apartamento|default:''|escapejs }}')" class="mobile-action-btn" style="color: #000;">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect><path d="M9 12h6"></path><path d="M9 16h6"></path><path d="M12 8h.01"></path></svg>
+                            </a>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <div style="text-align:center; padding: 40px 20px; color: var(--texto-secundario);">
+                        No se encontraron contactos.
+                    </div>
+                    {% endfor %}
+                </div>
             </section>
-
-
         </div>
+
     </main>
 
     <script>
@@ -1113,7 +1299,7 @@
         // window.onload = cambiar;
         document.addEventListener('DOMContentLoaded', cambiar);
 
-        function verHistorial(nombre, historial, doc, razon, rep, mail, cel, ciudad, dir, tper, tid, fechaReg, creador) {
+        function verHistorial(nombre, historial, doc, razon, rep, mail, cel, ciudad, dir, tper, tid, fechaReg, creador, ocup, fnac, proy, torre, apto) {
             const container = document.getElementById('historial-container-modal');
             const card = document.getElementById('m-client-card');
             const subtitle = document.getElementById('modal-audit-subtitle');
@@ -1128,6 +1314,9 @@
                 <div class="m-info-item" id="m-field-rep"><span class="m-info-label">Rep. Legal</span><span class="m-info-value">${rep || '-'}</span></div>
                 <div class="m-info-item" id="m-field-mail"><span class="m-info-label">Email</span><span class="m-info-value">${mail || '-'}</span></div>
                 <div class="m-info-item" id="m-field-cel"><span class="m-info-label">Celular</span><span class="m-info-value">${cel || '-'}</span></div>
+                <div class="m-info-item"><span class="m-info-label">Ocupación</span><span class="m-info-value">${ocup || '-'}</span></div>
+                <div class="m-info-item"><span class="m-info-label">Proyecto</span><span class="m-info-value">${proy || '-'}</span></div>
+                <div class="m-info-item"><span class="m-info-label">Torre / Apto</span><span class="m-info-value">${torre || '-'} / ${apto || '-'}</span></div>
                 <div class="m-info-item" id="m-field-loc" style="grid-column: span 2;"><span class="m-info-label">Ubicación</span><span class="m-info-value">${ciudad}, ${dir}</span></div>
             `;
 

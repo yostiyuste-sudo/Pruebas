@@ -9,7 +9,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        :root{--bg:#f8fafc;--pri:#a82e2e;--pri2:#862424;--sec:#335d80;--ok:#01B574;--warn:#F59E0B;--cyan:#00C6E0;--txt:#0f172a;--txt2:#64748b;--white:#FFF;--shadow:0 4px 20px rgba(0,0,0,0.04);--ease:all .4s cubic-bezier(.175,.885,.32,1.275)}
+        :root{--bg:#f8fafc;--pri:#a82e2e;--pri2:#862424;--sec:#335d80;--ok:#01B574;--warn:#e11d48;--cyan:#00C6E0;--txt:#0f172a;--txt2:#64748b;--white:#FFF;--shadow:0 4px 20px rgba(0,0,0,0.04);--ease:all .4s cubic-bezier(.175,.885,.32,1.275)}
         *{margin:0;padding:0;box-sizing:border-box}
         body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--txt);min-height:100vh;overflow-x:hidden}
 
@@ -46,7 +46,7 @@
         .sidebar:hover .btn-logout span{opacity:1;display:block}
 
         /* ── WRAPPER ── */
-        .wrapper{margin-left:90px;flex:1;padding:40px;transition:var(--ease);width:calc(100% - 90px)}
+        .wrapper{margin-left:90px;flex:1;padding:40px;transition:var(--ease);width:calc(100% - 90px)} /* Stash sidebar overrides this later if hovered */
         .sidebar:hover~.wrapper{margin-left:290px;width:calc(100% - 290px)}
 
         /* ── KPI CARDS ── */
@@ -136,7 +136,7 @@
             height: 18px;
             width: 50px;
             border-radius: 20px;
-            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="40" height="12" viewBox="0 0 40 12"><path fill="%23fff" d="M12,6 L16,2 L16,10 Z" /><path fill="%23fff" d="M28,6 L24,2 L24,10 Z" /></svg>') center no-repeat, linear-gradient(90deg, #FF6B6B 0%, #F59E0B 100%);
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="40" height="12" viewBox="0 0 40 12"><path fill="%23fff" d="M12,6 L16,2 L16,10 Z" /><path fill="%23fff" d="M28,6 L24,2 L24,10 Z" /></svg>') center no-repeat, linear-gradient(90deg, #FF6B6B 0%, #e11d48 100%);
             cursor: pointer;
             -webkit-appearance: none;
             margin-top: -1px;
@@ -155,7 +155,7 @@
             width: 50px;
             border-radius: 20px;
             border: none;
-            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="40" height="12" viewBox="0 0 40 12"><path fill="%23fff" d="M12,6 L16,2 L16,10 Z" /><path fill="%23fff" d="M28,6 L24,2 L24,10 Z" /></svg>') center no-repeat, linear-gradient(90deg, #FF6B6B 0%, #F59E0B 100%);
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="40" height="12" viewBox="0 0 40 12"><path fill="%23fff" d="M12,6 L16,2 L16,10 Z" /><path fill="%23fff" d="M28,6 L24,2 L24,10 Z" /></svg>') center no-repeat, linear-gradient(90deg, #FF6B6B 0%, #e11d48 100%);
             cursor: pointer;
             box-shadow: 0 2px 4px rgba(0,0,0,0.3);
         }
@@ -184,81 +184,423 @@
         /* ── SECTION LABEL ── */
         .section-label{font-size:12px;font-weight:800;color:var(--txt2);letter-spacing:.08em;text-transform:uppercase;margin-bottom:12px;display:flex;align-items:center;gap:8px}
         .section-label::after{content:'';flex:1;height:1px;background:#E9EDF7}
-    </style>
+    
+        
+
+        
+        
+
+        /* --- SIDEBAR --- */
+        .barra-lateral {
+            position: fixed; top: 0; left: 0; height: 100vh;
+            width: 90px; background-color: #1a2232; border-right: 1px solid #111827;
+            display: flex; flex-direction: column; z-index: 1000;
+            transition: var(--transicion); padding-bottom: 30px; overflow: hidden;
+            align-items: center;
+        }
+        .barra-lateral:hover { width: 290px; align-items: stretch; }
+        
+        .barra-cabecera { padding: 40px 0; display: flex; align-items: center; justify-content: center; gap: 12px; width: 100%; transition: 0.3s; }
+        .barra-lateral:hover .barra-cabecera { padding: 40px 25px; justify-content: flex-start; }
+        
+        .logo-d { 
+            min-width: 48px; height: 48px; 
+            background: #a82e2e; color: white; display: flex; align-items: center; justify-content: center;
+            border-radius: 14px; font-weight: 800; font-size: 24px;
+        }
+        .logo-texto { font-weight: 800; font-size: 22px; color: #ffffff; letter-spacing: -0.5px; opacity: 0; transition: 0.3s; white-space: nowrap; display: none; margin-left: 5px; }
+        .barra-lateral:hover .logo-texto { opacity: 1; display: block; }
+
+        .perfil-sidebar { 
+            width: 60px; height: 60px; margin-bottom: 30px; border-radius: 20px; 
+            background: rgba(255, 255, 255, 0.03); display: flex; align-items: center; justify-content: center; 
+            transition: 0.3s; overflow: hidden;
+        }
+        .barra-lateral:hover .perfil-sidebar { width: 250px; height: auto; padding: 18px 20px; margin: 0 20px 40px 20px; border-radius: 24px; justify-content: flex-start; gap: 15px; background: rgba(255,255,255,0.05); }
+        
+        .avatar-s { 
+            min-width: 48px; height: 48px; background: #a82e2e; border: 1.5px solid rgba(255,255,255,0.1); 
+            border-radius: 50%; display: flex; align-items: center; justify-content: center; 
+            font-weight: 800; color: white; font-size: 17px;
+        }
+        .p-info { opacity: 0; transition: 0.3s; white-space: nowrap; display: none; }
+        .barra-lateral:hover .p-info { opacity: 1; display: block; }
+        .p-nombre { font-weight: 800; font-size: 17px; color: #ffffff; display: block; line-height: 1.2; }
+        .p-rol { font-size: 14px; color: #94a3b8; font-weight: 500; }
+
+        .navegacion { flex: 1; width: 100%; padding: 0 15px; display: flex; flex-direction: column; align-items: center; gap: 8px; }
+        .barra-lateral:hover .navegacion { align-items: stretch; padding: 0 20px; }
+        
+        .nav-enlace { 
+            display: flex; align-items: center; justify-content: center; width: 56px; min-height: 56px; 
+            text-decoration: none; color: #94a3b8; border-radius: 16px; 
+            transition: 0.3s; font-weight: 700; font-size: 16px; white-space: nowrap;
+        }
+        .barra-lateral:hover .nav-enlace { width: 100%; justify-content: flex-start; padding: 16px 22px; border-radius: 20px; gap: 18px; }
+        
+        .nav-enlace:hover { background: rgba(255, 255, 255, 0.05); color: #ffffff; }
+        .nav-enlace.activo { 
+            background: rgba(168, 46, 46, 0.15); color: #ffffff !important; 
+            border-left: 4px solid #a82e2e;
+            border-radius: 20px 0 0 20px;
+        }
+        .nav-enlace.activo svg { stroke: #a82e2e; }
+        .nav-text { opacity: 0; transition: 0.3s; display: none; }
+        .barra-lateral:hover .nav-text { opacity: 1; display: block; }
+
+        .cerrar-sesion-cont { 
+            margin-top: auto; width: 100%; border-top: 1px solid rgba(255, 255, 255, 0.05);
+            display: flex; justify-content: center;
+        }
+        .barra-lateral:hover .cerrar-sesion-cont { padding: 10px 20px 0 20px; justify-content: flex-start; }
+        
+        .btn-cerrar {
+            display: flex; align-items: center; justify-content: center; width: 56px; height: 75px;
+            text-decoration: none; color: #94a3b8; font-weight: 700; font-size: 16px;
+            transition: 0.3s; white-space: nowrap;
+        }
+        .barra-lateral:hover .btn-cerrar { width: 100%; justify-content: flex-start; padding: 0 20px; gap: 18px; }
+        
+        .btn-cerrar:hover { color: #ffffff; }
+        .btn-cerrar span { opacity: 0; transition: 0.3s; display: none; }
+        .barra-lateral:hover .btn-cerrar span { opacity: 1; display: block; }
+
+        /* --- WRAPPER --- */
+        .wrapper { margin-left: 90px; flex: 1; padding: 40px; transition: var(--transicion); }
+        .barra-lateral:hover ~ .wrapper { margin-left: 290px; }
+
+        /* KPI CARDS */
+        .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 25px; margin-bottom: 40px; }
+        .kpi-card { background: white; padding: 25px; border-radius: 25px; box-shadow: var(--sombra); display: flex; align-items: center; gap: 20px; transition: 0.3s; border: 1px solid var(--gris-borde); }
+        .kpi-card:hover { transform: translateY(-5px); }
+        .kpi-icon { width: 56px; height: 56px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 24px; background: var(--bg-principal); }
+        .kpi-val { font-size: 24px; font-weight: 800; color: var(--texto); }
+        .kpi-label { font-size: 14px; font-weight: 600; color: var(--texto-suave); }
+
+        /* CHARTS GRID */
+        .charts-main-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 25px; margin-bottom: 25px; }
+        
+        .chart-card { 
+            background: white; 
+            padding: 24px; 
+            border-radius: 16px; 
+            box-shadow: var(--sombra); 
+            border: 1px solid var(--gris-borde);
+            position: relative;
+        }
+        .chart-title { 
+            background: #a82e2e;
+            color: white !important;
+            margin: -24px -24px 24px -24px !important;
+            padding: 14px 20px;
+            font-size: 15px; 
+            font-weight: 700; 
+            border-top-left-radius: 16px;
+            border-top-right-radius: 16px;
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+        }
+        .chart-title svg {
+            stroke: white !important;
+        }
+        
+        /* CIRCULAR DIAGRAM */
+        .pie-container { display: flex; align-items: center; justify-content: center; height: 220px; position: relative; }
+        .pie-chart-wrapper { width: 180px; height: 180px; position: relative; }
+        .pie-center-label {
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            text-align: center; pointer-events: none;
+        }
+        .pie-center-val { font-size: 24px; font-weight: 800; color: var(--texto); line-height: 1; }
+        .pie-center-text { font-size: 11px; color: var(--texto-suave); font-weight: 600; margin-top: 2px; }
+        
+        .pie-legend { display: flex; flex-direction: column; gap: 12px; margin-left: 20px; }
+        .legend-item { display: flex; flex-direction: column; gap: 2px; }
+        .legend-header { display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 700; color: var(--texto); }
+        .legend-perc { font-size: 12px; color: var(--texto-suave); font-weight: 600; padding-left: 20px; }
+        .dot { width: 10px; height: 10px; border-radius: 50%; }
+
+        /* BARS DIAGRAM */
+        .bars-container { display: flex; flex-direction: column; gap: 20px; padding: 10px 0; }
+        .bar-row { display: flex; flex-direction: column; gap: 8px; }
+        .bar-info { display: flex; justify-content: space-between; font-size: 13px; font-weight: 700; }
+        .bar-bg { background: #E9EDF7; height: 12px; border-radius: 10px; overflow: hidden; position: relative; }
+        .bar-fill { height: 100%; border-radius: 10px; transition: 1s width cubic-bezier(0.1, 0.1, 0.1, 1); }
+
+        /* LINE DIAGRAM */
+        .line-chart-container { height: 250px; position: relative; margin-top: 20px; padding-bottom: 30px; }
+        .line-svg { width: 100%; height: 100%; overflow: visible; }
+        .line-path { fill: none; stroke: var(--primario); stroke-width: 4; stroke-linecap: round; stroke-linejoin: round; filter: drop-shadow(0 10px 10px rgba(211, 47, 47, 0.2)); }
+        .month-labels { display: flex; justify-content: space-between; margin-top: 15px; padding: 0 10px; }
+        .month-label { font-size: 11px; font-weight: 800; color: var(--texto-suave); }
+
+        /* TOP CONTACTS CARD */
+        .top-list { display: flex; flex-direction: column; gap: 15px; }
+        .top-item { display: flex; align-items: center; gap: 15px; background: var(--bg-principal); padding: 15px; border-radius: 20px; transition: 0.3s; border: 1px solid var(--gris-borde); }
+        .top-item:hover { transform: translateX(10px); background: #ebf0ff; }
+        .item-avatar { width: 45px; height: 45px; background: white; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-weight: 800; color: var(--primario); border: 1px solid var(--gris-borde); }
+        .item-info { flex: 1; }
+        .item-name { font-weight: 800; font-size: 14px; display: block; }
+        .item-count { font-size: 12px; color: var(--texto-suave); font-weight: 600; }
+        .item-badge { background: var(--primario); color: white; padding: 5px 12px; border-radius: 10px; font-size: 12px; font-weight: 800; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        .chart-card { animation: fadeIn 0.6s ease-out forwards; }
+        
+        /* Star icon for emails */
+        .btn-star svg {
+            fill: none;
+            stroke: #cbd5e0;
+            transition: all 0.2s ease;
+        }
+        .btn-star.active svg {
+            fill: #e11d48;
+            stroke: #e11d48;
+        }
+        /* NEW BUTTON STYLE */
+        .btn-banner {
+            background-color: #1e293b;
+            color: white;
+            text-decoration: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 14px;
+            transition: var(--transicion);
+            display: inline-flex;
+            align-items: center;
+            border: none;
+        }
+        .btn-banner:hover {
+            background-color: #0f172a;
+            transform: translateY(-2px);
+        }
+
+        /* --- RESPONSIVE STYLES --- */
+        .hamburger-btn {
+            display: none;
+        }
+        .sidebar-overlay {
+            display: none;
+        }
+
+        @media (max-width: 768px) {
+            .barra-lateral {
+                width: 280px !important;
+                position: fixed !important;
+                left: -280px !important;
+                height: 100dvh !important;
+                padding-bottom: 50px !important;
+                overflow-y: auto !important;
+                transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), left 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
+                z-index: 10000 !important;
+            }
+            .barra-lateral.activo {
+                left: 0 !important;
+                box-shadow: 15px 0 50px rgba(0,0,0,0.15) !important;
+            }
+            .barra-lateral:hover {
+                width: 280px !important;
+            }
+            .barra-lateral:hover .logo-texto {
+                display: block !important;
+                opacity: 1 !important;
+            }
+            .barra-lateral:hover .p-info {
+                display: block !important;
+                opacity: 1 !important;
+            }
+            .barra-lateral:hover .nav-text {
+                display: block !important;
+                opacity: 1 !important;
+            }
+            .barra-lateral:hover .btn-cerrar span {
+                display: block !important;
+                opacity: 1 !important;
+            }
+            .barra-lateral:hover ~ .wrapper {
+                margin-left: 0 !important;
+                width: 100% !important;
+            }
+            
+            .wrapper {
+                margin-left: 0 !important;
+                width: 100% !important;
+                padding: 20px !important;
+            }
+            
+            .charts-main-grid {
+                grid-template-columns: 1fr !important;
+                gap: 20px !important;
+            }
+            
+            .chart-card[style*="grid-column: span 2"] {
+                grid-column: span 1 !important;
+            }
+            
+            .hamburger-btn {
+                display: flex !important;
+                align-items: center;
+                justify-content: center;
+                background: white;
+                border: 1px solid #e2e8f0;
+                border-radius: 12px;
+                width: 44px;
+                height: 44px;
+                color: #1e293b;
+                cursor: pointer;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+                z-index: 1001;
+                margin-right: 15px;
+                outline: none;
+                flex-shrink: 0;
+            }
+            .hamburger-btn svg {
+                stroke: var(--primario);
+            }
+            
+            .sidebar-overlay {
+                display: none;
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100vw;
+                height: 100vh;
+                background: rgba(0, 0, 0, 0.4);
+                backdrop-filter: blur(4px);
+                z-index: 9999;
+            }
+            .sidebar-overlay.activo {
+                display: block;
+            }
+            
+            .perfil-sidebar {
+                width: 240px !important;
+                height: auto !important;
+                padding: 18px 20px !important;
+                margin: 0 20px 40px 20px !important;
+                border-radius: 24px !important;
+                justify-content: flex-start !important;
+                gap: 15px !important;
+            }
+            .p-info {
+                display: block !important;
+                opacity: 1 !important;
+            }
+            .nav-enlace {
+                width: 100% !important;
+                justify-content: flex-start !important;
+                padding: 16px 22px !important;
+                border-radius: 20px !important;
+                gap: 18px !important;
+            }
+            .nav-text {
+                display: block !important;
+                opacity: 1 !important;
+            }
+            .cerrar-sesion-cont {
+                padding: 10px 20px 0 20px !important;
+                justify-content: flex-start !important;
+            }
+            .btn-cerrar {
+                width: 100% !important;
+                justify-content: flex-start !important;
+                padding: 0 20px !important;
+                gap: 18px !important;
+            }
+            .btn-cerrar span {
+                display: block !important;
+                opacity: 1 !important;
+            }
+        }
+    
+</style>
 </head>
 <body>
 
-<!-- ════════════ SIDEBAR ════════════ -->
-<aside class="sidebar">
-    <div class="sb-head">
-        <div class="logo">D</div>
-        <div class="logo-t">CONSTRUCTORA</div>
-    </div>
-    <div class="profile">
-        <div class="avatar">
-            {% if usuario_logueado %}
-                {{ usuario_logueado.nombre_usuario|make_list|first|upper }}
-            {% else %}
-                U
+<!-- SIDEBAR -->
+    <!-- BARRA LATERAL -->
+    <aside class="barra-lateral">
+        <div class="barra-cabecera">
+            <img src="{% static 'img/logo_dyco.png' %}" alt="Logo DYCO" style="width: 48px; height: 48px; object-fit: contain; border-radius: 12px; background: white; padding: 4px; box-shadow: 0 2px 5px rgba(0,0,0,0.2);">
+            <div class="logo-texto">CONSTRUCTORA</div>
+        </div>
+
+        <nav class="navegacion">
+            <a href="{% url 'dashboard' %}" class="nav-enlace activo">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+                <span class="nav-text">Inicio</span>
+            </a>
+            <a href="{% url 'contactos' %}" class="nav-enlace">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
+                <span class="nav-text">Registro de Contacto</span>
+            </a>
+            <a href="{% url 'interacciones' %}" class="nav-enlace">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                <span class="nav-text">Interacciones</span>
+            </a>
+            {% if usuario_logueado.rol.nombre_rol == "Administrador" %}
+            <a href="{% url 'usuarios' %}" class="nav-enlace">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                <span class="nav-text">Gestión de Usuarios</span>
+            </a>
             {% endif %}
-        </div>
-        <div class="p-info">
-            <span class="p-name">{% if usuario_logueado %}{{ usuario_logueado.nombre_usuario }}{% else %}Usuario{% endif %}</span>
-            <p class="p-role">{% if usuario_logueado %}{{ usuario_logueado.rol.nombre_rol }}{% else %}Usuario{% endif %}</p>
-        </div>
-    </div>
-    <nav class="nav">
-        <a href="{% url 'dashboard' %}" class="nav-link active">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
-            <span class="nav-txt">Inicio</span>
-        </a>
-        <a href="{% url 'incidencias' %}" class="nav-link">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
-            <span class="nav-txt">Incidencias</span>
-        </a>
-        {% if usuario_logueado.rol.nombre_rol == 'Administrador' %}
-        <a href="{% url 'usuarios' %}" class="nav-link">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-            <span class="nav-txt">Gestión de Usuarios</span>
-        </a>
-        {% endif %}
-        <a href="{% url 'contactos' %}" class="nav-link">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="23" y1="11" x2="17" y2="11"/><line x1="20" y1="8" x2="20" y2="14"/></svg>
-            <span class="nav-txt">Registro de Contacto</span>
-        </a>
-        <a href="{% url 'interacciones' %}" class="nav-link">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-            <span class="nav-txt">Interacciones</span>
-        </a>
-    </nav>
-    <div class="logout-c">
-        <a href="{% url 'logout' %}" class="btn-logout">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
-            <span>Cerrar Sesión</span>
-        </a>
-    </div>
-</aside>
+            <a href="{% url 'incidencias' %}" class="nav-enlace">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+                <span class="nav-text">Incidencias</span>
+            </a>
+        </nav>
+
+        <!-- ── PERFIL BOTTOM (Configuraciones) ── -->
+        {% include 'configuraciones.html' %}
+    </aside>
 
 <!-- ════════════ MAIN ════════════ -->
 <div class="wrapper">
 
-    <!-- Header -->
-    <div style="background: #fff; border-radius: 16px; padding: 20px 24px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; box-shadow: var(--shadow); border: 1px solid #e2e8f0;">
-        <div>
-            <h1 style="font-size:24px; font-weight:800; color: #1a1a1a; margin-bottom: 4px;">Constructora DYCO</h1>
-            <p style="color:var(--txt2); font-weight:500; font-size:14px; margin:0;">Inicio • Bienvenido de nuevo, {% if usuario_logueado %}{{ usuario_logueado.nombre_usuario }}{% else %}Usuario{% endif %}</p>
-        </div>
-        <div style="display: flex; gap: 12px; align-items: center;">
-            <a href="{% url 'contactos' %}" style="background: #1B2559; color: #fff; text-decoration: none; padding: 10px 20px; border-radius: 10px; font-weight: 700; font-size: 14px; transition: 0.3s;">Registrar Contacto</a>
-            <div style="width: 40px; height: 40px; background: #E9EDF7; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; color: #1B2559; font-size: 16px;">
-                {% if usuario_logueado %}{{ usuario_logueado.nombre_usuario|make_list|first|upper }}{% else %}U{% endif %}
+    <header style="position: relative; margin-bottom: 40px; border-radius: 16px; box-shadow: var(--sombra); overflow: hidden; min-height: 120px; display: flex; justify-content: space-between; align-items: center; padding: 20px 30px;">
+            <!-- Carrusel de fondo -->
+            <div id="headerCarousel" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 0;">
+                <div class="header-slide" style="position: absolute; inset: 0; background: url('{% static 'img/slide1.png' %}') center/cover; transition: opacity 1.5s ease-in-out; opacity: 1;"></div>
+                <div class="header-slide" style="position: absolute; inset: 0; background: url('{% static 'img/slide2.png' %}') center/cover; transition: opacity 1.5s ease-in-out; opacity: 0;"></div>
+                <div class="header-slide" style="position: absolute; inset: 0; background: url('{% static 'img/slide3.png' %}') center/cover; transition: opacity 1.5s ease-in-out; opacity: 0;"></div>
+                <!-- Overlay oscuro suave para mejorar el contraste del texto blanco -->
+                <div style="position: absolute; inset: 0; background: linear-gradient(to right, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.3) 100%);"></div>
             </div>
-        </div>
-    </div>
 
+            <!-- Contenido Izquierdo (DYCO) -->
+            <div style="position: relative; z-index: 1; display: flex; align-items: center; gap: 15px;">
+                <button id="hamburger-btn" class="hamburger-btn" style="display: none; color: white;">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="3" y1="12" x2="21" y2="12"></line>
+                        <line x1="3" y1="6" x2="21" y2="6"></line>
+                        <line x1="3" y1="18" x2="21" y2="18"></line>
+                    </svg>
+                </button>
+                <h1 style="font-size: 32px; font-weight: 900; color: white; margin: 0; letter-spacing: 1px; text-shadow: 0 2px 10px rgba(0,0,0,0.3);">DYCO</h1>
+            </div>
 
-
-    <!-- ── Dashboard Grid ── -->
+            <!-- Contenido Derecho (Bot├│n Registrar) -->
+            <div style="position: relative; z-index: 1; display: flex; align-items: center; gap: 15px;">
+                <a href="{% url 'contactos' %}" class="btn-banner" style="background: white; color: var(--rojo-primario); padding: 12px 24px; font-size: 14px; box-shadow: 0 4px 15px rgba(0,0,0,0.2);">Registrar Contacto</a>
+            </div>
+            
+            <script>
+                document.addEventListener("DOMContentLoaded", function() {
+                    const hSlides = document.querySelectorAll('.header-slide');
+                    let currentHSlide = 0;
+                    if(hSlides.length > 0) {
+                        setInterval(() => {
+                            hSlides[currentHSlide].style.opacity = 0;
+                            currentHSlide = (currentHSlide + 1) % hSlides.length;
+                            hSlides[currentHSlide].style.opacity = 1;
+                        }, 5000); // Cambia cada 5 segundos
+                    }
+                });
+            </script>
+        </header>
+<!-- ── Dashboard Grid ── -->
     <div class="grid" style="grid-template-columns: repeat(2, 1fr);">
         
         <!-- 1. Distribución por Tipo de Interacción (Donut) -->
@@ -288,7 +630,7 @@
                     <div class="leg-right">0<span class="leg-pct">(0%)</span></div>
                 </div>
                 <div class="leg-row">
-                    <div class="leg-left"><div class="leg-dot" style="background:#F59E0B"></div>Llamadas</div>
+                    <div class="leg-left"><div class="leg-dot" style="background:#e11d48"></div>Llamadas</div>
                     <div class="leg-right">0<span class="leg-pct">(0%)</span></div>
                 </div>
                 <div class="leg-row">
@@ -492,7 +834,7 @@ Chart.defaults.color       = '#A3AED0';
 
 const C = {
     green : '#01B574',
-    amber : '#F59E0B',
+    amber : '#e11d48',
     red   : '#EF4444',
     pri   : '#D32F2F',
     blue  : '#4318FF',
@@ -606,7 +948,7 @@ function initDonuts() {
             labels: ['Correos','Llamadas','Reuniones','Notas','Otros'],
             datasets: [{
                 data: interData,
-                backgroundColor: [C.pri, C.amber, C.blue, C.cyan, C.green],
+                backgroundColor: ['#a82e2e', '#1a2232', '#64748b', '#e11d48', '#334155'],
                 borderWidth: 0,
                 hoverOffset: 10
             }]
@@ -631,7 +973,7 @@ function initDonuts() {
             labels: ['Personas Naturales','Personas Jurídicas'],
             datasets: [{
                 data: [ct.naturales, ct.juridicas],
-                backgroundColor: [C.blue, C.cyan],
+                backgroundColor: ['#a82e2e', '#1a2232'],
                 borderWidth: 0,
                 hoverOffset: 10
             }]
@@ -654,7 +996,7 @@ function initDonuts() {
             labels: ['Activos','Inactivos'],
             datasets: [{
                 data: [u.activos, u.inactivos],
-                backgroundColor: [C.green, C.gray],
+                backgroundColor: ['#a82e2e', '#1a2232'],
                 borderWidth: 0,
                 hoverOffset: 10
             }]
@@ -678,7 +1020,7 @@ function initMesVsMes() {
             labels: ['Mes 1', 'Mes 2'],
             datasets: [{
                 data: [50, 50],
-                backgroundColor: [C.pri, C.blue],
+                backgroundColor: ['#a82e2e', '#1a2232'],
                 borderWidth: 0,
                 hoverOffset: 10
             }]
@@ -719,8 +1061,8 @@ function initActividadCategoria() {
     const ctx  = document.getElementById('chartActividadCategoria').getContext('2d');
     const labels = [{% for l in acciones_labels %}'{{ l }}'{% if not forloop.last %},{% endif %}{% endfor %}];
     const data = [{% for c in acciones_counts %}{{ c }}{% if not forloop.last %},{% endif %}{% endfor %}];
-    const bars = data.map(() => 'rgba(67,24,255,.72)');
-    const bHov = data.map(() => 'rgba(67,24,255,.9)');
+    const bars = data.map(() => '#335d80');
+    const bHov = data.map(() => '#a82e2e');
 
     chartActividadCategoria = new Chart(ctx, {
         type: 'bar',

@@ -1,0 +1,308 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Nuevo Contacto - Constructora Dyco</title>
+    <!-- Fuente Inter (Moderna y Profesional) -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-principal: #f8fafc;
+            --primario: #a82e2e;
+            --texto: #0f172a;
+            --blanco: #FFFFFF;
+            --gris-borde: #e2e8f0;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-principal);
+            color: var(--texto);
+            overflow-x: hidden;
+        }
+
+        /* Cabecera Móvil */
+        .mobile-header {
+            background-color: #1a2232;
+            color: white;
+            display: flex;
+            align-items: center;
+            padding: 15px 20px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .btn-back {
+            color: white;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            margin-right: 15px;
+        }
+
+        .header-title {
+            font-weight: 700;
+            font-size: 18px;
+        }
+
+        /* Contenedor principal */
+        .mobile-container {
+            padding: 20px;
+            background: white;
+            min-height: calc(100vh - 60px);
+        }
+
+        .grupo-campo {
+            margin-bottom: 18px;
+        }
+
+        .grupo-campo label {
+            display: block;
+            margin-bottom: 6px;
+            font-size: 13px;
+            font-weight: 600;
+            color: #475569;
+        }
+
+        .entrada-texto,
+        select {
+            width: 100%;
+            padding: 14px 16px;
+            border: 1px solid #cbd5e1;
+            border-radius: 12px;
+            font-size: 15px;
+            font-family: 'Inter', sans-serif;
+            transition: 0.2s;
+            background-color: #f8fafc;
+        }
+
+        .entrada-texto:focus,
+        select:focus {
+            outline: none;
+            border-color: var(--primario);
+            background-color: white;
+            box-shadow: 0 0 0 3px rgba(168, 46, 46, 0.1);
+        }
+
+        .boton-principal {
+            width: 100%;
+            background-color: var(--primario);
+            color: white;
+            padding: 16px;
+            border: none;
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 30px;
+            margin-bottom: 40px;
+        }
+
+        .boton-principal:active {
+            transform: scale(0.98);
+        }
+
+        /* Alertas de error */
+        .alerta-error {
+            background-color: #fee2e2;
+            color: #991b1b;
+            padding: 14px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            font-weight: 500;
+            border-left: 4px solid #ef4444;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="mobile-header">
+        <a href="{% url 'contactos' %}" onclick="if(document.referrer) { window.history.back(); return false; }" class="btn-back">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="19" y1="12" x2="5" y2="12"></line>
+                <polyline points="12 19 5 12 12 5"></polyline>
+            </svg>
+        </a>
+        <div class="header-title">Registrar Nuevo Contacto</div>
+    </div>
+
+    <div class="mobile-container">
+        {% if error %}
+        <div class="alerta-error">
+            {{ error }}
+        </div>
+        {% endif %}
+
+        <form method="POST" action="{% url 'nuevo_contacto_mobile' %}" onsubmit="return validarRegistro()">
+            {% csrf_token %}
+            <div class="grupo-campo">
+                <label>Tipo de Persona</label>
+                <select name="tipo_contacto" id="tipoSelect" onchange="cambiar()" required>
+                    {% for tc in tipos_contacto %}
+                    <option value="{{ tc.id }}">{{ tc.nombre_tipo }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <!-- SECCIÓN PERSONA NATURAL -->
+            <div id="sn">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                    <div class="grupo-campo">
+                        <label>Identificación</label>
+                        <select name="tipo_doc" id="tipoDocNatural">
+                            {% for td in tipos_doc %}
+                            {% if td.nombre_tipo != "NIT" %}
+                            <option value="{{ td.id }}">{{ td.nombre_tipo }}</option>
+                            {% endif %}
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="grupo-campo">
+                        <label>Número</label>
+                        <input type="text" name="documento_nit" id="doc_nat" class="entrada-texto"
+                            placeholder="1010...">
+                    </div>
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                    <div class="grupo-campo">
+                        <label>Nombres</label>
+                        <input type="text" name="nombre" id="n" class="entrada-texto" placeholder="Juan">
+                    </div>
+                    <div class="grupo-campo">
+                        <label>Apellidos</label>
+                        <input type="text" name="apellido" id="a" class="entrada-texto" placeholder="Pérez">
+                    </div>
+                </div>
+            </div>
+
+            <!-- SECCIÓN PERSONA JURÍDICA -->
+            <div id="sj" style="display:none;">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                    <div class="grupo-campo">
+                        <label>Identificación</label>
+                        <select name="tipo_doc" id="tipoDocJuridica" class="entrada-texto">
+                            {% for td in tipos_doc %}
+                            {% if td.nombre_tipo == "NIT" %}
+                            <option value="{{ td.id }}" selected>{{ td.nombre_tipo }}</option>
+                            {% else %}
+                            <option value="{{ td.id }}">{{ td.nombre_tipo }}</option>
+                            {% endif %}
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="grupo-campo">
+                        <label>Número</label>
+                        <input type="text" name="documento_nit" id="doc_jur" class="entrada-texto"
+                            placeholder="Número...">
+                    </div>
+                </div>
+                <div class="grupo-campo">
+                    <label>Razón Social</label>
+                    <input type="text" name="razon_social" id="rs" class="entrada-texto"
+                        placeholder="Nombre de la empresa">
+                </div>
+                <div class="grupo-campo">
+                    <label>Nombre del Representante</label>
+                    <input type="text" name="nombre_rep_legal" id="rep" class="entrada-texto"
+                        placeholder="Ej: Juan Pérez">
+                </div>
+            </div>
+
+            <div class="grupo-campo">
+                <label>Correo Electrónico</label>
+                <input type="email" name="correo" id="c" class="entrada-texto"
+                    placeholder="ejemplo@correo.com">
+            </div>
+            
+            <div class="grupo-campo">
+                <label>Celular</label>
+                <input type="text" name="celular" id="cel" class="entrada-texto" placeholder="300...">
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                <div class="grupo-campo">
+                    <label>Ciudad</label>
+                    <input type="text" name="ciudad" class="entrada-texto" placeholder="Bogotá">
+                </div>
+                <div class="grupo-campo">
+                    <label>Dirección</label>
+                    <input type="text" name="direccion" class="entrada-texto" placeholder="Calle 123...">
+                </div>
+            </div>
+
+            {% include 'registro_contactos.html' %}
+
+            <button type="submit" class="boton-principal">
+                <span>REGISTRAR CONTACTO</span>
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+            </button>
+        </form>
+    </div>
+
+    <script>
+        function cambiar() {
+            var s = document.getElementById("tipoSelect");
+            var t = s.options[s.selectedIndex].text;
+            var sn = document.getElementById("sn");
+            var sj = document.getElementById("sj");
+
+            const isJur = t.includes("Jurídica");
+            sn.style.display = isJur ? "none" : "block";
+            sj.style.display = isJur ? "block" : "none";
+            
+            // Deshabilitar los campos de la sección oculta para no enviar datos duplicados ni vacíos
+            var snInputs = sn.querySelectorAll("input, select");
+            var sjInputs = sj.querySelectorAll("input, select");
+            
+            for(var i = 0; i < snInputs.length; i++) snInputs[i].disabled = isJur;
+            for(var i = 0; i < sjInputs.length; i++) sjInputs[i].disabled = !isJur;
+        }
+
+        function validarRegistro() {
+            var t = document.getElementById("tipoSelect");
+            var txt = t.options[t.selectedIndex].text;
+
+            var dN = document.getElementById("doc_nat").value.trim();
+            var dJ = document.getElementById("doc_jur").value.trim();
+            var n = document.getElementById("n").value.trim();
+            var rs = document.getElementById("rs").value.trim();
+
+            if (txt.includes("Natural")) {
+                if (!dN || !n) {
+                    alert("Identificación y Nombres son obligatorios para Persona Natural.");
+                    return false;
+                }
+            } else {
+                if (!dJ || !rs) {
+                    alert("Identificación y Razón Social son obligatorios para Persona Jurídica.");
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        document.addEventListener('DOMContentLoaded', cambiar);
+    </script>
+</body>
+
+</html>

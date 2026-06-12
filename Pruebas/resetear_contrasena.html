@@ -47,8 +47,8 @@
         .strength-bars{display:flex;gap:5px;margin-top:8px}
         .s-bar{flex:1;height:4px;border-radius:2px;background:rgba(255,255,255,.1);transition:.4s}
         .s-bar.w1{background:#ef4444}
-        .s-bar.w2{background:#f97316}
-        .s-bar.w3{background:#eab308}
+        .s-bar.w2{background:#e11d48}
+        .s-bar.w3{background:#a82e2e}
         .s-bar.w4{background:#22c55e}
         .strength-txt{font-size:12px;margin-top:5px;font-weight:600;transition:.3s}
         /* REQUIREMENTS */
@@ -235,7 +235,7 @@
 
         const score = Object.values(reqs).filter(Boolean).length;
         const levels = ['','Muy débil','Débil','Aceptable','Segura'];
-        const colors = ['','#ef4444','#f97316','#eab308','#22c55e'];
+        const colors = ['#a82e2e', '#1a2232', '#64748b', '#e11d48', '#334155', '#7f1d1d'];
 
         for (let i = 0; i < 4; i++) {
             const bar = document.getElementById('sb' + i);
@@ -334,7 +334,7 @@
             const pct = (remaining / seconds) * 100;
             barEl.style.width = pct + '%';
             if (remaining <= 30) { valEl.style.color='#ef4444'; barEl.style.background='#ef4444'; }
-            else if (remaining <= 60) { valEl.style.color='#f97316'; barEl.style.background='#f97316'; }
+            else if (remaining <= 60) { valEl.style.color='#e11d48'; barEl.style.background='#e11d48'; }
             else { valEl.style.color='#22c55e'; barEl.style.background='#22c55e'; }
             remaining--;
         }

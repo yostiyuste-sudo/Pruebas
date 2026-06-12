@@ -513,6 +513,18 @@ def contactos(request):
         razon_social = request.POST.get("razon_social")
         nombre_rep_legal = request.POST.get("nombre_rep_legal")
         
+        tipo_proyecto = request.POST.get("tipo_proyecto")
+        proyecto_nombre = request.POST.get("proyecto_nombre")
+        torre = request.POST.get("torre")
+        apartamento = request.POST.get("apartamento")
+        tipo_contrato = request.POST.get("tipo_contrato")
+        ocupacion = request.POST.get("ocupacion")
+        otra_ocupacion = request.POST.get("otra_ocupacion")
+        fn = request.POST.get("fecha_nacimiento")
+        fecha_nacimiento = fn if fn else None
+        ed = request.POST.get("edad")
+        edad = int(ed) if ed and str(ed).isdigit() else None
+        
         identificador = nombre if nombre else razon_social
         
         if not identificador or not documento_nit:
@@ -530,6 +542,10 @@ def contactos(request):
                     usuario_asignado=usuario_logueado, nombre=nombre,
                     apellido=apellido, razon_social=razon_social, 
                     nombre_rep_legal=nombre_rep_legal, activo=True,
+                    tipo_proyecto=tipo_proyecto, proyecto_nombre=proyecto_nombre,
+                    torre=torre, apartamento=apartamento, tipo_contrato=tipo_contrato,
+                    ocupacion=ocupacion, otra_ocupacion=otra_ocupacion,
+                    fecha_nacimiento=fecha_nacimiento, edad=edad,
                     historial_cambios=f"[{timezone.localtime(timezone.now()).strftime('%d/%m/%Y %H:%M')}] Registrado por {usuario_logueado.nombre_usuario}"
                 )
                 return redirect('/')
@@ -568,6 +584,94 @@ def contactos(request):
         "query": query
     })
 
+def nuevo_contacto_mobile(request):
+    id_sesion = request.session.get('user_id')
+    if not id_sesion:
+        return redirect('/login/')
+    usuario_logueado = Usuario.objects.get(id=id_sesion)
+    
+    error = ""
+    # Asegurar tipos base
+    if not TipoContacto.objects.exists():
+        TipoContacto.objects.create(nombre_tipo="Persona Natural")
+        TipoContacto.objects.create(nombre_tipo="Persona Jurídica")
+    
+    # Asegurar tipos de identificación
+    if not TipoIdentificacion.objects.filter(nombre_tipo="CC").exists(): TipoIdentificacion.objects.get_or_create(nombre_tipo="CC")
+    if not TipoIdentificacion.objects.filter(nombre_tipo="NIT").exists(): TipoIdentificacion.objects.get_or_create(nombre_tipo="NIT")
+    if not TipoIdentificacion.objects.filter(nombre_tipo="TI").exists(): TipoIdentificacion.objects.get_or_create(nombre_tipo="TI")
+    if not TipoIdentificacion.objects.filter(nombre_tipo="Pasaporte").exists(): TipoIdentificacion.objects.get_or_create(nombre_tipo="Pasaporte")
+    if not TipoIdentificacion.objects.filter(nombre_tipo="CE").exists(): TipoIdentificacion.objects.get_or_create(nombre_tipo="CE")
+    
+    if request.method == "POST":
+        tipo_contacto_id = request.POST.get("tipo_contacto")
+        tipo_doc_id = request.POST.get("tipo_doc")
+        documento_nit = request.POST.get("documento_nit")
+        celular = request.POST.get("celular")
+        direccion = request.POST.get("direccion")
+        ciudad = request.POST.get("ciudad")
+        correo = request.POST.get("correo")
+        nombre = request.POST.get("nombre")
+        apellido = request.POST.get("apellido")
+        razon_social = request.POST.get("razon_social")
+        nombre_rep_legal = request.POST.get("nombre_rep_legal")
+        
+        tipo_proyecto = request.POST.get("tipo_proyecto")
+        proyecto_nombre = request.POST.get("proyecto_nombre")
+        torre = request.POST.get("torre")
+        apartamento = request.POST.get("apartamento")
+        tipo_contrato = request.POST.get("tipo_contrato")
+        ocupacion = request.POST.get("ocupacion")
+        otra_ocupacion = request.POST.get("otra_ocupacion")
+        fn = request.POST.get("fecha_nacimiento")
+        fecha_nacimiento = fn if fn else None
+        ed = request.POST.get("edad")
+        edad = int(ed) if ed and str(ed).isdigit() else None
+        
+        identificador = nombre if nombre else razon_social
+        
+        if not identificador or not documento_nit:
+            error = "Nombre/Razón Social y Identificación son obligatorios."
+        elif Contacto.objects.filter(documento_nit=documento_nit).exists():
+            error = f"El documento/NIT '{documento_nit}' ya se encuentra registrado."
+        elif not correo and not celular:
+            error = "Ingrese al menos Correo o Celular."
+        else:
+            try:
+                Contacto.objects.create(
+                    tipo_contacto_id=tipo_contacto_id, tipo_doc_id=tipo_doc_id,
+                    documento_nit=documento_nit, celular=celular,
+                    direccion=direccion, ciudad=ciudad, correo=correo,
+                    usuario_asignado=usuario_logueado, nombre=nombre,
+                    apellido=apellido, razon_social=razon_social, 
+                    nombre_rep_legal=nombre_rep_legal, activo=True,
+                    tipo_proyecto=tipo_proyecto, proyecto_nombre=proyecto_nombre,
+                    torre=torre, apartamento=apartamento, tipo_contrato=tipo_contrato,
+                    ocupacion=ocupacion, otra_ocupacion=otra_ocupacion,
+                    fecha_nacimiento=fecha_nacimiento, edad=edad,
+                    historial_cambios=f"[{timezone.localtime(timezone.now()).strftime('%d/%m/%Y %H:%M')}] Registrado por {usuario_logueado.nombre_usuario}"
+                )
+                return redirect('/contactos/')
+            except Exception as e: error = f"Error: {e}"
+
+    proyectos = [
+        {"id": 1, "nombre_proyecto": "Satori (Ibagué)"},
+        {"id": 2, "nombre_proyecto": "Mandala (Ibagué)"},
+        {"id": 3, "nombre_proyecto": "Selvia (Armenia)"},
+        {"id": 4, "nombre_proyecto": "Ícono 60 (Ibagué)"},
+        {"id": 5, "nombre_proyecto": "Ática (Ibagué)"},
+        {"id": 6, "nombre_proyecto": "Vivalto (Ibagué)"},
+        {"id": 7, "nombre_proyecto": "Morada Pinaos (Ibagué)"},
+    ]
+
+    return render(request, "nuevo_contacto.html", {
+        "tipos_contacto": TipoContacto.objects.all(),
+        "tipos_doc": TipoIdentificacion.objects.all(),
+        "proyectos": proyectos,
+        "error": error,
+        "usuario_logueado": usuario_logueado
+    })
+
 def editar_contacto(request, id_contacto):
     id_sesion = request.session.get('user_id')
     if not id_sesion: return redirect('/login/')
@@ -604,6 +708,18 @@ def editar_contacto(request, id_contacto):
             p.apellido = None
             p.razon_social = request.POST.get("razon_social")
             p.nombre_rep_legal = request.POST.get("nombre_rep_legal")
+            
+        p.tipo_proyecto = request.POST.get("tipo_proyecto")
+        p.proyecto_nombre = request.POST.get("proyecto_nombre")
+        p.torre = request.POST.get("torre")
+        p.apartamento = request.POST.get("apartamento")
+        p.tipo_contrato = request.POST.get("tipo_contrato")
+        p.ocupacion = request.POST.get("ocupacion")
+        p.otra_ocupacion = request.POST.get("otra_ocupacion")
+        fn = request.POST.get("fecha_nacimiento")
+        p.fecha_nacimiento = fn if fn else None
+        ed = request.POST.get("edad")
+        p.edad = int(ed) if ed and str(ed).isdigit() else None
 
         if not (p.nombre if p.nombre else p.razon_social): error = "Nombre o Razón Social es obligatorio."
         elif Contacto.objects.filter(documento_nit=p.documento_nit).exclude(id=p.id).exists():
@@ -636,10 +752,22 @@ def editar_contacto(request, id_contacto):
             p.save()
             return redirect('/')
                 
+    # Lista estática de proyectos
+    proyectos = [
+        {"id": 1, "nombre_proyecto": "Satori (Ibagué)"},
+        {"id": 2, "nombre_proyecto": "Mandala (Ibagué)"},
+        {"id": 3, "nombre_proyecto": "Selvia (Armenia)"},
+        {"id": 4, "nombre_proyecto": "Ícono 60 (Ibagué)"},
+        {"id": 5, "nombre_proyecto": "Ática (Ibagué)"},
+        {"id": 6, "nombre_proyecto": "Vivalto (Ibagué)"},
+        {"id": 7, "nombre_proyecto": "Morada Pinaos (Ibagué)"},
+    ]
+
     return render(request, "editar_contacto.html", {
         "c": p, "error": error, 
         "tipos_contacto": TipoContacto.objects.all(),
         "tipos_doc": TipoIdentificacion.objects.all(),
+        "proyectos": proyectos,
         "usuario_logueado": usuario_logueado
     })
 

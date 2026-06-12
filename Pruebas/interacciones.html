@@ -11,6 +11,7 @@
         :root {
             --bg-principal: #f8fafc;
             --primario: #a82e2e;
+            --rojo-primario: #a82e2e;
             --primario-soft: rgba(168, 46, 46, 0.1);
             --secundario: #335d80;
             --destacado: #01B574;
@@ -351,7 +352,9 @@
                 width: 280px !important;
                 position: fixed !important;
                 left: -280px !important;
-                height: 100vh !important;
+                height: 100dvh !important;
+                padding-bottom: 50px !important;
+                overflow-y: auto !important;
                 transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), left 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
                 z-index: 10000 !important;
             }
@@ -418,7 +421,7 @@
                 flex-shrink: 0;
             }
             .hamburger-btn svg {
-                stroke: var(--rojo-primario);
+                stroke: var(--primario);
             }
             
             .sidebar-overlay {
@@ -636,7 +639,10 @@
         .info-valor { font-size: 13.5px; color: var(--texto-principal); font-weight: 700; }
 
         .panel-derecho {
-            background: var(--blanco); border-radius: 16px; box-shadow: var(--sombra-suave); border: 1px solid var(--gris-borde); overflow: hidden; display: flex; flex-direction: column; min-height: 500px;
+            background-color: var(--blanco);
+            border-radius: 16px; 
+            box-shadow: var(--sombra-suave), inset 0 0 120px rgba(168, 46, 46, 0.15); 
+            border: 1px solid var(--gris-borde); overflow: hidden; display: flex; flex-direction: column; min-height: 500px;
         }
         .tabs-primarias { display: flex; border-bottom: 1px solid var(--gris-borde); background: #fcfdfd; }
         .tab-btn { padding: 16px 28px; border: none; background: transparent; font-size: 13.5px; font-weight: 700; color: var(--texto-secundario); cursor: pointer; border-bottom: 3px solid transparent; transition: all 0.2s; }
@@ -675,6 +681,52 @@
             border-color: var(--rojo-primario) !important;
             box-shadow: 0 0 0 3px rgba(168, 46, 46, 0.15);
         }
+        /* Modal Alertas Styles */
+        .modal-historial {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 9999;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(4px);
+        }
+
+        .modal-historial-contenido {
+            background: white;
+            border-radius: 20px;
+            width: 90%;
+            max-width: 500px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+            animation: slideUp 0.3s ease;
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .modal-historial-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        .modal-historial-header h3 {
+            font-size: 18px;
+            color: #1e293b;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
     </style>
     <script src="{% static 'js/validaciones.js' %}"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -682,12 +734,12 @@
 
 <body>
     <div id="sidebar-overlay" class="sidebar-overlay"></div>
+        <!-- BARRA LATERAL -->
     <aside class="barra-lateral">
         <div class="barra-cabecera">
-            <div class="logo-d">D</div>
+            <img src="{% static 'img/logo_dyco.png' %}" alt="Logo DYCO" style="width: 48px; height: 48px; object-fit: contain; border-radius: 12px; background: white; padding: 4px; box-shadow: 0 2px 5px rgba(0,0,0,0.2);">
             <div class="logo-texto">CONSTRUCTORA</div>
         </div>
-
 
         <nav class="navegacion">
             <a href="{% url 'dashboard' %}" class="nav-enlace">
@@ -708,8 +760,13 @@
                 <span class="nav-text">Gestión de Usuarios</span>
             </a>
             {% endif %}
+            <a href="{% url 'incidencias' %}" class="nav-enlace">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+                <span class="nav-text">Incidencias</span>
+            </a>
         </nav>
 
+        <!-- ── PERFIL BOTTOM (Configuraciones) ── -->
         {% include 'configuraciones.html' %}
     </aside>
 
@@ -718,26 +775,46 @@
          CONTENIDO PRINCIPAL
     ════════════════════════════════════════════ -->
     <main class="contenido-principal">
-        <header style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px; flex-wrap: wrap; gap: 15px; background: white; padding: 20px 28px; border-radius: 16px; border: 1px solid var(--gris-borde); box-shadow: var(--sombra);">
-            <div style="display: flex; align-items: center; gap: 10px;">
-                <button id="hamburger-btn" class="hamburger-btn" style="display: none;">
+        <header style="position: relative; margin-bottom: 40px; border-radius: 16px; box-shadow: var(--sombra); overflow: hidden; min-height: 120px; display: flex; justify-content: space-between; align-items: center; padding: 20px 30px;">
+            <!-- Carrusel de fondo -->
+            <div id="headerCarousel" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 0;">
+                <div class="header-slide" style="position: absolute; inset: 0; background: url('{% static 'img/slide1.png' %}') center/cover; transition: opacity 1.5s ease-in-out; opacity: 1;"></div>
+                <div class="header-slide" style="position: absolute; inset: 0; background: url('{% static 'img/slide2.png' %}') center/cover; transition: opacity 1.5s ease-in-out; opacity: 0;"></div>
+                <div class="header-slide" style="position: absolute; inset: 0; background: url('{% static 'img/slide3.png' %}') center/cover; transition: opacity 1.5s ease-in-out; opacity: 0;"></div>
+                <!-- Overlay oscuro suave para mejorar el contraste del texto blanco -->
+                <div style="position: absolute; inset: 0; background: linear-gradient(to right, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.3) 100%);"></div>
+            </div>
+
+            <!-- Contenido Izquierdo (DYCO) -->
+            <div style="position: relative; z-index: 1; display: flex; align-items: center; gap: 15px;">
+                <button id="hamburger-btn" class="hamburger-btn" style="display: none; color: white;">
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                         <line x1="3" y1="12" x2="21" y2="12"></line>
                         <line x1="3" y1="6" x2="21" y2="6"></line>
                         <line x1="3" y1="18" x2="21" y2="18"></line>
                     </svg>
                 </button>
-                <div>
-                    <h1 style="font-size: 24px; font-weight: 800; color: #0f172a; margin: 0;">Constructora DYCO</h1>
-                    <p style="color: var(--texto-suave); font-weight: 500; font-size: 13px; margin: 0;">Interacciones &bull; Bienvenido de nuevo, {{ usuario_logueado.nombre_usuario }}</p>
-                </div>
+                <h1 style="font-size: 32px; font-weight: 900; color: white; margin: 0; letter-spacing: 1px; text-shadow: 0 2px 10px rgba(0,0,0,0.3);">DYCO</h1>
             </div>
-            <div style="display: flex; align-items: center; gap: 15px;">
-                <a href="{% url 'contactos' %}" class="btn-banner">Registrar Contacto</a>
-                <div style="width: 44px; height: 44px; background: #e2e8f0; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; color: #334155; font-size: 15px;" title="{{ usuario_logueado.nombre_usuario }}">
-                    {{ usuario_logueado.nombre_usuario|make_list|first|upper }}
-                </div>
+
+            <!-- Contenido Derecho (Botón Registrar) -->
+            <div style="position: relative; z-index: 1; display: flex; align-items: center; gap: 15px;">
+                <a href="{% url 'contactos' %}" class="btn-banner" style="background: white; color: var(--rojo-primario); padding: 12px 24px; font-size: 14px; box-shadow: 0 4px 15px rgba(0,0,0,0.2);">Registrar Contacto</a>
             </div>
+            
+            <script>
+                document.addEventListener("DOMContentLoaded", function() {
+                    const hSlides = document.querySelectorAll('.header-slide');
+                    let currentHSlide = 0;
+                    if(hSlides.length > 0) {
+                        setInterval(() => {
+                            hSlides[currentHSlide].style.opacity = 0;
+                            currentHSlide = (currentHSlide + 1) % hSlides.length;
+                            hSlides[currentHSlide].style.opacity = 1;
+                        }, 5000); // Cambia cada 5 segundos
+                    }
+                });
+            </script>
         </header>
 
         {% if error %}
@@ -775,7 +852,7 @@
                         {% for c in contactos %}
                         <div onclick="window.location.href='/contacto/{{ c.id }}/?from=interacciones';" 
                              style="position: relative; background: white; border: 1px solid var(--gris-borde); padding: 20px; border-radius: 16px; cursor: pointer; transition: all 0.2s ease; box-shadow: var(--sombra);"
-                             onmouseover="this.style.borderColor='var(--rojo-primario)'; this.style.transform='translateY(-3px)'; this.style.boxShadow='0 10px 20px rgba(168,46,46,0.06)';" 
+                             onmouseover="this.style.borderColor='var(--rojo-primario)'; this.style.transform='translateY(-3px)'; this.style.boxShadow='0 0 25px rgba(168,46,46,0.15), inset 0 0 15px rgba(168,46,46,0.08)';" 
                              onmouseout="this.style.borderColor='var(--gris-borde)'; this.style.transform='translateY(0)'; this.style.boxShadow='var(--sombra)';" 
                         >
                             <!-- Action buttons (Edit, Bell, Clock) -->
@@ -787,6 +864,26 @@
                                         onmouseover="this.style.color='var(--rojo-primario)'; this.style.background='#FFF5F5';"
                                         onmouseout="this.style.color='#64748b'; this.style.background='#f1f5f9';">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
+                                </button>
+                                
+                                <!-- Info Button -->
+                                <button onclick="event.stopPropagation(); mostrarInfoAdicional(this);" 
+                                        title="Información Personal y Proyecto"
+                                        data-tipo-proyecto="{{ c.tipo_proyecto|default:'-' }}"
+                                        data-proyecto="{{ c.proyecto_nombre|default:'-' }}"
+                                        data-torre="{{ c.torre|default:'-' }}"
+                                        data-apartamento="{{ c.apartamento|default:'-' }}"
+                                        data-contrato="{{ c.tipo_contrato|default:'-' }}"
+                                        data-ocupacion="{{ c.ocupacion|default:'-' }}"
+                                        data-otra-oc="{{ c.otra_ocupacion|default:'' }}"
+                                        data-fecha-nac="{{ c.fecha_nacimiento|date:'Y-m-d'|default:'-' }}"
+                                        data-edad="{{ c.edad|default:'-' }}"
+                                        data-identificacion="{{ c.documento_nit|default:'-' }}"
+                                        data-nombre="{% if c.nombre %}{{ c.nombre }} {{ c.apellido }}{% else %}{{ c.razon_social }}{% endif %}"
+                                        style="color: #64748b; background: #f1f5f9; border: none; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s; outline: none;"
+                                        onmouseover="this.style.color='#10b981'; this.style.background='#ecfdf5';"
+                                        onmouseout="this.style.color='#64748b'; this.style.background='#f1f5f9';">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
                                 </button>
                                 
                                 <!-- Bell Icon (Indicador de Interacciones: Llamadas, Correos Recibidos y Reuniones) -->
@@ -1194,7 +1291,7 @@
                                 datasets: [{
                                     label: 'Minutos',
                                     data: [data.avg_call_min || 0, data.avg_meeting_min || 0],
-                                    backgroundColor: ['#335d80', '#01B574'],
+                                    backgroundColor: ['#a82e2e', '#1a2232'],
                                     borderRadius: 6,
                                     barThickness: 25
                                 }]
@@ -1455,7 +1552,7 @@
                                 } else if (item.tipo === 'Reunión') {
                                     iconSvg = `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>`;
                                     iconBg = '#fff7ed';
-                                    iconColor = '#f97316';
+                                    iconColor = '#e11d48';
                                 }
                                 
                                 listContainer.innerHTML += `
@@ -1527,6 +1624,84 @@
             </div>
         </div>
     </div>
+
+    <!-- Modal para Información del Proyecto y Laboral -->
+    <div id="modalInfoCard" class="modal-historial" onclick="cerrarInfoCard()" style="display: none; align-items: center; justify-content: center; z-index: 15000;">
+        <div class="modal-historial-contenido" style="max-width: 450px; min-height: 200px;" onclick="event.stopPropagation()">
+            <div class="modal-historial-header" style="display: flex; justify-content: space-between; width: 100%; align-items: center; padding-bottom: 15px; margin-bottom: 15px; border-bottom: 1px solid #f1f5f9;">
+                <h3 style="margin: 0; font-size: 16px; font-weight: 800; color: #1e293b; display: flex; align-items: center; gap: 10px;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+                    <span>Información del Cliente</span>
+                </h3>
+                <button onclick="cerrarInfoCard()" style="background:none; border:none; font-size:24px; color:#cbd5e1; cursor:pointer; padding: 5px;">&times;</button>
+            </div>
+            
+            <div id="info-modal-content" style="font-size: 13px; color: #334155; line-height: 1.5;">
+                <!-- Dinámico -->
+            </div>
+        </div>
+    </div>
+    <script>
+        function mostrarInfoAdicional(btn) {
+            const modal = document.getElementById('modalInfoCard');
+            const content = document.getElementById('info-modal-content');
+            if(!modal || !content) return;
+            
+            const nombre = btn.getAttribute('data-nombre');
+            const tProj = btn.getAttribute('data-tipo-proyecto');
+            const proj = btn.getAttribute('data-proyecto');
+            const torre = btn.getAttribute('data-torre');
+            const apto = btn.getAttribute('data-apartamento');
+            const contrato = btn.getAttribute('data-contrato');
+            const oc = btn.getAttribute('data-ocupacion');
+            const otraOc = btn.getAttribute('data-otra-oc');
+            const fNac = btn.getAttribute('data-fecha-nac');
+            const edad = btn.getAttribute('data-edad');
+            const identificacion = btn.getAttribute('data-identificacion');
+
+            let html = `<div style="font-weight: 800; font-size: 15px; margin-bottom: 15px; color: #0f172a;">${nombre}</div>`;
+            
+            html += `<div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 15px; margin-bottom: 15px;">
+                        <div style="font-weight: 800; color: var(--rojo-primario); font-size: 11.5px; text-transform: uppercase; margin-bottom: 12px; letter-spacing: 0.5px; display: flex; align-items: center; gap: 6px;">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
+                            Información del Proyecto
+                        </div>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                            <div><span style="color:#64748b; font-size:11px; display:block; font-weight:600;">Tipo</span><strong style="color:#1e293b; font-size:12.5px;">${tProj}</strong></div>
+                            <div><span style="color:#64748b; font-size:11px; display:block; font-weight:600;">Conjunto</span><strong style="color:#1e293b; font-size:12.5px;">${proj}</strong></div>
+                            <div><span style="color:#64748b; font-size:11px; display:block; font-weight:600;">Torre</span><strong style="color:#1e293b; font-size:12.5px;">${torre}</strong></div>
+                            <div><span style="color:#64748b; font-size:11px; display:block; font-weight:600;">Apto / Motivo</span><strong style="color:#1e293b; font-size:12.5px;">${apto} / ${contrato}</strong></div>
+                        </div>
+                     </div>`;
+
+            let ocupacionFinal = oc === "Otra ocupación" ? otraOc : oc;
+            
+            html += `<div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 15px;">
+                        <div style="font-weight: 800; color: #3b82f6; font-size: 11.5px; text-transform: uppercase; margin-bottom: 12px; letter-spacing: 0.5px; display: flex; align-items: center; gap: 6px;">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                            Personal y Laboral
+                        </div>
+                        <div style="display: grid; grid-template-columns: 1fr; gap: 12px;">
+                            <div><span style="color:#64748b; font-size:11px; display:block; font-weight:600;">Ocupación / Cargo</span><strong style="color:#1e293b; font-size:12.5px;">${ocupacionFinal}</strong></div>
+                        </div>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 12px;">
+                            <div><span style="color:#64748b; font-size:11px; display:block; font-weight:600;">Identificación</span><strong style="color:#1e293b; font-size:12.5px;">${identificacion}</strong></div>
+                        </div>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 12px;">
+                            <div><span style="color:#64748b; font-size:11px; display:block; font-weight:600;">Fecha de Nacimiento</span><strong style="color:#1e293b; font-size:12.5px;">${fNac}</strong></div>
+                            <div><span style="color:#64748b; font-size:11px; display:block; font-weight:600;">Edad</span><strong style="color:#1e293b; font-size:12.5px;">${edad !== '-' && edad !== 'N/A' && edad !== '' ? edad + ' años' : '-'}</strong></div>
+                        </div>
+                     </div>`;
+            
+            content.innerHTML = html;
+            modal.style.display = 'flex';
+        }
+
+        function cerrarInfoCard() {
+            const modal = document.getElementById('modalInfoCard');
+            if(modal) modal.style.display = 'none';
+        }
+    </script>
 </body>
 
 </html>

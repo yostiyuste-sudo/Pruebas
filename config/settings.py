@@ -24,7 +24,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-9nqyhnj14&rheqfwrhkt#7*&d#o3oqm$^!-c)cn3i+ky=c60n-')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.getenv('DEBUG', 'False') == 'True'
+DEBUG = os.getenv('DEBUG', 'True') == 'True'
 
 # ALLOWED_HOSTS = ['127.0.0.1', 'localhost', '10.6.76.127', '.ngrok-free.dev']
 ALLOWED_HOSTS = [
@@ -40,6 +40,8 @@ if RENDER_EXTERNAL_HOST:
 
 NGROK_URL = os.getenv('NGROK_URL', 'https://karly-nonwarrantable-letty.ngrok-free.dev')
 
+ALLOWED_HOSTS = ['*']
+NGROK_URL = 'https://karly-nonwarrantable-letty.ngrok-free.dev'
 CSRF_TRUSTED_ORIGINS = [NGROK_URL, 'https://*.ngrok-free.dev']
 RENDER_EXTERNAL_URL = os.getenv('RENDER_EXTERNAL_URL')
 if RENDER_EXTERNAL_URL:
@@ -101,7 +103,7 @@ WSGI_APPLICATION = 'config.wsgi.application'
 
 DATABASES = {
     'default': dj_database_url.config(
-        default='postgresql://postgres:1234@localhost:5432/db_dyco'
+        default='sqlite:///db.sqlite3'
     )
 }
 

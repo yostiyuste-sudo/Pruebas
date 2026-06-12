@@ -8,7 +8,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        :root{--bg:#F4F7FE;--pri:#D32F2F;--sec:#4318FF;--ok:#01B574;--warn:#F59E0B;--txt:#1B2559;--txt2:#A3AED0;--white:#FFF;--shadow:0 20px 50px rgba(0,0,0,.05);--ease:all .4s cubic-bezier(.175,.885,.32,1.275)}
+        :root{--bg:#F4F7FE;--pri:#D32F2F;--sec:#4318FF;--ok:#01B574;--warn:#e11d48;--txt:#1B2559;--txt2:#A3AED0;--white:#FFF;--shadow:0 20px 50px rgba(0,0,0,.05);--ease:all .4s cubic-bezier(.175,.885,.32,1.275)}
         *{margin:0;padding:0;box-sizing:border-box}
         body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--txt);min-height:100vh;overflow-x:hidden}
         /* SIDEBAR */
@@ -35,7 +35,7 @@
         .nav-link.active svg{stroke:#ffffff}
         .nav-txt{opacity:0;transition:.3s;display:none}
         .sidebar:hover .nav-txt{opacity:1;display:block}
-        .nav-badge{position:absolute;top:6px;right:2px;min-width:20px;height:20px;padding:0 5px;background:#F59E0B;color:#fff;font-size:11px;font-weight:800;border-radius:10px;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(245,158,11,.4);z-index:2}
+        .nav-badge{position:absolute;top:6px;right:2px;min-width:20px;height:20px;padding:0 5px;background:#e11d48;color:#fff;font-size:11px;font-weight:800;border-radius:10px;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(245,158,11,.4);z-index:2}
         .sidebar:hover .nav-badge{top:50%;right:18px;transform:translateY(-50%)}
         .logout-c{margin-top:auto;width:100%;border-top:1px solid rgba(255,255,255,0.05);display:flex;justify-content:center}
         .sidebar:hover .logout-c{padding:10px 20px 0 20px;justify-content:flex-start}
@@ -44,8 +44,8 @@
         .btn-logout:hover{color:#C72B2B}
         .btn-logout span{opacity:0;transition:.3s;display:none}
         .sidebar:hover .btn-logout span{opacity:1;display:block}
-        .wrapper{padding:25px 25px 25px 115px;transition:var(--ease);width:100%}
-        .sidebar:hover~.wrapper{padding-left:315px}
+        .wrapper{margin-left: 90px; padding:25px; transition:var(--ease); width:calc(100% - 90px)}
+        .barra-lateral:hover~.wrapper{margin-left:290px; width:calc(100% - 290px)}
         /* NOTIF */
         .notif-wrap{position:relative}
         .notif-btn{background:#fff;border:1px solid #E9EDF7;border-radius:50%;width:45px;height:45px;display:flex;align-items:center;justify-content:center;cursor:pointer;position:relative;box-shadow:0 4px 6px rgba(0,0,0,.02);transition:.2s}
@@ -63,7 +63,7 @@
         .notif-item.unread{background:#EEF9F4}
         .notif-icon-el{min-width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px;background:rgba(1,181,116,.1);color:#01B574}
         .notif-icon-el.new{background:rgba(67,24,255,.1);color:#4318FF}
-        .notif-icon-el.edit{background:rgba(245,158,11,.1);color:#F59E0B}
+        .notif-icon-el.edit{background:rgba(245,158,11,.1);color:#e11d48}
         .notif-icon-el.off{background:rgba(160,160,160,.1);color:#888}
         .notif-msg{font-size:13px;color:var(--txt);line-height:1.4}
         .notif-time{font-size:11px;color:var(--txt2);margin-top:3px}
@@ -88,7 +88,7 @@
         .rol-admin{background:#FFF3E0;color:#E65100}
         .rol-user{background:#EEF2FF;color:#4318FF}
         .badge-count{background:var(--bg);padding:5px 12px;border-radius:10px;font-size:13px;font-weight:800}
-        .btn-est-active{color:#B45309;background:#FEF3C7;padding:5px 12px;border-radius:20px;font-weight:700;font-size:12px;display:inline-block}
+        .btn-est-active{color:#be123c;background:#ffe4e6;padding:5px 12px;border-radius:20px;font-weight:700;font-size:12px;display:inline-block}
         .btn-est-inactive{color:#64748b;background:#f1f5f9;padding:5px 12px;border-radius:20px;font-weight:700;font-size:12px;display:inline-block}
         .btn-icon{width:32px;height:32px;border-radius:8px;border:none;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;transition:.3s;background:#F4F7FE;color:#475467}
         .btn-icon:hover{background:var(--sec);color:#fff}
@@ -112,7 +112,7 @@
         /* TOAST */
         .toast{position:fixed;bottom:30px;right:30px;padding:16px 25px;border-radius:14px;color:#fff;font-weight:700;font-size:14px;z-index:3000;display:none;align-items:center;gap:10px;box-shadow:0 10px 30px rgba(0,0,0,.2)}
         .toast.show{display:flex;animation:toastIn .4s ease}
-        .toast.success{background:#01B574}.toast.error{background:#D32F2F}.toast.warn{background:#F59E0B}
+        .toast.success{background:#01B574}.toast.error{background:#D32F2F}.toast.warn{background:#e11d48}
         @keyframes toastIn{from{transform:translateY(20px);opacity:0}to{transform:translateY(0);opacity:1}}
         .chart-legend{display:flex;gap:20px;justify-content:center;flex-wrap:wrap;margin-bottom:12px}
         .leg-item{display:flex;align-items:center;gap:7px;cursor:pointer;font-size:13px;font-weight:600;color:#667085;transition:.2s}
@@ -138,7 +138,7 @@
             height: 18px;
             width: 50px;
             border-radius: 20px;
-            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="40" height="12" viewBox="0 0 40 12"><path fill="%23fff" d="M12,6 L16,2 L16,10 Z" /><path fill="%23fff" d="M28,6 L24,2 L24,10 Z" /></svg>') center no-repeat, linear-gradient(90deg, #FF6B6B 0%, #F59E0B 100%);
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="40" height="12" viewBox="0 0 40 12"><path fill="%23fff" d="M12,6 L16,2 L16,10 Z" /><path fill="%23fff" d="M28,6 L24,2 L24,10 Z" /></svg>') center no-repeat, linear-gradient(90deg, #FF6B6B 0%, #e11d48 100%);
             cursor: pointer;
             -webkit-appearance: none;
             margin-top: -1px;
@@ -157,38 +157,117 @@
             width: 50px;
             border-radius: 20px;
             border: none;
-            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="40" height="12" viewBox="0 0 40 12"><path fill="%23fff" d="M12,6 L16,2 L16,10 Z" /><path fill="%23fff" d="M28,6 L24,2 L24,10 Z" /></svg>') center no-repeat, linear-gradient(90deg, #FF6B6B 0%, #F59E0B 100%);
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="40" height="12" viewBox="0 0 40 12"><path fill="%23fff" d="M12,6 L16,2 L16,10 Z" /><path fill="%23fff" d="M28,6 L24,2 L24,10 Z" /></svg>') center no-repeat, linear-gradient(90deg, #FF6B6B 0%, #e11d48 100%);
             cursor: pointer;
             box-shadow: 0 2px 4px rgba(0,0,0,0.3);
         }
+    
+        /* --- SIDEBAR NUEVA --- */
+        .barra-lateral {
+            position: fixed; top: 0; left: 0; height: 100vh;
+            width: 90px; background-color: #1a2232; border-right: 1px solid #111827;
+            display: flex; flex-direction: column; z-index: 1000;
+            transition: var(--ease); padding-bottom: 30px; overflow: hidden;
+            align-items: center;
+        }
+        .barra-lateral:hover { width: 290px; align-items: stretch; }
+        
+        .barra-cabecera { padding: 40px 0; display: flex; align-items: center; justify-content: center; gap: 12px; width: 100%; transition: 0.3s; }
+        .barra-lateral:hover .barra-cabecera { padding: 40px 25px; justify-content: flex-start; }
+        
+        .logo-d { 
+            min-width: 48px; height: 48px; 
+            background: #a82e2e; color: white; display: flex; align-items: center; justify-content: center;
+            border-radius: 14px; font-weight: 800; font-size: 24px;
+        }
+        .logo-texto { font-weight: 800; font-size: 22px; color: #ffffff; letter-spacing: -0.5px; opacity: 0; transition: 0.3s; white-space: nowrap; display: none; margin-left: 5px; }
+        .barra-lateral:hover .logo-texto { opacity: 1; display: block; }
+
+        .navegacion { flex: 1; width: 100%; padding: 0 15px; display: flex; flex-direction: column; align-items: center; gap: 8px; }
+        .barra-lateral:hover .navegacion { align-items: stretch; padding: 0 20px; }
+        
+        .nav-enlace { 
+            display: flex; align-items: center; justify-content: center; width: 56px; min-height: 56px; 
+            text-decoration: none; color: #94a3b8; border-radius: 16px; 
+            transition: 0.3s; font-weight: 700; font-size: 16px; white-space: nowrap;
+        }
+        .barra-lateral:hover .nav-enlace { width: 100%; justify-content: flex-start; padding: 16px 22px; border-radius: 20px; gap: 18px; }
+        
+        .nav-enlace:hover { background: rgba(255, 255, 255, 0.05); color: #ffffff; }
+        .nav-enlace.activo { 
+            background: rgba(168, 46, 46, 0.15); color: #ffffff !important; 
+            border-left: 4px solid #a82e2e;
+            border-radius: 20px 0 0 20px;
+        }
+        .nav-enlace.activo svg { stroke: #a82e2e; }
+        .nav-text { opacity: 0; transition: 0.3s; display: none; }
+        .barra-lateral:hover .nav-text { opacity: 1; display: block; }
+        
+        /* Mobile styles override */
+        @media (max-width: 768px) {
+            .barra-lateral {
+                width: 280px !important;
+                position: fixed !important;
+                left: -280px !important;
+                height: 100dvh !important;
+                padding-bottom: 50px !important;
+                overflow-y: auto !important;
+                transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), left 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
+                z-index: 10000 !important;
+            }
+            .barra-lateral.activo {
+                left: 0 !important;
+                box-shadow: 15px 0 50px rgba(0,0,0,0.15) !important;
+            }
+            .barra-lateral:hover { width: 280px !important; }
+            .barra-lateral:hover .logo-texto, .barra-lateral:hover .nav-text { display: block !important; opacity: 1 !important; }
+            .nav-enlace {
+                width: 100% !important;
+                justify-content: flex-start !important;
+                padding: 16px 22px !important;
+                border-radius: 20px !important;
+                gap: 18px !important;
+            }
+            .barra-lateral:hover ~ .wrapper { margin-left: 0 !important; width: 100% !important; }
+        }
+
     </style>
 </head>
 <body>
-    <aside class="sidebar">
-        <div class="sb-head"><div class="logo">D</div><div class="logo-t">CONSTRUCTORA</div></div>
-        <div class="profile">
-            <div class="avatar">
-                {% if usuario_logueado %}
-                    {{ usuario_logueado.nombre_usuario|make_list|first|upper }}
-                {% else %}
-                    U
-                {% endif %}
-            </div>
-            <div class="p-info">
-                <span class="p-name">{% if usuario_logueado %}{{ usuario_logueado.nombre_usuario }}{% else %}Usuario{% endif %}</span>
-                <p class="p-role">{% if usuario_logueado %}{{ usuario_logueado.rol.nombre_rol }}{% else %}Usuario{% endif %}</p>
-            </div>
+        <!-- BARRA LATERAL -->
+    <aside class="barra-lateral">
+        <div class="barra-cabecera">
+            <img src="{% static 'img/logo_dyco.png' %}" alt="Logo DYCO" style="width: 48px; height: 48px; object-fit: contain; border-radius: 12px; background: white; padding: 4px; box-shadow: 0 2px 5px rgba(0,0,0,0.2);">
+            <div class="logo-texto">CONSTRUCTORA</div>
         </div>
-        <nav class="nav">
-            <a href="{% url 'dashboard' %}" class="nav-link"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg><span class="nav-txt">Inicio</span></a>
-            <a href="{% url 'incidencias' %}" class="nav-link"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg><span class="nav-txt">Incidencias</span></a>
-            {% if usuario_logueado.rol.nombre_rol == 'Administrador' %}
-            <a href="{% url 'usuarios' %}" class="nav-link active"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg><span class="nav-txt">Gestión de Usuarios</span></a>
+
+        <nav class="navegacion">
+            <a href="{% url 'dashboard' %}" class="nav-enlace">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+                <span class="nav-text">Inicio</span>
+            </a>
+            <a href="{% url 'contactos' %}" class="nav-enlace">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
+                <span class="nav-text">Registro de Contacto</span>
+            </a>
+            <a href="{% url 'interacciones' %}" class="nav-enlace">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                <span class="nav-text">Interacciones</span>
+            </a>
+            {% if usuario_logueado.rol.nombre_rol == "Administrador" %}
+            <a href="{% url 'usuarios' %}" class="nav-enlace activo">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                <span class="nav-text">Gestión de Usuarios</span>
+            </a>
             {% endif %}
-            <a href="{% url 'contactos' %}" class="nav-link"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="23" y1="11" x2="17" y2="11"/><line x1="20" y1="8" x2="20" y2="14"/></svg><span class="nav-txt">Registro de Contacto</span></a>
-            <a href="{% url 'interacciones' %}" class="nav-link"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg><span class="nav-txt">Interacciones</span></a>
+            <a href="{% url 'incidencias' %}" class="nav-enlace">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+                <span class="nav-text">Incidencias</span>
+            </a>
         </nav>
-        <div class="logout-c"><a href="{% url 'logout' %}" class="btn-logout"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg><span>Cerrar Sesión</span></a></div>
+
+        <!-- ── PERFIL BOTTOM (Configuraciones) ── -->
+        {% include 'configuraciones.html' %}
     </aside>
 
     <div class="wrapper">
@@ -360,7 +439,7 @@ let nextId = 2;
 let toggleTargetId = null;
 let uChart = null;
 
-const COLORS = ['#D32F2F','#1B2559','#01B574','#F59E0B','#4318FF','#8C98A4'];
+const COLORS = ['#a82e2e', '#1a2232', '#64748b', '#e11d48', '#334155', '#7f1d1d'];
 
 // ===== DATOS CHART POR PERÍODO =====
 function getMonthLabels() {
@@ -635,8 +714,8 @@ function verUsuario(id) {
                 <div style="font-size:18px;font-weight:800;color:#01B574;margin-top:4px">0</div>
             </div>
             <div style="background:#FFF3E0;padding:12px;border-radius:12px">
-                <div style="font-size:11px;color:#F59E0B;font-weight:700;text-transform:uppercase">No Logradas</div>
-                <div style="font-size:18px;font-weight:800;color:#F59E0B;margin-top:4px">0</div>
+                <div style="font-size:11px;color:#e11d48;font-weight:700;text-transform:uppercase">No Logradas</div>
+                <div style="font-size:18px;font-weight:800;color:#e11d48;margin-top:4px">0</div>
             </div>
         </div>
 
@@ -657,7 +736,7 @@ function verUsuario(id) {
             labels: ['Llamadas','Correos','Reuniones','Notas','Otros'],
             datasets: [{
                 data: [0, 0, 0, 0, 0],
-                backgroundColor: ['#F59E0B','#D32F2F','#4318FF','#00C6E0','#01B574'],
+                backgroundColor: ['#a82e2e', '#1a2232', '#64748b', '#e11d48', '#334155'],
                 borderWidth: 0
             }]
         },

@@ -19,10 +19,10 @@
     <div id="camposApartamento" style="display:none; margin-top: 12px; padding: 15px; border: 1px dashed var(--gris-borde); border-radius: 8px;">
         <div class="grupo-campo">
             <label>Conjunto / Proyecto</label>
-            <select name="proyecto" id="proyectoSelect" class="entrada-texto">
+            <select name="proyecto_nombre" id="proyectoSelect" class="entrada-texto">
                 <option value="">Selecciona un conjunto</option>
                 {% for p in proyectos %}
-                <option value="{{ p.id }}">{{ p.nombre_proyecto }}</option>
+                <option value="{{ p.nombre_proyecto }}">{{ p.nombre_proyecto }}</option>
                 {% endfor %}
             </select>
         </div>

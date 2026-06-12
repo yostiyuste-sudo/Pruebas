@@ -1,0 +1,26 @@
+{{ c.nombre|default:c.razon_social }}
+{{ c.apto|default:'-' }}
+{{ c.motivo|default:'-' }}
+{{ c.fecha_nacimiento|default:'-' }}
+{{ c.conjunto|default:'-' }}
+{{ c.usuario_asignado.nombre_usuario|default:"Jary" }}
+{{ c.nombre|default:c.razon_social|first|upper }}
+{{ c.apellido|escapejs }}
+{{ c.celular }}
+{{ c.correo|default:"-" }}
+{{ c.torre|default:'-' }}
+{{ c.telefono|default:'' }}
+{{ c.tipo_proyecto|default:'-' }}
+{{ c.ciudad|default:"-" }}
+{{ c.id }}
+{{ c.razon_social }}
+{{ c.apellido }}
+{{ c.nombre }}
+{{ c.correo }}
+{{ c.edad|default:'-' }}
+{{ c.nombre|escapejs }}
+{{ c.documento_nit }}
+{{ c.celular|default:'' }}
+{{ c.razon_social|escapejs }}
+{{ c.celular|default:c.telefono|default:'Sin número' }}
+{{ c.direccion|default:"-" }}

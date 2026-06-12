@@ -355,13 +355,12 @@
 <body>
     <div id="sidebar-overlay" class="sidebar-overlay"></div>
     <!-- BARRA LATERAL -->
+        <!-- BARRA LATERAL -->
     <aside class="barra-lateral">
         <div class="barra-cabecera">
-            <div class="logo-d">D</div>
+            <img src="{% static 'img/logo_dyco.png' %}" alt="Logo DYCO" style="width: 48px; height: 48px; object-fit: contain; border-radius: 12px; background: white; padding: 4px; box-shadow: 0 2px 5px rgba(0,0,0,0.2);">
             <div class="logo-texto">CONSTRUCTORA</div>
         </div>
-
-
 
         <nav class="navegacion">
             <a href="{% url 'dashboard' %}" class="nav-enlace">
@@ -382,8 +381,13 @@
                 <span class="nav-text">Gestión de Usuarios</span>
             </a>
             {% endif %}
+            <a href="{% url 'incidencias' %}" class="nav-enlace">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+                <span class="nav-text">Incidencias</span>
+            </a>
         </nav>
 
+        <!-- ── PERFIL BOTTOM (Configuraciones) ── -->
         {% include 'configuraciones.html' %}
     </aside>
 
@@ -513,8 +517,100 @@
                     </div>
                 </div>
 
+                <!-- ═══ INFORMACIÓN DEL PROYECTO ═══ -->
+                <div style="margin-top: 24px; border-top: 1px solid var(--gris-borde); padding-top: 20px;">
+                    <p style="font-size: 13px; font-weight: 700; color: var(--rojo-primario); margin-bottom: 14px; text-transform: uppercase; letter-spacing: 0.5px;">
+                        Información del Proyecto
+                    </p>
+
+                    <div class="grupo-campo">
+                        <label>Tipo de Proyecto / Servicio</label>
+                        <select name="tipo_proyecto" id="tipoProyectoSelectEdit" class="entrada-texto" onchange="mostrarCamposProyectoEdit()">
+                            <option value="">Selecciona el tipo de proyecto</option>
+                            <option value="Construcción desde cero en terreno propio" {% if c.tipo_proyecto == "Construcción desde cero en terreno propio" %}selected{% endif %}>Construcción desde cero en terreno propio</option>
+                            <option value="Diseño y construcción de casas personalizadas" {% if c.tipo_proyecto == "Diseño y construcción de casas personalizadas" %}selected{% endif %}>Diseño y construcción de casas personalizadas</option>
+                            <option value="Trámites legales y licencias" {% if c.tipo_proyecto == "Trámites legales y licencias" %}selected{% endif %}>Trámites legales y licencias</option>
+                            <option value="Adecuaciones o remodelaciones" {% if c.tipo_proyecto == "Adecuaciones o remodelaciones" %}selected{% endif %}>Adecuaciones o remodelaciones</option>
+                            <option value="Apartamento" {% if c.tipo_proyecto == "Apartamento" %}selected{% endif %}>Apartamento</option>
+                        </select>
+                    </div>
+
+                    <div id="camposApartamentoEdit" style="display:{% if c.tipo_proyecto == 'Apartamento' %}block{% else %}none{% endif %}; margin-top: 12px; padding: 15px; border: 1px dashed var(--gris-borde); border-radius: 8px;">
+                        <div class="grupo-campo">
+                            <label>Conjunto / Proyecto</label>
+                            <select name="proyecto_nombre" class="entrada-texto">
+                                <option value="">Selecciona un conjunto</option>
+                                {% for p in proyectos %}
+                                <option value="{{ p.nombre_proyecto }}" {% if c.proyecto_nombre == p.nombre_proyecto %}selected{% endif %}>{{ p.nombre_proyecto }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 12px;">
+                            <div class="grupo-campo">
+                                <label>Torre</label>
+                                <input type="text" name="torre" class="entrada-texto" value="{{ c.torre|default:'' }}" placeholder="Ej: Torre A">
+                            </div>
+                            <div class="grupo-campo">
+                                <label>N° Apartamento</label>
+                                <input type="text" name="apartamento" class="entrada-texto" value="{{ c.apartamento|default:'' }}" placeholder="Ej: 501"
+                                    oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+                            </div>
+                        </div>
+                        <div class="grupo-campo" style="margin-top: 12px;">
+                            <label>Motivo</label>
+                            <select name="tipo_contrato" class="entrada-texto">
+                                <option value="">Selecciona</option>
+                                <option value="Comprar" {% if c.tipo_contrato == "Comprar" %}selected{% endif %}>Comprar</option>
+                                <option value="Arrendar" {% if c.tipo_contrato == "Arrendar" %}selected{% endif %}>Arrendar</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Información Personal y Laboral -->
+                    <div style="margin-top: 20px; border-top: 1px solid var(--gris-borde); padding-top: 20px;">
+                        <p style="font-size: 13px; font-weight: 700; color: var(--rojo-primario); margin-bottom: 14px; text-transform: uppercase; letter-spacing: 0.5px;">
+                            Información Personal y Laboral
+                        </p>
+                        <div class="grupo-campo">
+                            <label>Ocupación / Trabajo</label>
+                            <select name="ocupacion" id="ocupacionSelectEdit" class="entrada-texto" onchange="mostrarOtraOcupacionEdit()">
+                                <option value="">Selecciona una ocupación</option>
+                                <option value="Dirección y Gerencia" {% if c.ocupacion == "Dirección y Gerencia" %}selected{% endif %}>Dirección y Gerencia</option>
+                                <option value="Área de la Salud" {% if c.ocupacion == "Área de la Salud" %}selected{% endif %}>Área de la Salud</option>
+                                <option value="Educación y Ciencias" {% if c.ocupacion == "Educación y Ciencias" %}selected{% endif %}>Educación y Ciencias</option>
+                                <option value="Tecnología e Informática" {% if c.ocupacion == "Tecnología e Informática" %}selected{% endif %}>Tecnología e Informática</option>
+                                <option value="Administración, Negocios y Finanzas" {% if c.ocupacion == "Administración, Negocios y Finanzas" %}selected{% endif %}>Administración, Negocios y Finanzas</option>
+                                <option value="Artes, Diseño y Comunicación" {% if c.ocupacion == "Artes, Diseño y Comunicación" %}selected{% endif %}>Artes, Diseño y Comunicación</option>
+                                <option value="Servicios, Ventas y Hostelería" {% if c.ocupacion == "Servicios, Ventas y Hostelería" %}selected{% endif %}>Servicios, Ventas y Hostelería</option>
+                                <option value="Oficios Manuales y Operativos" {% if c.ocupacion == "Oficios Manuales y Operativos" %}selected{% endif %}>Oficios Manuales y Operativos</option>
+                                <option value="Ingeniería, Construcción y Arquitectura" {% if c.ocupacion == "Ingeniería, Construcción y Arquitectura" %}selected{% endif %}>Ingeniería, Construcción y Arquitectura</option>
+                                <option value="Agricultura y Medio Ambiente" {% if c.ocupacion == "Agricultura y Medio Ambiente" %}selected{% endif %}>Agricultura y Medio Ambiente</option>
+                                <option value="Otra ocupación" {% if c.ocupacion == "Otra ocupación" %}selected{% endif %}>Otra ocupación</option>
+                            </select>
+                        </div>
+                        <div class="grupo-campo" id="campoOtraOcupacionEdit" style="display:{% if c.ocupacion == 'Otra ocupación' %}block{% else %}none{% endif %}; margin-top: 12px;">
+                            <label>Especifique la ocupación</label>
+                            <input type="text" name="otra_ocupacion" class="entrada-texto" value="{{ c.otra_ocupacion|default:'' }}" placeholder="¿A qué se dedica?"
+                                oninput="this.value = this.value.replace(/[0-9]/g, '')">
+                        </div>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 12px;">
+                            <div class="grupo-campo">
+                                <label>Fecha de Nacimiento</label>
+                                <input type="date" id="fechaNacimientoEdit" name="fecha_nacimiento" class="entrada-texto"
+                                    value="{{ c.fecha_nacimiento|date:'Y-m-d'|default:'' }}" onchange="calcularEdadEdit()">
+                            </div>
+                            <div class="grupo-campo">
+                                <label>Edad (años)</label>
+                                <input type="number" id="edadCalculadaEdit" name="edad" class="entrada-texto"
+                                    value="{{ c.edad|default:'' }}" placeholder="Calculada automáticamente" readonly
+                                    style="background-color: #f1f5f9; cursor: not-allowed;">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <div style="display: flex; gap: 15px; margin-top: 30px;">
-                    <a href="/" class="boton-principal"
+                    <a href="{% url 'contactos' %}" onclick="if(document.referrer) { window.history.back(); return false; }" class="boton-principal"
                         style="background-color: #eee; color: #555; width: auto; padding: 15px 30px;">
                         CANCELAR
                     </a>
@@ -537,6 +633,43 @@
             sn.style.display = isJur ? "none" : "block";
             sj.style.display = isJur ? "block" : "none";
         }
+
+        function mostrarCamposProyectoEdit() {
+            var sel = document.getElementById("tipoProyectoSelectEdit");
+            var campos = document.getElementById("camposApartamentoEdit");
+            if (sel && sel.value === "Apartamento") {
+                campos.style.display = "block";
+            } else {
+                campos.style.display = "none";
+            }
+        }
+
+        function mostrarOtraOcupacionEdit() {
+            var sel = document.getElementById("ocupacionSelectEdit");
+            var campo = document.getElementById("campoOtraOcupacionEdit");
+            if (sel && sel.value === "Otra ocupación") {
+                campo.style.display = "block";
+            } else {
+                campo.style.display = "none";
+            }
+        }
+
+        function calcularEdadEdit() {
+            var fechaInput = document.getElementById("fechaNacimientoEdit").value;
+            if (fechaInput) {
+                var hoy = new Date();
+                var fechaNac = new Date(fechaInput);
+                var edad = hoy.getFullYear() - fechaNac.getFullYear();
+                var m = hoy.getMonth() - fechaNac.getMonth();
+                if (m < 0 || (m === 0 && hoy.getDate() < fechaNac.getDate())) {
+                    edad--;
+                }
+                document.getElementById("edadCalculadaEdit").value = edad >= 0 ? edad : 0;
+            } else {
+                document.getElementById("edadCalculadaEdit").value = "";
+            }
+        }
+
         // Ejecutar al cargar por si acaso
         document.addEventListener('DOMContentLoaded', cambiar);
     </script>
