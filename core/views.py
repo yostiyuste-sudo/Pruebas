@@ -2481,23 +2481,28 @@ def whatsapp_webhook(request):
 
 def _enviar_ultramsg(phone, message):
     """Envía mensaje por UltraMsg. Retorna (success, whatsapp_id, error_msg)."""
-    import urllib.request, urllib.parse, json
+    import urllib.request, urllib.parse, urllib.error, json
     instance_id = getattr(settings, 'ULTRAMSG_INSTANCE_ID', '')
     token = getattr(settings, 'ULTRAMSG_TOKEN', '')
     if not instance_id or not token:
         return False, None, "ULTRAMSG_INSTANCE_ID o ULTRAMSG_TOKEN no configurados"
     try:
-        data = urllib.parse.urlencode({"token": token, "to": phone, "body": message}).encode()
+        payload = {"token": token, "to": phone, "body": message}
+        data = urllib.parse.urlencode(payload).encode()
         req = urllib.request.Request(
             f"https://api.ultramsg.com/{instance_id}/messages/chat",
             data=data,
             method='POST'
         )
+        req.add_header('Content-Type', 'application/x-www-form-urlencoded')
         with urllib.request.urlopen(req, timeout=10) as resp:
             body = json.loads(resp.read().decode())
             if body.get("sent"):
                 return True, body.get("messageId", ""), None
-            return False, None, body.get("error", "Error desconocido de UltraMsg")
+            return False, None, json.dumps(body)
+    except urllib.error.HTTPError as e:
+        detail = e.read().decode() if e.fp else str(e)
+        return False, None, f"UltraMsg 403: {detail}"
     except Exception as e:
         return False, None, f"UltraMsg: {e}"
 
