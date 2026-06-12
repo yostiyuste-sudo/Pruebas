@@ -14,6 +14,32 @@ from django.db.models import Q, Count, Sum
 from django.db.models.functions import TruncMonth
 from .models import Contacto, TipoContacto, TipoIdentificacion, Interaccion, TipoInteraccion, Usuario, Rol, FirmaDigital, MensajeWhatsApp
 
+def enviar_correo_seguro(asunto, texto_plano, destinatarios):
+    html_content = f"""
+    <html>
+    <body style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; color: #333; line-height: 1.6; background-color: #F4F7FE; padding: 20px;">
+        <div style="max-width: 600px; margin: 0 auto; background: #fff; padding: 30px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05);">
+            <div style="text-align: center; margin-bottom: 25px;">
+                <h1 style="color: #D32F2F; margin: 0; font-size: 24px;">Constructora Dyco</h1>
+                <p style="color: #A3AED0; margin: 5px 0 0 0; font-size: 14px;">Gestión y CRM</p>
+            </div>
+            <div style="font-size: 15px; color: #1B2559;">
+                {texto_plano.replace(chr(10), '<br>')}
+            </div>
+            <hr style="border: none; border-top: 1px solid #E9EDF7; margin: 30px 0 20px 0;">
+            <p style="font-size: 12px; color: #A3AED0; text-align: center; margin: 0;">
+                Este es un mensaje automático de Constructora Dyco, por favor no respondas a este correo.
+            </p>
+        </div>
+    </body>
+    </html>
+    """
+    remitente = f"Constructora Dyco <{settings.DEFAULT_FROM_EMAIL}>"
+    msg = EmailMultiAlternatives(asunto, texto_plano, remitente, destinatarios)
+    msg.attach_alternative(html_content, "text/html")
+    msg.send(fail_silently=False)
+
+
 def registro_view(request):
     error = ""
     # Asegurar que los roles existan
@@ -23,11 +49,10 @@ def registro_view(request):
     if request.method == "POST":
         nombre = request.POST.get("usuario")
         email = request.POST.get("email")
-        rol_id = request.POST.get("rol_id")
-        if not rol_id:
-            error = "Debes seleccionar un rol para registrarte."
-            roles = Rol.objects.all()
-            return render(request, "registro.html", {"roles": roles, "error": error})
+        
+        # Asignar el rol "Usuario" por defecto
+        rol_obj = Rol.objects.filter(nombre_rol="Usuario").first()
+        rol_id = rol_obj.id if rol_obj else None
         
         passw = request.POST.get("password")
         
@@ -42,12 +67,10 @@ def registro_view(request):
                 usuario_sin_verificar.save()
 
                 try:
-                    send_mail(
+                    enviar_correo_seguro(
                         'Verifica tu cuenta (reenvío) - CRM',
                         f'Hola {usuario_sin_verificar.nombre_usuario},\n\nTu nuevo código de verificación es: {pin}\n\nIntroduce este código en la web para activar tu cuenta.',
-                        None,
-                        [email],
-                        fail_silently=False,
+                        [email]
                     )
                     print(f"\n[SOPORTE] Código de verificación (reenvío) para {usuario_sin_verificar.nombre_usuario}: {pin}\n")
                 except: pass
@@ -78,12 +101,10 @@ def registro_view(request):
                 )
 
                 try:
-                    send_mail(
+                    enviar_correo_seguro(
                         'Bienvenido al CRM - Código de Verificación',
                         f'Hola {nombre},\n\nTu código para activar tu cuenta es: {pin}\n\nIntroduce este código en la web para terminar tu registro.',
-                        None,
-                        [email],
-                        fail_silently=False,
+                        [email]
                     )
                     print(f"\n[SOPORTE] Código de verificación para {nombre}: {pin}\n")
                 except: pass
@@ -125,6 +146,80 @@ def verificar_correo(request):
             
     return redirect('/registro/')
 
+def reenviar_pin(request):
+    """Reenvía el PIN de verificación al correo registrado."""
+    if request.method == "POST":
+        email = request.POST.get("email", "").strip()
+        u = Usuario.objects.filter(email__iexact=email, activo=False).first()
+        if u:
+            import random
+            pin = str(random.randint(100000, 999999))
+            u.token_verificacion = pin
+            u.save()
+            try:
+                enviar_correo_seguro(
+                    'Nuevo código de verificación - Constructora Dyco',
+                    f'Hola {u.nombre_usuario},\n\nTu nuevo código de verificación es: {pin}\n\nEste código expirará en 5 minutos.',
+                    [email]
+                )
+                print(f"\n[SOPORTE] Nuevo PIN reenviado para {u.nombre_usuario}: {pin}\n")
+            except: pass
+            return render(request, "registro.html", {
+                "success": "Se ha reenviado un nuevo código a tu correo.",
+                "roles": Rol.objects.all(),
+                "show_pin": True,
+                "email_reg": email
+            })
+        else:
+            return render(request, "registro.html", {
+                "error": "No encontramos una cuenta pendiente con ese correo.",
+                "roles": Rol.objects.all(),
+                "show_pin": True,
+                "email_reg": email
+            })
+    return redirect('/registro/')
+
+def cambiar_correo_registro(request):
+    """Permite al usuario cambiar el correo antes de verificar."""
+    if request.method == "POST":
+        email_viejo = request.POST.get("email_viejo", "").strip()
+        email_nuevo = request.POST.get("email_nuevo", "").strip()
+        u = Usuario.objects.filter(email__iexact=email_viejo, activo=False).first()
+        if not u:
+            return render(request, "registro.html", {
+                "error": "No se encontró la cuenta pendiente de verificación.",
+                "roles": Rol.objects.all(),
+                "show_pin": True,
+                "email_reg": email_viejo
+            })
+        if Usuario.objects.filter(email__iexact=email_nuevo, activo=True).exists():
+            return render(request, "registro.html", {
+                "error": "Ese correo ya está en uso por otra cuenta verificada.",
+                "roles": Rol.objects.all(),
+                "show_pin": True,
+                "email_reg": email_viejo
+            })
+        import random
+        pin = str(random.randint(100000, 999999))
+        u.email = email_nuevo
+        u.token_verificacion = pin
+        u.save()
+        try:
+            enviar_correo_seguro(
+                'Código de verificación - Constructora Dyco',
+                f'Hola {u.nombre_usuario},\n\nTu código de verificación para tu nuevo correo es: {pin}\n\nEste código expirará en 5 minutos.',
+                [email_nuevo]
+            )
+            print(f"\n[SOPORTE] PIN enviado al nuevo correo {email_nuevo} para {u.nombre_usuario}: {pin}\n")
+        except: pass
+        return render(request, "registro.html", {
+            "success": f"Correo actualizado. Hemos enviado un nuevo código a {email_nuevo}.",
+            "roles": Rol.objects.all(),
+            "show_pin": True,
+            "email_reg": email_nuevo
+        })
+    return redirect('/registro/')
+
 def login_view(request):
     error = ""
     # Asegurar roles base
@@ -136,18 +231,11 @@ def login_view(request):
         Usuario.objects.create(nombre_usuario="admin", email="admin@crm.com", password_hash="admin123", rol=admin_rol, activo=True)
     
     if request.method == "POST":
-        rol_id = request.POST.get("rol_id")
-        if not rol_id:
-            error = "Selecciona un rol."
-            roles = Rol.objects.all()
-            return render(request, "login.html", {"roles": roles, "error": error})
-            
         user_input = request.POST.get("usuario", "").strip()
         pass_input = request.POST.get("password", "")
         
         u = Usuario.objects.filter(
             Q(nombre_usuario__iexact=user_input) | Q(email__iexact=user_input),
-            rol_id=rol_id,
             password_hash=pass_input
         ).first()
         
@@ -187,12 +275,10 @@ def recuperar_contrasena_view(request):
                 
                 # Enviar correo (simplificado, sin links de ngrok)
                 try:
-                    send_mail(
+                    enviar_correo_seguro(
                         'Código de Recuperación - Constructora Dyco',
                         f'Hola {u.nombre_usuario},\n\nTu código de recuperación de contraseña es: {pin}\n\nIntroduce este código en la ventana de recuperación para continuar.',
-                        None,
-                        [email],
-                        fail_silently=False,
+                        [email]
                     )
                     # Atajo para desarrollo: imprimir el código en la consola
                     print(f"\n[SOPORTE] Código de recuperación para {u.nombre_usuario}: {pin}\n")
@@ -2421,3 +2507,53 @@ def obtener_notificaciones_contacto(request, id_contacto):
         'clock_list': clock_list
     })
 
+
+def usuarios_view(request):
+    """Vista de gestión de usuarios — solo para administradores."""
+    user_id = request.session.get('user_id')
+    if not user_id:
+        return redirect('/login/')
+    u = Usuario.objects.get(id=user_id)
+    if u.rol.nombre_rol != 'Administrador':
+        return redirect('/')
+
+    todos = Usuario.objects.select_related('rol').order_by('rol__nombre_rol', 'nombre_usuario')
+
+    # Estadísticas para la gráfica
+    from django.db.models.functions import TruncYear, TruncMonth, TruncWeek
+    from django.utils import timezone as tz
+    now = tz.now()
+
+    # Interacciones por usuario (últimos 12 meses)
+    stats = (
+        Interaccion.objects
+        .values('usuario_responsable__nombre_usuario')
+        .annotate(total=Count('id'))
+        .order_by('-total')[:8]
+    )
+
+    chart_labels = [s['usuario_responsable__nombre_usuario'] or 'Sin asignar' for s in stats]
+    chart_data   = [s['total'] for s in stats]
+
+    return render(request, 'usuarios.html', {
+        'usuario_logueado': u,
+        'todos_usuarios': todos,
+        'admins': todos.filter(rol__nombre_rol='Administrador'),
+        'usuarios': todos.filter(rol__nombre_rol='Usuario'),
+        'total_usuarios': todos.count(),
+        'activos': todos.filter(activo=True).count(),
+        'inactivos': todos.filter(activo=False).count(),
+        'chart_labels': chart_labels,
+        'chart_data': chart_data,
+    })
+
+
+def incidencias_view(request):
+    """Vista de gestión de incidencias (placeholder — módulo futuro)."""
+    user_id = request.session.get('user_id')
+    if not user_id:
+        return redirect('/login/')
+    u = Usuario.objects.get(id=user_id)
+    return render(request, 'incidencias.html', {
+        'usuario_logueado': u,
+    })

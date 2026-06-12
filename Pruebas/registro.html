@@ -110,6 +110,25 @@
                         </div>
                     </div>
 
+                    <!-- Identificación -->
+                    <div class="field-group">
+                        <label class="field-label" for="identificacion">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
+                                stroke-linejoin="round">
+                                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                                <line x1="16" y1="2" x2="16" y2="6"></line>
+                                <line x1="8" y1="2" x2="8" y2="6"></line>
+                                <line x1="3" y1="10" x2="21" y2="10"></line>
+                            </svg>
+                            Número de Identificación
+                        </label>
+                        <div class="field-wrap">
+                            <input type="text" name="identificacion" id="identificacion" class="field-input"
+                                placeholder="Solo números, Ej: 123456789" required pattern="\d+" title="Solo se permiten números" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+                        </div>
+                    </div>
+
                     <!-- Email -->
                     <div class="field-group">
                         <label class="field-label" for="email">
@@ -128,35 +147,6 @@
                         </div>
                     </div>
 
-                    <!-- Rol -->
-                    <div class="field-group">
-                        <label class="field-label" for="rol_id">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24"
-                                fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
-                                stroke-linejoin="round">
-                                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
-                                <circle cx="9" cy="7" r="4"></circle>
-                                <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
-                                <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
-                            </svg>
-                            Selecciona tu Rol
-                        </label>
-                        <div class="field-wrap">
-                            <select name="rol_id" id="rol_id" class="field-input" required>
-                                <option value=""> Seleccionar Rol </option>
-                                {% for r in roles %}
-                                <option value="{{ r.id }}">{{ r.nombre_rol }}</option>
-                                {% endfor %}
-                            </select>
-                            <span class="field-arrow">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24"
-                                    fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
-                                    stroke-linejoin="round">
-                                    <polyline points="6 9 12 15 18 9"></polyline>
-                                </svg>
-                            </span>
-                        </div>
-                    </div>
 
                     <!-- Contraseña + medidor -->
                     <div class="field-group">
@@ -201,15 +191,18 @@
                 <form method="POST" action="{% url 'verificar_correo' %}" class="auth-form" id="verifyForm">
                     {% csrf_token %}
                     <input type="hidden" name="email" value="{{ email_reg }}">
+
+
+
                     <div class="field-group">
                         <label class="field-label" for="pin">
                             Código de Verificación (6 dígitos)
                         </label>
                         <div class="field-wrap">
                             <input type="text" name="pin" id="pin" class="field-input" placeholder="123456" required
-                                maxlength="6" pattern="\d{6}">
+                                maxlength="6" pattern="\d{6}" oninput="this.value=this.value.replace(/[^0-9]/g,'')">
                         </div>
-                        <p class="pwd-hint" style="color: var(--texto-secundario); font-size: 11px; margin-top: 8px;">
+                        <p class="pwd-hint" style="color: white; font-size: 11px; margin-top: 8px;">
                             Ingresa el código enviado a {{ email_reg }}
                         </p>
                     </div>
@@ -218,10 +211,48 @@
                         <span>Verificar y Activar</span>
                     </button>
 
-                    <p style="text-align: center; margin-top: 15px;">
-                        <a href="/registro/" class="form-link" style="font-size: 12px;">Volver al registro</a>
-                    </p>
+                    <!-- Temporizador -->
+                    <div style="text-align:center; margin-top:16px; margin-bottom:16px;">
+                        <div id="timerBox" style="display:inline-flex;align-items:center;gap:8px;background:rgba(211,47,47,0.12);border:1.5px solid rgba(211,47,47,0.35);border-radius:12px;padding:8px 18px;">
+                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#D32F2F" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                            <span style="font-size:13px;font-weight:700;color:#D32F2F;">Expira en: <span id="countdown">05:00</span></span>
+                        </div>
+                        <p id="timerExpired" style="display:none;color:#D32F2F;font-size:12px;font-weight:700;margin-top:6px;">⚠ El código ha expirado. Solicita uno nuevo.</p>
+                    </div>
                 </form>
+
+                <!-- Opciones: Reenviar PIN y Cambiar correo -->
+                <div style="display:flex;flex-direction:column;align-items:center;gap:10px;margin-top:16px;">
+                    <!-- Reenviar PIN -->
+                    <form method="POST" action="{% url 'reenviar_pin' %}" id="resendForm">
+                        {% csrf_token %}
+                        <input type="hidden" name="email" value="{{ email_reg }}">
+                        <button type="submit" id="resendBtn" class="form-link" style="background:none;border:none;cursor:pointer;font: size 12px;px;font-weight:600;color:#D32F2F;padding:0;">
+                            Volver a enviar el código
+                        </button>
+                    </form>
+
+                    <!-- Cambiar correo -->
+                    <button type="button" onclick="document.getElementById('changeEmailBox').style.display='block';this.style.display='none';" class="form-link" style="background:none;border:none;cursor:pointer;font: size 12px;px;font-weight:600;color:#D32F2F;padding:0;">
+                        Cambiar correo electrónico
+                    </button>
+
+                    <div id="changeEmailBox" style="display:none;width:100%;margin-top:4px;">
+                        <form method="POST" action="{% url 'cambiar_correo_registro' %}">
+                            {% csrf_token %}
+                            <input type="hidden" name="email_viejo" value="{{ email_reg }}">
+                            <div class="field-wrap" style="margin-bottom:8px;">
+                                <input type="email" name="email_nuevo" class="field-input" placeholder="Nuevo correo electrónico" required>
+                            </div>
+                            <button type="submit" class="btn-auth btn-auth--register" style="padding:10px;">
+                                <span>Confirmar nuevo correo</span>
+                            </button>
+                        </form>
+                    </div>
+
+                    <a href="/registro/" class="form-link" style="font-size:12px;margin-top:4px;">Volver al registro</a>
+                </div>
+
                 {% endif %}
 
                 <div class="form-footer">
@@ -318,11 +349,43 @@
         // ═══════════════════════════════════════════════
         // ANIMACIÓN BOTÓN AL ENVIAR
         // ═══════════════════════════════════════════════
-        document.getElementById('registerForm').addEventListener('submit', function () {
-            const btn = document.getElementById('btnRegister');
-            btn.classList.add('loading');
-            btn.querySelector('span').textContent = 'Registrando...';
-        });
+        // ═══════════════════════════════════════════════
+        // ANIMACIÓN BOTÓN AL ENVIAR
+        // ═══════════════════════════════════════════════
+        const regForm = document.getElementById('registerForm');
+        if (regForm) {
+            regForm.addEventListener('submit', function () {
+                const btn = document.getElementById('btnRegister');
+                btn.classList.add('loading');
+                btn.querySelector('span').textContent = 'Registrando...';
+            });
+        }
+
+        // ═══════════════════════════════════════════════
+        // TIMER PARA VERIFICACIÓN DE PIN
+        // ═══════════════════════════════════════════════
+        const countdownEl = document.getElementById('countdown');
+        if (countdownEl) {
+            let timeLeft = 300; // 5 minutos
+            const timerInterval = setInterval(() => {
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    countdownEl.textContent = '00:00';
+                    countdownEl.style.color = '#ef4444';
+                    const expEl = document.getElementById('timerExpired');
+                    if(expEl) expEl.style.display = 'block';
+                    const btnVerify = document.getElementById('btnVerify');
+                    if(btnVerify) btnVerify.disabled = true;
+                    const pinInput = document.getElementById('pin');
+                    if(pinInput) pinInput.disabled = true;
+                    return;
+                }
+                timeLeft--;
+                const m = Math.floor(timeLeft / 60);
+                const s = timeLeft % 60;
+                countdownEl.textContent = `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+            }, 1000);
+        }
     </script>
 </body>
 

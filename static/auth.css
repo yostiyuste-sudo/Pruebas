@@ -475,10 +475,18 @@ select.field-input {
     padding-right: 38px;
     cursor: pointer;
 }
+select.field-input:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(199, 178, 153, 0.18);
+}
 
 select.field-input option {
-    background: #16131e;
-    color: #eee;
+    background: #1a1a2e;
+    color: #ffffff;
+}
+select.field-input option:checked {
+    background-color: #2e1a1a;
+    color: #ffffff;
 }
 
 .field-arrow {

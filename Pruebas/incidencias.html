@@ -1,0 +1,373 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Incidencias - Constructora Dyco</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root{--bg:#F4F7FE;--pri:#D32F2F;--sec:#4318FF;--ok:#01B574;--warn:#F59E0B;--txt:#1B2559;--txt2:#A3AED0;--white:#FFF;--shadow:0 20px 50px rgba(0,0,0,.05);--ease:all .4s cubic-bezier(.175,.885,.32,1.275)}
+        *{margin:0;padding:0;box-sizing:border-box}
+        body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--txt);min-height:100vh;overflow-x:hidden}
+        /* SIDEBAR */
+        .sidebar{position:fixed;top:0;left:0;height:100vh;width:90px;background:#151B2B;border-right:none;display:flex;flex-direction:column;z-index:1000;transition:var(--ease);padding-bottom:30px;overflow:hidden;align-items:center}
+        .sidebar:hover{width:290px;align-items:stretch}
+        .sb-head{padding:40px 0;display:flex;align-items:center;justify-content:center;gap:12px;width:100%;transition:.3s}
+        .sidebar:hover .sb-head{padding:40px 25px;justify-content:flex-start}
+        .logo{min-width:48px;height:48px;background:#C72B2B;color:#fff;display:flex;align-items:center;justify-content:center;border-radius:14px;font-weight:800;font-size:24px}
+        .logo-t{font-weight:800;font-size:22px;color:#ffffff;opacity:0;transition:.3s;white-space:nowrap;display:none;margin-left:5px}
+        .sidebar:hover .logo-t{opacity:1;display:block}
+        .profile{width:60px;height:60px;margin-bottom:30px;border-radius:20px;background:#212B3F;display:flex;align-items:center;justify-content:center;transition:.3s;overflow:hidden}
+        .sidebar:hover .profile{width:250px;height:auto;padding:18px 20px;margin:0 20px 40px 20px;border-radius:24px;justify-content:flex-start;gap:15px}
+        .avatar{min-width:48px;height:48px;background:#C72B2B;border:none;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;color:#ffffff;font-size:17px}
+        .p-info{opacity:0;transition:.3s;white-space:nowrap;display:none}
+        .sidebar:hover .p-info{opacity:1;display:block}
+        .p-name{font-weight:800;font-size:17px;color:#ffffff;display:block;line-height:1.2}
+        .p-role{font-size:14px;color:#8F9BBA;font-weight:500}
+        .nav{flex:1;width:100%;padding:0 15px;display:flex;flex-direction:column;align-items:center;gap:8px}
+        .sidebar:hover .nav{align-items:stretch;padding:0 20px}
+        .nav-link{display:flex;align-items:center;justify-content:center;width:56px;min-height:56px;text-decoration:none;color:#8F9BBA;border-radius:16px;transition:.3s;font-weight:700;font-size:14px;white-space:nowrap;position:relative}
+        .sidebar:hover .nav-link{width:100%;justify-content:flex-start;padding:16px 22px;border-radius:20px;gap:18px}
+        .nav-link:hover{background:rgba(255,255,255,0.05);color:#ffffff}
+        .nav-link.active{background:#2E1E26;color:#ffffff!important;border-left:4px solid #C72B2B;border-radius:14px;box-shadow:none}
+        .nav-link.active svg{stroke:#ffffff}
+        .nav-txt{opacity:0;transition:.3s;display:none}
+        .sidebar:hover .nav-txt{opacity:1;display:block}
+        .nav-badge{position:absolute;top:6px;right:2px;min-width:20px;height:20px;padding:0 5px;background:#F59E0B;color:#fff;font-size:11px;font-weight:800;border-radius:10px;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(245,158,11,.4);z-index:2}
+        .sidebar:hover .nav-badge{top:50%;right:18px;transform:translateY(-50%)}
+        .logout-c{margin-top:auto;width:100%;border-top:1px solid rgba(255,255,255,0.05);display:flex;justify-content:center}
+        .sidebar:hover .logout-c{padding:10px 20px 0 20px;justify-content:flex-start}
+        .btn-logout{display:flex;align-items:center;justify-content:center;width:56px;height:75px;text-decoration:none;color:#8F9BBA;font-weight:700;font-size:16px;transition:.3s;white-space:nowrap}
+        .sidebar:hover .btn-logout{width:100%;justify-content:flex-start;padding:0 20px;gap:18px}
+        .btn-logout:hover{color:#C72B2B}
+        .btn-logout span{opacity:0;transition:.3s;display:none}
+        .sidebar:hover .btn-logout span{opacity:1;display:block}
+        .wrapper{padding:25px 25px 25px 115px;transition:var(--ease);width:100%}
+        .sidebar:hover~.wrapper{padding-left:315px}
+        /* NOTIF */
+        .notif-wrap{position:relative}
+        .notif-btn{background:#fff;border:1px solid #E9EDF7;border-radius:50%;width:45px;height:45px;display:flex;align-items:center;justify-content:center;cursor:pointer;position:relative;box-shadow:0 4px 6px rgba(0,0,0,.02);transition:.2s}
+        .notif-btn:hover{border-color:#D32F2F;color:#D32F2F}
+        .notif-badge{position:absolute;top:-4px;right:-4px;background:#D32F2F;color:#fff;border-radius:50%;min-width:20px;height:20px;font-size:11px;font-weight:800;display:flex;align-items:center;justify-content:center;border:2px solid #fff;padding:0 4px}
+        .notif-drop{display:none;position:absolute;right:0;top:55px;width:360px;background:#fff;border-radius:16px;box-shadow:0 10px 30px rgba(0,0,0,.12);border:1px solid #E9EDF7;z-index:1100;overflow:hidden}
+        .notif-drop.open{display:block;animation:slideD .3s ease}
+        @keyframes slideD{from{opacity:0;transform:translateY(-10px)}to{opacity:1;transform:translateY(0)}}
+        .notif-head{padding:15px 20px;border-bottom:1px solid #E9EDF7;display:flex;justify-content:space-between;align-items:center;background:#F8F9FA}
+        .notif-head h3{font-size:14px;font-weight:700}
+        .notif-head button{background:none;border:none;color:#D32F2F;font-size:12px;font-weight:600;cursor:pointer}
+        .notif-list{max-height:320px;overflow-y:auto}
+        .notif-item{padding:14px 20px;border-bottom:1px solid #f1f5f9;display:flex;gap:12px;cursor:pointer;transition:.2s}
+        .notif-item:hover{background:#F4F7FE}
+        .notif-item.unread{background:#FFFBEB}
+        .notif-icon{min-width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px}
+        .notif-icon.pend{background:rgba(245,158,11,.1);color:#F59E0B}
+        .notif-icon.ok{background:rgba(1,181,116,.1);color:#01B574}
+        .notif-icon.rej{background:rgba(211,47,47,.1);color:#D32F2F}
+        .notif-msg{font-size:13px;color:var(--txt);line-height:1.4}
+        .notif-time{font-size:11px;color:var(--txt2);margin-top:3px}
+        .notif-empty{padding:30px;text-align:center;color:var(--txt2);font-size:13px}
+        /* CONTENT */
+        .card{background:#fff;border-radius:20px;padding:30px;box-shadow:var(--shadow);margin-bottom:25px}
+        .btn-pri{background:var(--pri);color:#fff;border:none;padding:12px 24px;border-radius:12px;font-family:'Outfit',sans-serif;font-weight:700;font-size:15px;cursor:pointer;transition:.3s;box-shadow:0 5px 15px rgba(211,47,47,.2);text-decoration:none;display:inline-flex;align-items:center;gap:8px}
+        .btn-pri:hover{transform:translateY(-3px);box-shadow:0 8px 20px rgba(211,47,47,.3)}
+        .btn-sec{background:#F4F7FE;color:var(--txt);border:none;padding:12px 24px;border-radius:12px;font-family:'Outfit',sans-serif;font-weight:700;font-size:15px;cursor:pointer;transition:.3s}
+        .btn-sec:hover{background:#E9EDF7}
+        .table-wrap{overflow-x:auto;width:100%}
+        table{width:100%;border-collapse:separate;border-spacing:0}
+        th{text-align:left;padding:15px 18px;color:var(--txt2);font-weight:600;font-size:13px;text-transform:uppercase;letter-spacing:.5px;border-bottom:2px solid #F4F7FE}
+        td{padding:16px 18px;border-bottom:1px solid #F4F7FE;font-size:14px;font-weight:500;vertical-align:middle}
+        tr:last-child td{border-bottom:none}
+        tr:hover td{background:#FAFCFF}
+        tr.unread-row td{background:#FFF9E6}
+        .badge{padding:6px 12px;border-radius:8px;font-size:12px;font-weight:700;display:inline-block}
+        .badge.pend{background:rgba(245,158,11,.1);color:#F59E0B}
+        .badge.ok{background:rgba(1,181,116,.1);color:#01B574}
+        .badge.rej{background:rgba(211,47,47,.1);color:#D32F2F}
+        .btn-icon{width:32px;height:32px;border-radius:8px;border:none;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;transition:.3s;background:#F4F7FE;color:#475467}
+        .btn-icon:hover{background:var(--pri);color:#fff}
+        /* MODAL */
+        .modal{display:none;position:fixed;z-index:2000;inset:0;background:rgba(27,37,89,.5);backdrop-filter:blur(5px);justify-content:center;align-items:center}
+        .modal.open{display:flex}
+        .modal-box{background:var(--white);padding:0;border-radius:20px;width:90%;max-width:600px;box-shadow:0 25px 50px rgba(0,0,0,.1);animation:slideUp .4s ease}
+        @keyframes slideUp{from{transform:translateY(30px);opacity:0}to{transform:translateY(0);opacity:1}}
+        .modal-h{padding:25px 30px;border-bottom:1px solid #F4F7FE;display:flex;justify-content:space-between;align-items:center}
+        .modal-h h3{font-size:20px;font-weight:800}
+        .modal-close{color:var(--txt2);font-size:28px;cursor:pointer;transition:.3s;background:none;border:none;line-height:1}
+        .modal-close:hover{color:var(--pri)}
+        .modal-b{padding:30px}
+        .fg{margin-bottom:18px}
+        .fg label{display:block;margin-bottom:8px;font-weight:700;font-size:14px}
+        .fc{width:100%;padding:12px 15px;border:2px solid #E9EDF7;border-radius:12px;font-family:'Outfit',sans-serif;font-size:15px;color:var(--txt);outline:none;background:#FAFCFF;transition:.3s}
+        .fc:focus{border-color:var(--pri);background:#fff}
+        .chk-box{display:flex;align-items:flex-start;gap:10px;margin-top:15px;padding:15px;background:#FAFCFF;border-radius:12px;border:1px solid #E9EDF7}
+        .chk-box input{margin-top:4px}
+        .chk-box label{font-size:13px;color:var(--txt2);line-height:1.4}
+        /* TOAST */
+        .toast{position:fixed;bottom:30px;right:30px;padding:16px 25px;border-radius:14px;color:#fff;font-weight:700;font-size:14px;z-index:3000;display:none;animation:toastIn .4s ease;box-shadow:0 10px 30px rgba(0,0,0,.2)}
+        .toast.show{display:flex;align-items:center;gap:10px}
+        .toast.success{background:#01B574}
+        .toast.error{background:#D32F2F}
+        @keyframes toastIn{from{transform:translateY(20px);opacity:0}to{transform:translateY(0);opacity:1}}
+    </style>
+</head>
+<body>
+    <aside class="sidebar">
+        <div class="sb-head"><div class="logo">D</div><div class="logo-t">CONSTRUCTORA</div></div>
+        <div class="profile">
+            <div class="avatar">
+                {% if usuario_logueado %}
+                    {{ usuario_logueado.nombre_usuario|make_list|first|upper }}
+                {% else %}
+                    U
+                {% endif %}
+            </div>
+            <div class="p-info">
+                <span class="p-name">{% if usuario_logueado %}{{ usuario_logueado.nombre_usuario }}{% else %}Usuario{% endif %}</span>
+                <p class="p-role">{% if usuario_logueado %}{{ usuario_logueado.rol.nombre_rol }}{% else %}Usuario{% endif %}</p>
+            </div>
+        </div>
+        <nav class="nav">
+            <a href="{% url 'dashboard' %}" class="nav-link"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg><span class="nav-txt">Inicio</span></a>
+            <a href="{% url 'incidencias' %}" class="nav-link active"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg><span class="nav-txt">Incidencias</span></a>
+            {% if not usuario_logueado or usuario_logueado.rol.nombre_rol == "Administrador" %}
+            <a href="{% url 'usuarios' %}" class="nav-link"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg><span class="nav-txt">Gestión de Usuarios</span></a>
+            {% endif %}
+            <a href="{% url 'contactos' %}" class="nav-link"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="23" y1="11" x2="17" y2="11"/><line x1="20" y1="8" x2="20" y2="14"/></svg><span class="nav-txt">Registro de Contacto</span></a>
+            <a href="{% url 'interacciones' %}" class="nav-link"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg><span class="nav-txt">Interacciones</span></a>
+        </nav>
+        <div class="logout-c"><a href="{% url 'logout' %}" class="btn-logout"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg><span>Cerrar Sesión</span></a></div>
+    </aside>
+
+    <div class="wrapper">
+        <header style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:30px;flex-wrap:wrap;gap:15px">
+            <div>
+                <h1 style="font-size:30px;font-weight:800;letter-spacing:-.5px">Gestión de Incidencias</h1>
+                <p style="color:var(--txt2);font-weight:500">Administra permisos, excusas y reportes del equipo.</p>
+            </div>
+            <div style="display:flex;gap:15px;align-items:center">
+                <!-- NOTIFICACIONES -->
+                {% if not usuario_logueado or usuario_logueado.rol.nombre_rol == "Administrador" %}
+                <div class="notif-wrap">
+                    <button class="notif-btn" onclick="toggleNotif()" id="bellBtn">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+                        <span class="notif-badge" id="notifBadge" style="display:none">0</span>
+                    </button>
+                    <div class="notif-drop" id="notifDrop">
+                        <div class="notif-head"><h3>Notificaciones de Incidencias</h3><button onclick="markAllRead()">Marcar todo leído</button></div>
+                    </div>
+                </div>
+                {% endif %}
+                <button class="btn-pri" onclick="openModal('modalInc')">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                    Nueva Incidencia
+                </button>
+            </div>
+        </header>
+
+        <div class="card">
+            <div style="margin-bottom:20px; display:flex; align-items:center; background:#FAFCFF; border:1px solid #E9EDF7; border-radius:12px; padding:8px 16px; width:100%; max-width:400px">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#A3AED0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right:10px"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                <input type="text" id="searchInput" placeholder="Buscar por usuario, ID, correo, tipo, fecha, estado..." style="border:none; background:transparent; width:100%; font-family:'Outfit',sans-serif; font-size:14px; outline:none; color:var(--txt)" onkeyup="renderTable()">
+            </div>
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr><th>Usuario</th><th>ID</th><th>Correo</th><th>Tipo</th><th>Descripción</th><th>Fecha</th><th>Estado</th><th>Acciones</th></tr>
+                    </thead>
+                    <tbody id="tableBody"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL CREAR -->
+    <div class="modal" id="modalInc">
+        <div class="modal-box">
+            <div class="modal-h"><h3>Reportar Incidencia</h3><button class="modal-close" onclick="closeModal('modalInc')">&times;</button></div>
+            <div class="modal-b">
+                <form onsubmit="crearIncidencia(event)">
+                    <div class="fg"><label>Tipo de Incidencia</label><select name="tipo" class="fc" required id="fTipo"><option value="">Seleccione...</option><option>Excusa Médica</option><option>Permiso Personal</option><option>Falta Justificada</option><option>Documento Legal</option><option>Otro</option></select></div>
+                    <div class="fg"><label>Descripción</label><textarea name="desc" class="fc" rows="4" placeholder="Detalles..." required id="fDesc"></textarea></div>
+                    <div class="fg"><label>Archivo Adjunto (PDF/Imagen)</label><input type="file" class="fc" id="fFile"></div>
+                    <div class="chk-box"><input type="checkbox" id="chk1" required><label for="chk1">Acepto el tratamiento de mis datos personales bajo la <strong>Ley 1581 de 2012</strong>.</label></div>
+                    <div style="margin-top:25px;text-align:right;display:flex;gap:10px;justify-content:flex-end">
+                        <button type="submit" class="btn-pri">Enviar Reporte</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL ADMIN -->
+    <div class="modal" id="modalAdmin">
+        <div class="modal-box">
+            <div class="modal-h"><h3 id="adminTitle">Cambiar Estado</h3><button class="modal-close" onclick="closeModal('modalAdmin')">&times;</button></div>
+            <div class="modal-b">
+                <form onsubmit="confirmarEstado(event)">
+                    <div style="padding:15px;border-radius:12px;background:#F4F7FE;margin-bottom:20px;font-weight:600;display:flex;gap:10px;align-items:center">
+                        <span id="adminIcon"></span>
+                        <span>Estás a punto de <strong id="adminAction"></strong> esta incidencia.</span>
+                    </div>
+                    <div class="fg"><label>Observación (opcional)</label><textarea class="fc" rows="3" id="adminObs" placeholder="Motivo de la decisión..."></textarea></div>
+                    <div class="chk-box"><input type="checkbox" id="chk2" required><label for="chk2">Confirmo que he revisado la información bajo los protocolos de la empresa y la <strong>Ley 1581 de 2012</strong>.</label></div>
+                    <div style="margin-top:25px;text-align:right;display:flex;gap:10px;justify-content:flex-end">
+                        <button type="submit" class="btn-pri" id="adminBtn">Confirmar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL VER DETALLE -->
+    <div class="modal" id="modalDetalle">
+        <div class="modal-box">
+            <div class="modal-h"><h3>Detalle de Incidencia</h3><button class="modal-close" onclick="closeModal('modalDetalle')">&times;</button></div>
+            <div class="modal-b" id="detalleBody"></div>
+        </div>
+    </div>
+
+    <div class="toast" id="toast"></div>
+
+<script>
+// ===== ROLE VARIABLE =====
+const isAdmin = {% if not usuario_logueado or usuario_logueado.rol.nombre_rol == "Administrador" %}true{% else %}false{% endif %};
+const currentUserName = "{% if usuario_logueado %}{{ usuario_logueado.nombre_usuario|escapejs }}{% else %}Usuario{% endif %}";
+const currentUserEmail = "{% if usuario_logueado %}{{ usuario_logueado.email|escapejs }}{% else %}usuario@dyco.com{% endif %}";
+
+// ===== DATA =====
+let nextId = 1;
+let incidencias = [];
+let adminTarget = null;
+let adminNewState = '';
+
+// ===== RENDER TABLE =====
+function renderTable() {
+    const term = document.getElementById('searchInput') ? document.getElementById('searchInput').value.toLowerCase() : '';
+    const tb = document.getElementById('tableBody');
+    tb.innerHTML = incidencias.filter(inc => {
+        if(!isAdmin && inc.user !== currentUserName) return false;
+        if(!term) return true;
+        return inc.user.toLowerCase().includes(term) ||
+               inc.uid.toLowerCase().includes(term) ||
+               inc.email.toLowerCase().includes(term) ||
+               inc.tipo.toLowerCase().includes(term) ||
+               inc.fecha.toLowerCase().includes(term) ||
+               inc.estado.toLowerCase().includes(term);
+    }).map(inc => {
+        const badgeClass = inc.estado === 'Pendiente' ? 'pend' : inc.estado === 'Verificada' ? 'ok' : 'rej';
+        return `
+        <tr class="${!inc.leida ? 'unread-row' : ''}" id="row-${inc.id}">
+            <td style="font-weight:700">${inc.user}</td>
+            <td style="font-family:monospace;color:#4318FF;font-weight:600">${inc.uid}</td>
+            <td style="color:var(--txt2)">${inc.email}</td>
+            <td style="font-weight:600">${inc.tipo}</td>
+            <td><div style="max-width:200px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" title="${inc.desc}">${inc.desc}</div></td>
+            <td style="font-size:13px">${inc.fecha}</td>
+            <td><span class="badge ${badgeClass}">${inc.estado}</span></td>
+            <td>
+                <div style="display:flex;gap:4px;flex-wrap:nowrap">
+                    <button class="btn-icon" title="Ver detalle" onclick="verDetalle(${inc.id})"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
+                    ${!inc.leida && isAdmin ? `<button class="btn-icon" title="Marcar leída" onclick="marcarLeida(${inc.id})" style="color:#4318FF"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg></button>` : ''}
+                    ${(isAdmin && inc.estado === 'Pendiente') ? `
+                        <button class="btn-icon" title="Verificar" onclick="openAdmin(${inc.id},'Verificada')" style="color:#01B574"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></button>
+                        <button class="btn-icon" title="Rechazar" onclick="openAdmin(${inc.id},'Rechazada')" style="color:#D32F2F"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+                    ` : ''}
+                </div>
+            </td>
+        </tr>`;
+    }).join('');
+}
+
+function filterTable() { renderTable(); }
+
+// ===== MODALS =====
+function openModal(id) { document.getElementById(id).classList.add('open'); }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+window.addEventListener('click', e => { if (e.target.classList.contains('modal')) e.target.classList.remove('open'); });
+
+// ===== CRUD =====
+function crearIncidencia(e) {
+    e.preventDefault();
+    const tipo = document.getElementById('fTipo').value;
+    const desc = document.getElementById('fDesc').value;
+    const hasFile = document.getElementById('fFile').files.length > 0;
+    const now = new Date();
+    const fecha = `${String(now.getDate()).padStart(2,'0')}/${String(now.getMonth()+1).padStart(2,'0')}/${now.getFullYear()} ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+    incidencias.unshift({
+        id: nextId++, user: currentUserName, uid: isAdmin ? 'ADM-0001' : 'USR-0001', email: currentUserEmail,
+        tipo, desc, fecha, estado: 'Pendiente', leida: false, archivo: hasFile
+    });
+    closeModal('modalInc');
+    e.target.reset();
+    renderTable();
+    toast('Incidencia reportada correctamente', 'success');
+}
+
+function marcarLeida(id) {
+    const inc = incidencias.find(i => i.id === id);
+    if (inc) { inc.leida = true; renderTable(); toast('Incidencia marcada como leída', 'success'); }
+}
+
+function openAdmin(id, estado) {
+    adminTarget = id;
+    adminNewState = estado;
+    document.getElementById('adminTitle').textContent = estado === 'Verificada' ? 'Verificar Incidencia' : 'Rechazar Incidencia';
+    document.getElementById('adminAction').textContent = estado === 'Verificada' ? 'Verificar y Aceptar' : 'Rechazar';
+    document.getElementById('adminIcon').textContent = estado === 'Verificada' ? '✅' : '❌';
+    const btn = document.getElementById('adminBtn');
+    btn.textContent = estado === 'Verificada' ? 'Verificar' : 'Rechazar';
+    btn.style.background = estado === 'Verificada' ? '#01B574' : '#D32F2F';
+    document.getElementById('adminObs').value = '';
+    document.getElementById('chk2').checked = false;
+    openModal('modalAdmin');
+}
+
+function confirmarEstado(e) {
+    e.preventDefault();
+    const inc = incidencias.find(i => i.id === adminTarget);
+    if (inc) {
+        inc.estado = adminNewState;
+        inc.leida = true;
+    }
+    closeModal('modalAdmin');
+    renderTable();
+    toast(`Incidencia ${adminNewState.toLowerCase()} correctamente`, 'success');
+}
+
+function verDetalle(id) {
+    const inc = incidencias.find(i => i.id === id);
+    if (!inc) return;
+    inc.leida = true;
+    document.getElementById('detalleBody').innerHTML = `
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px">
+            <div><label style="font-size:12px;color:var(--txt2);font-weight:600;text-transform:uppercase">Usuario</label><p style="font-weight:700;margin-top:4px">${inc.user}</p></div>
+            <div><label style="font-size:12px;color:var(--txt2);font-weight:600;text-transform:uppercase">Identificación</label><p style="font-weight:700;margin-top:4px;color:#4318FF;font-family:monospace">${inc.uid}</p></div>
+            <div><label style="font-size:12px;color:var(--txt2);font-weight:600;text-transform:uppercase">Correo</label><p style="font-weight:500;margin-top:4px;color:var(--txt2)">${inc.email}</p></div>
+            <div><label style="font-size:12px;color:var(--txt2);font-weight:600;text-transform:uppercase">Tipo</label><p style="font-weight:700;margin-top:4px">${inc.tipo}</p></div>
+            <div style="grid-column:span 2"><label style="font-size:12px;color:var(--txt2);font-weight:600;text-transform:uppercase">Descripción</label><p style="font-weight:500;margin-top:4px;line-height:1.6">${inc.desc}</p></div>
+            <div><label style="font-size:12px;color:var(--txt2);font-weight:600;text-transform:uppercase">Fecha</label><p style="font-weight:500;margin-top:4px">${inc.fecha}</p></div>
+            <div><label style="font-size:12px;color:var(--txt2);font-weight:600;text-transform:uppercase">Estado</label><p style="margin-top:4px"><span class="badge ${inc.estado==='Pendiente'?'pend':inc.estado==='Verificada'?'ok':'rej'}">${inc.estado}</span></p></div>
+            <div><label style="font-size:12px;color:var(--txt2);font-weight:600;text-transform:uppercase">Archivo Adjunto</label><p style="font-weight:500;margin-top:4px">${inc.archivo ? '📎 Archivo adjunto disponible' : 'Sin archivo'}</p></div>
+        </div>
+        ${(isAdmin && inc.estado === 'Pendiente') ? `<div style="margin-top:25px;display:flex;gap:10px;justify-content:flex-end">
+            <button class="btn-pri" style="background:#01B574" onclick="closeModal('modalDetalle');openAdmin(${inc.id},'Verificada')">✓ Verificar</button>
+            <button class="btn-pri" onclick="closeModal('modalDetalle');openAdmin(${inc.id},'Rechazada')">✗ Rechazar</button>
+        </div>` : ''}`;
+    openModal('modalDetalle');
+    renderTable();
+}
+
+// ===== TOAST =====
+function toast(msg, type) {
+    const t = document.getElementById('toast');
+    t.className = `toast show ${type}`;
+    t.innerHTML = `${type==='success'?'✓':'⚠'} ${msg}`;
+    setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+// ===== INIT =====
+document.addEventListener('DOMContentLoaded', renderTable);
+</script>
+</body>
+</html>

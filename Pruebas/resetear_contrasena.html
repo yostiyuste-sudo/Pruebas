@@ -1,142 +1,348 @@
 {% load static %}
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Nueva Contraseña - Constructora Dyco</title>
-    <link rel="stylesheet" href="{% static 'auth.css' %}">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+        body{font-family:'Inter',sans-serif;min-height:100vh;background:#0f172a;overflow:hidden}
+        .auth-bg{position:fixed;inset:0;z-index:0;background:linear-gradient(135deg,#1a1a2e 0%,#16213e 40%,#0f3460 100%)}
+        .auth-bg-overlay{position:absolute;inset:0;background:rgba(10,15,30,.6)}
+        .auth-center{position:relative;z-index:10;display:flex;align-items:center;justify-content:center;min-height:100vh;padding:20px}
+        .glass-card{display:flex;width:100%;max-width:920px;border-radius:24px;overflow:hidden;box-shadow:0 30px 80px rgba(0,0,0,.5);min-height:580px}
+        .panel-left{flex:1;position:relative;overflow:hidden;display:none}
+        @media(min-width:768px){.panel-left{display:block}}
+        .slide-bg{position:absolute;inset:0;background:linear-gradient(135deg,#B71C1C 0%,#D32F2F 100%)}
+        .slide-overlay{position:absolute;inset:0;background:linear-gradient(to bottom,rgba(0,0,0,.1),rgba(0,0,0,.65));display:flex;flex-direction:column;justify-content:space-between;padding:40px}
+        .brand{display:flex;align-items:center;gap:15px}
+        .brand-logo{width:48px;height:48px;background:#fff;border-radius:12px;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:22px;color:#D32F2F}
+        .brand-name{color:#fff;font-size:22px;font-weight:700}
+        .slide-info{color:rgba(255,255,255,.8);font-size:14px;line-height:1.8}
+        .slide-info h3{color:#fff;font-size:20px;font-weight:700;margin-bottom:10px}
+        .tips{list-style:none;margin-top:12px}
+        .tips li{padding:5px 0;display:flex;align-items:center;gap:8px;font-size:13px}
+        .tips li::before{content:'✓';color:#22c55e;font-weight:700}
+        .panel-right{flex:1;background:rgba(15,23,42,.94);backdrop-filter:blur(20px);padding:50px 45px;display:flex;flex-direction:column;justify-content:center;overflow-y:auto}
+        .form-icon{width:52px;height:52px;border-radius:14px;background:rgba(211,47,47,.15);border:1px solid rgba(211,47,47,.3);display:flex;align-items:center;justify-content:center;color:#EF5350;margin-bottom:18px}
+        .form-title{font-size:26px;font-weight:700;color:#fff;margin-bottom:6px}
+        .form-sub{font-size:14px;color:rgba(255,255,255,.5);margin-bottom:10px}
+        .alert{padding:12px 16px;border-radius:10px;font-size:13px;margin-bottom:18px;font-weight:500;display:flex;align-items:center;gap:8px}
+        .alert-err{background:rgba(239,68,68,.15);color:#FCA5A5;border:1px solid rgba(239,68,68,.3)}
+        .alert-ok{background:rgba(34,197,94,.15);color:#86EFAC;border:1px solid rgba(34,197,94,.3)}
+        .field-g{display:flex;flex-direction:column;gap:6px;margin-bottom:16px}
+        .field-label{font-size:13px;font-weight:600;color:rgba(255,255,255,.7);display:flex;justify-content:space-between;align-items:center}
+        .field-wrap{position:relative}
+        .field-input{width:100%;padding:13px 48px 13px 16px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:12px;color:#fff;font-family:'Inter',sans-serif;font-size:15px;outline:none;transition:.25s}
+        .field-input::placeholder{color:rgba(255,255,255,.3)}
+        .field-input:focus{border-color:rgba(211,47,47,.6);background:rgba(255,255,255,.08)}
+        .field-input:disabled{opacity:.5;cursor:not-allowed}
+        .field-input.valid{border-color:rgba(34,197,94,.5)}
+        .field-input.invalid{border-color:rgba(239,68,68,.5)}
+        .eye-btn{position:absolute;right:14px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:rgba(255,255,255,.4);display:flex;align-items:center;transition:.2s}
+        .eye-btn:hover{color:rgba(255,255,255,.8)}
+        /* STRENGTH */
+        .strength-bars{display:flex;gap:5px;margin-top:8px}
+        .s-bar{flex:1;height:4px;border-radius:2px;background:rgba(255,255,255,.1);transition:.4s}
+        .s-bar.w1{background:#ef4444}
+        .s-bar.w2{background:#f97316}
+        .s-bar.w3{background:#eab308}
+        .s-bar.w4{background:#22c55e}
+        .strength-txt{font-size:12px;margin-top:5px;font-weight:600;transition:.3s}
+        /* REQUIREMENTS */
+        .req-list{list-style:none;margin:12px 0;display:grid;grid-template-columns:1fr 1fr;gap:5px}
+        .req-item{font-size:12px;color:rgba(255,255,255,.4);display:flex;align-items:center;gap:5px;transition:.3s}
+        .req-item.met{color:#86EFAC}
+        .req-item::before{content:'○';font-size:10px}
+        .req-item.met::before{content:'✓';color:#22c55e}
+        .btn-auth{width:100%;padding:14px;background:#D32F2F;color:#fff;border:none;border-radius:12px;font-family:'Inter',sans-serif;font-size:15px;font-weight:600;cursor:pointer;transition:.25s;display:flex;align-items:center;justify-content:center;gap:10px;margin-top:8px}
+        .btn-auth:hover:not(:disabled){background:#B71C1C;transform:translateY(-1px)}
+        .btn-auth:disabled{opacity:.6;cursor:not-allowed;transform:none}
+        .form-footer{margin-top:22px;text-align:center}
+        .form-link{color:rgba(255,255,255,.5);text-decoration:none;font-size:13px;transition:.2s}
+        .form-link:hover{color:#EF5350}
+        /* TIMER */
+        .timer-box{padding:10px 16px;border-radius:10px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);display:flex;align-items:center;gap:12px;margin-bottom:18px}
+        .timer-val{font-size:18px;font-weight:700;color:#22c55e;font-variant-numeric:tabular-nums;min-width:52px}
+        .timer-meta{flex:1}
+        .timer-label{font-size:11px;text-transform:uppercase;letter-spacing:1px;color:rgba(255,255,255,.4);margin-bottom:4px}
+        .timer-bar-bg{width:100%;height:3px;background:rgba(255,255,255,.1);border-radius:2px;overflow:hidden}
+        .timer-bar{height:100%;background:#22c55e;border-radius:2px;transition:width 1s linear,background .5s}
+        /* NAV TOP */
+        .nav-top{position:fixed;top:20px;left:20px;z-index:100;display:flex;gap:10px}
+        .nav-pill{background:rgba(255,255,255,.1);backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,.15);color:rgba(255,255,255,.8);text-decoration:none;padding:9px 18px;border-radius:50px;font-size:13px;font-weight:600;display:flex;align-items:center;gap:7px;transition:.2s;cursor:pointer}
+        .nav-pill:hover{background:rgba(211,47,47,.3);border-color:rgba(211,47,47,.5);color:#fff}
+        /* SUCCESS SCREEN */
+        .success-screen{display:none;text-align:center;padding:20px 0;animation:fadeStep .5s ease}
+        @keyframes fadeStep{from{opacity:0;transform:translateY(15px)}to{opacity:1;transform:translateY(0)}}
+        .success-icon{width:80px;height:80px;background:rgba(34,197,94,.15);border:2px solid rgba(34,197,94,.3);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 24px;font-size:36px;animation:popIn .6s cubic-bezier(.175,.885,.32,1.275)}
+        @keyframes popIn{from{transform:scale(0)}to{transform:scale(1)}}
+        .countdown-txt{font-size:13px;color:rgba(255,255,255,.4);margin-top:20px}
+        #redirectCount{color:#D32F2F;font-weight:700}
+    </style>
 </head>
+<body>
+    <div class="auth-bg"><div class="auth-bg-overlay"></div></div>
 
-<body class="auth-page">
-
-    <div class="auth-bg">
-        <div class="auth-bg-image" id="bgImage"></div>
-        <div class="auth-bg-overlay"></div>
+    <!-- NAVEGACIÓN -->
+    <div class="nav-top">
+        <a href="{% url 'dashboard' %}" class="nav-pill">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+            Inicio
+        </a>
+        <a href="{% url 'recuperar_contrasena' %}" class="nav-pill">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+            Atrás
+        </a>
     </div>
 
     <div class="auth-center">
         <div class="glass-card">
-            <div class="glass-panel-left">
-                <div class="carousel-track">
-                    <div class="carousel-slide active" style="background-image: url('{% static 'img/slide1.png' %}')"></div>
-                </div>
-                <div class="carousel-overlay">
-                    <div class="carousel-brand">
-                        <img src="{% static 'img/logo_dyco.png' %}" alt="Logo Dyco" class="carousel-logo">
-                        <h2 class="carousel-title">Constructora Dyco</h2>
+            <!-- PANEL IZQUIERDO -->
+            <div class="panel-left">
+                <div class="slide-bg"></div>
+                <div class="slide-overlay">
+                    <div class="brand">
+                        <div class="brand-logo">D</div>
+                        <span class="brand-name">Constructora Dyco</span>
+                    </div>
+                    <div>
+                        <div class="slide-info">
+                            <h3>Elige una contraseña segura</h3>
+                            Para proteger tu cuenta, asegúrate de que tu contraseña cumpla con todos los requisitos.
+                            <ul class="tips">
+                                <li>Mínimo 8 caracteres</li>
+                                <li>Al menos una mayúscula</li>
+                                <li>Al menos un número</li>
+                                <li>Al menos un carácter especial</li>
+                            </ul>
+                        </div>
                     </div>
                 </div>
             </div>
 
-            <div class="glass-panel-right">
-                <div class="form-header">
+            <!-- PANEL DERECHO -->
+            <div class="panel-right">
+                <!-- TIMER -->
+                <div class="timer-box" id="timerBox">
+                    <div class="timer-val" id="timerVal">05:00</div>
+                    <div class="timer-meta">
+                        <div class="timer-label">Sesión de recuperación</div>
+                        <div class="timer-bar-bg"><div class="timer-bar" id="timerBar"></div></div>
+                    </div>
+                </div>
+
+                <!-- FORM RESET -->
+                <div id="formSection">
                     <div class="form-icon">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24" fill="none"
-                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"></path>
-                        </svg>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></svg>
                     </div>
                     <h1 class="form-title">Nueva Contraseña</h1>
-                    <p class="form-subtitle">Elige una contraseña segura</p>
+                    <p class="form-sub">Elige una contraseña segura para tu cuenta.</p>
+
+                    <div id="alertBox" style="display:none"></div>
+
+                    <form onsubmit="resetPassword(event)" id="resetForm">
+                        <div class="field-g">
+                            <label class="field-label">
+                                Nueva Contraseña
+                                <span class="strength-txt" id="strengthTxt"></span>
+                            </label>
+                            <div class="field-wrap">
+                                <input type="password" class="field-input" id="newPass" placeholder="••••••••" required autocomplete="new-password" oninput="checkStrength(this.value)" id="newPass">
+                                <button type="button" class="eye-btn" onclick="toggleEye('newPass','eye1')">
+                                    <svg id="eye1" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                                </button>
+                            </div>
+                            <div class="strength-bars">
+                                <div class="s-bar" id="sb0"></div>
+                                <div class="s-bar" id="sb1"></div>
+                                <div class="s-bar" id="sb2"></div>
+                                <div class="s-bar" id="sb3"></div>
+                            </div>
+                            <ul class="req-list">
+                                <li class="req-item" id="r-len">Mínimo 8 caracteres</li>
+                                <li class="req-item" id="r-upper">Una mayúscula</li>
+                                <li class="req-item" id="r-num">Un número</li>
+                                <li class="req-item" id="r-special">Un carácter especial</li>
+                            </ul>
+                        </div>
+
+                        <div class="field-g">
+                            <label class="field-label">Confirmar Contraseña</label>
+                            <div class="field-wrap">
+                                <input type="password" class="field-input" id="confPass" placeholder="••••••••" required autocomplete="new-password" oninput="checkMatch()">
+                                <button type="button" class="eye-btn" onclick="toggleEye('confPass','eye2')">
+                                    <svg id="eye2" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                                </button>
+                            </div>
+                            <p id="matchTxt" style="font-size:12px;margin-top:5px;transition:.3s"></p>
+                        </div>
+
+                        <button type="submit" class="btn-auth" id="btnReset">
+                            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                            <span id="btnResetTxt">Actualizar Contraseña</span>
+                        </button>
+                    </form>
                 </div>
 
-                {% if error %}
-                <div class="auth-alert auth-alert-error">
-                    {{ error }}
-                </div>
-                {% endif %}
-
-                <form method="POST" class="auth-form" id="resetForm">
-                    {% csrf_token %}
-                    <div class="field-group">
-                        <label class="field-label" for="password">Nueva Contraseña</label>
-                        <div class="field-wrap">
-                            <input type="password" name="password" id="password" class="field-input"
-                                placeholder="••••••••" required autocomplete="new-password">
-                            <button type="button" class="field-eye" id="togglePwd">
-                                <svg id="eyeIcon" xmlns="http://www.w3.org/2000/svg" width="16" height="16"
-                                    viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                                    stroke-linecap="round" stroke-linejoin="round">
-                                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
-                                    <circle cx="12" cy="12" r="3"></circle>
-                                </svg>
-                            </button>
-                        </div>
-                        <div class="pwd-strength">
-                            <div class="pwd-bar" id="pwdBar"></div>
-                        </div>
-                        <p class="pwd-hint" id="pwdHint"></p>
-                    </div>
-
-                    <div class="field-group">
-                        <label class="field-label" for="confirm_password">Confirmar Contraseña</label>
-                        <div class="field-wrap">
-                            <input type="password" name="confirm_password" id="confirm_password" class="field-input"
-                                placeholder="••••••••" required autocomplete="new-password">
-                        </div>
-                    </div>
-
-                    <button type="submit" class="btn-auth" id="btnReset">
-                        <span>Actualizar Contraseña</span>
+                <!-- PANTALLA ÉXITO -->
+                <div class="success-screen" id="successScreen">
+                    <div class="success-icon">🔐</div>
+                    <h2 style="color:#fff;font-size:24px;font-weight:700;margin-bottom:10px">¡Contraseña Actualizada!</h2>
+                    <p style="color:rgba(255,255,255,.5);font-size:14px;line-height:1.6">Tu contraseña fue cambiada correctamente.<br>Ya puedes iniciar sesión con ella.</p>
+                    <button class="btn-auth" onclick="window.location.href='{% url &quot;login&quot; %}'" style="margin-top:30px;max-width:280px;margin-left:auto;margin-right:auto">
+                        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
+                        Ir al Login
                     </button>
-                </form>
+                    <p class="countdown-txt">Redirigiendo en <span id="redirectCount">5</span> segundos...</p>
+                </div>
 
                 <div class="form-footer">
-                    <p><a href="/login/" class="form-link">Volver al inicio de sesión</a></p>
+                    <a href="{% url 'login' %}" class="form-link">← Volver al inicio de sesión</a>
                 </div>
             </div>
         </div>
     </div>
 
-    <script>
-        const bgImage = document.getElementById('bgImage');
-        bgImage.style.backgroundImage = "url('{% static 'img/slide1.png' %}')";
+<script>
+    const EYE_OPEN = `<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>`;
+    const EYE_CLOSED = `<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/>`;
 
-        const togglePwd = document.getElementById('togglePwd');
-        const pwdInput = document.getElementById('password');
-        const eyeIcon = document.getElementById('eyeIcon');
-        const EYE_OPEN = `<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle>`;
-        const EYE_CLOSED = `<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line>`;
+    function toggleEye(inputId, iconId) {
+        const inp = document.getElementById(inputId);
+        const ico = document.getElementById(iconId);
+        const show = inp.type === 'password';
+        inp.type = show ? 'text' : 'password';
+        ico.innerHTML = show ? EYE_CLOSED : EYE_OPEN;
+    }
 
-        togglePwd.addEventListener('click', () => {
-            const visible = pwdInput.type === 'text';
-            pwdInput.type = visible ? 'password' : 'text';
-            eyeIcon.innerHTML = visible ? EYE_OPEN : EYE_CLOSED;
-        });
+    // ===== PASSWORD STRENGTH =====
+    function checkStrength(val) {
+        const reqs = {
+            len: val.length >= 8,
+            upper: /[A-Z]/.test(val),
+            num: /[0-9]/.test(val),
+            special: /[^A-Za-z0-9]/.test(val)
+        };
+        // Update requirements
+        document.getElementById('r-len').classList.toggle('met', reqs.len);
+        document.getElementById('r-upper').classList.toggle('met', reqs.upper);
+        document.getElementById('r-num').classList.toggle('met', reqs.num);
+        document.getElementById('r-special').classList.toggle('met', reqs.special);
 
-        const pwdBar = document.getElementById('pwdBar');
-        const pwdHint = document.getElementById('pwdHint');
+        const score = Object.values(reqs).filter(Boolean).length;
+        const levels = ['','Muy débil','Débil','Aceptable','Segura'];
+        const colors = ['','#ef4444','#f97316','#eab308','#22c55e'];
 
-        pwdInput.addEventListener('input', () => {
-            const val = pwdInput.value;
-            if (!val) { pwdBar.style.width = '0'; pwdHint.textContent = ''; return; }
-            let score = 0;
-            if (val.length >= 8) score++;
-            if (/[A-Z]/.test(val)) score++;
-            if (/[0-9]/.test(val)) score++;
-            if (/[^A-Za-z0-9]/.test(val)) score++;
-            const levels = [
-                { pct: '25%', color: '#ef4444', text: 'Muy débil' },
-                { pct: '50%', color: '#f97316', text: 'Débil' },
-                { pct: '75%', color: '#eab308', text: 'Aceptable' },
-                { pct: '100%', color: '#22c55e', text: 'Segura' },
-            ];
-            const lvl = levels[Math.max(0, score - 1)];
-            pwdBar.style.width = lvl.pct;
-            pwdBar.style.background = lvl.color;
-            pwdHint.textContent = lvl.text;
-            pwdHint.style.color = lvl.color;
-        });
+        for (let i = 0; i < 4; i++) {
+            const bar = document.getElementById('sb' + i);
+            bar.className = 's-bar' + (i < score ? ` w${score}` : '');
+        }
+        const txt = document.getElementById('strengthTxt');
+        txt.textContent = val ? levels[score] : '';
+        txt.style.color = colors[score];
 
-        document.getElementById('resetForm').addEventListener('submit', function () {
-            const btn = document.getElementById('btnReset');
-            btn.style.opacity = '0.7';
-            btn.querySelector('span').textContent = 'Procesando...';
-        });
-    </script>
+        // Update new password field visual
+        const inp = document.getElementById('newPass');
+        if (!val) { inp.className='field-input'; return; }
+        inp.classList.toggle('valid', score === 4);
+        inp.classList.toggle('invalid', score < 2 && val.length > 0);
+        if (score >= 2 && score < 4) { inp.classList.remove('valid','invalid'); }
+
+        checkMatch();
+    }
+
+    function checkMatch() {
+        const p1 = document.getElementById('newPass').value;
+        const p2 = document.getElementById('confPass').value;
+        const txt = document.getElementById('matchTxt');
+        const confInp = document.getElementById('confPass');
+        if (!p2) { txt.textContent=''; confInp.className='field-input'; return; }
+        if (p1 === p2) { txt.textContent='✓ Las contraseñas coinciden'; txt.style.color='#86EFAC'; confInp.classList.add('valid'); confInp.classList.remove('invalid'); }
+        else { txt.textContent='✗ Las contraseñas no coinciden'; txt.style.color='#FCA5A5'; confInp.classList.add('invalid'); confInp.classList.remove('valid'); }
+    }
+
+    // ===== SUBMIT =====
+    function resetPassword(e) {
+        e.preventDefault();
+        const p1 = document.getElementById('newPass').value;
+        const p2 = document.getElementById('confPass').value;
+        const reqs = { len: p1.length >= 8, upper: /[A-Z]/.test(p1), num: /[0-9]/.test(p1), special: /[^A-Za-z0-9]/.test(p1) };
+        const score = Object.values(reqs).filter(Boolean).length;
+
+        if (score < 3) { showAlert('⚠ La contraseña no cumple los requisitos mínimos de seguridad.', 'err'); return; }
+        if (p1 !== p2) { showAlert('⚠ Las contraseñas no coinciden.', 'err'); return; }
+
+        const btn = document.getElementById('btnReset');
+        btn.disabled = true;
+        document.getElementById('btnResetTxt').textContent = 'Actualizando...';
+
+        setTimeout(() => {
+            clearInterval(timerInterval);
+            document.getElementById('formSection').style.display = 'none';
+            document.getElementById('timerBox').style.display = 'none';
+            const ss = document.getElementById('successScreen');
+            ss.style.display = 'block';
+            // Countdown redirect
+            let count = 5;
+            const countEl = document.getElementById('redirectCount');
+            const countInt = setInterval(() => {
+                count--;
+                countEl.textContent = count;
+                if (count <= 0) { clearInterval(countInt); window.location.href = '{% url "login" %}'; }
+            }, 1000);
+        }, 1500);
+    }
+
+    function showAlert(msg, type) {
+        const a = document.getElementById('alertBox');
+        a.className = `alert alert-${type}`;
+        a.innerHTML = msg;
+        a.style.display = 'flex';
+        setTimeout(() => a.style.display='none', 5000);
+    }
+
+    // ===== TIMER =====
+    let timerInterval = null;
+    const TIMER_DURATION = 300;
+
+    function startTimer(seconds) {
+        let remaining = seconds;
+        const barEl = document.getElementById('timerBar');
+        const valEl = document.getElementById('timerVal');
+
+        function tick() {
+            if (remaining <= 0) {
+                clearInterval(timerInterval);
+                valEl.textContent = '00:00';
+                valEl.style.color = '#ef4444';
+                barEl.style.width = '0%';
+                barEl.style.background = '#ef4444';
+                document.getElementById('newPass').disabled = true;
+                document.getElementById('confPass').disabled = true;
+                document.getElementById('btnReset').disabled = true;
+                document.getElementById('btnResetTxt').textContent = 'Sesión Expirada';
+                showAlert('⚠ La sesión ha expirado. <a href="{% url \'recuperar_contrasena\' %}" style="color:#FCA5A5;font-weight:700">Solicita un nuevo código</a>', 'err');
+                setTimeout(() => window.location.href='{% url "recuperar_contrasena" %}', 4000);
+                return;
+            }
+            const m = Math.floor(remaining / 60), s = remaining % 60;
+            valEl.textContent = `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+            const pct = (remaining / seconds) * 100;
+            barEl.style.width = pct + '%';
+            if (remaining <= 30) { valEl.style.color='#ef4444'; barEl.style.background='#ef4444'; }
+            else if (remaining <= 60) { valEl.style.color='#f97316'; barEl.style.background='#f97316'; }
+            else { valEl.style.color='#22c55e'; barEl.style.background='#22c55e'; }
+            remaining--;
+        }
+        tick();
+        timerInterval = setInterval(tick, 1000);
+    }
+
+    document.addEventListener('DOMContentLoaded', () => startTimer(TIMER_DURATION));
+</script>
 </body>
-
 </html>

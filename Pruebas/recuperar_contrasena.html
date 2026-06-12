@@ -1,123 +1,338 @@
 {% load static %}
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Recuperar Contraseña - Constructora Dyco</title>
-    <link rel="stylesheet" href="{% static 'auth.css' %}">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+        body{font-family:'Inter',sans-serif;min-height:100vh;background:#0f172a;overflow:hidden}
+        .auth-bg{position:fixed;inset:0;z-index:0;background:linear-gradient(135deg,#1a1a2e 0%,#16213e 40%,#0f3460 100%)}
+        .auth-bg-overlay{position:absolute;inset:0;background:rgba(10,15,30,.6)}
+        .auth-center{position:relative;z-index:10;display:flex;align-items:center;justify-content:center;min-height:100vh;padding:20px}
+        .glass-card{display:flex;width:100%;max-width:920px;border-radius:24px;overflow:hidden;box-shadow:0 30px 80px rgba(0,0,0,.5);min-height:560px}
+        .panel-left{flex:1;position:relative;overflow:hidden;display:none}
+        @media(min-width:768px){.panel-left{display:block}}
+        .slide-bg{position:absolute;inset:0;background:linear-gradient(135deg,#D32F2F 0%,#B71C1C 100%)}
+        .slide-overlay{position:absolute;inset:0;background:linear-gradient(to bottom,rgba(0,0,0,.1),rgba(0,0,0,.7));display:flex;flex-direction:column;justify-content:space-between;padding:40px}
+        .brand{display:flex;align-items:center;gap:15px}
+        .brand-logo{width:48px;height:48px;background:#fff;border-radius:12px;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:22px;color:#D32F2F}
+        .brand-name{color:#fff;font-size:22px;font-weight:700}
+        .slide-info{color:rgba(255,255,255,.8);font-size:14px;line-height:1.8}
+        .slide-info h3{color:#fff;font-size:20px;font-weight:700;margin-bottom:10px}
+        .slide-dots{display:flex;gap:8px;margin-top:20px}
+        .slide-dot{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.4)}
+        .slide-dot.active{background:#fff;width:20px;border-radius:4px}
+        .panel-right{flex:1;background:rgba(15,23,42,.94);backdrop-filter:blur(20px);padding:50px 45px;display:flex;flex-direction:column;justify-content:center;overflow-y:auto}
+        .form-icon{width:52px;height:52px;border-radius:14px;background:rgba(211,47,47,.15);border:1px solid rgba(211,47,47,.3);display:flex;align-items:center;justify-content:center;color:#EF5350;margin-bottom:18px}
+        .form-title{font-size:26px;font-weight:700;color:#fff;margin-bottom:6px}
+        .form-sub{font-size:14px;color:rgba(255,255,255,.5);margin-bottom:28px}
+        .alert{padding:12px 16px;border-radius:10px;font-size:13px;margin-bottom:18px;font-weight:500;display:flex;align-items:center;gap:8px}
+        .alert-err{background:rgba(239,68,68,.15);color:#FCA5A5;border:1px solid rgba(239,68,68,.3)}
+        .alert-ok{background:rgba(34,197,94,.15);color:#86EFAC;border:1px solid rgba(34,197,94,.3)}
+        .alert-info{background:rgba(59,130,246,.15);color:#93C5FD;border:1px solid rgba(59,130,246,.3)}
+        .field-g{display:flex;flex-direction:column;gap:6px;margin-bottom:18px}
+        .field-label{font-size:13px;font-weight:600;color:rgba(255,255,255,.7)}
+        .field-input{width:100%;padding:13px 16px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:12px;color:#fff;font-family:'Inter',sans-serif;font-size:15px;outline:none;transition:.25s}
+        .field-input::placeholder{color:rgba(255,255,255,.3)}
+        .field-input:focus{border-color:rgba(211,47,47,.6);background:rgba(255,255,255,.08)}
+        .field-input:disabled{opacity:.5;cursor:not-allowed}
+        .btn-auth{width:100%;padding:14px;background:#D32F2F;color:#fff;border:none;border-radius:12px;font-family:'Inter',sans-serif;font-size:15px;font-weight:600;cursor:pointer;transition:.25s;display:flex;align-items:center;justify-content:center;gap:10px;margin-top:4px}
+        .btn-auth:hover:not(:disabled){background:#B71C1C;transform:translateY(-1px)}
+        .btn-auth:disabled{opacity:.6;cursor:not-allowed;transform:none}
+        .btn-auth.loading{background:#B71C1C}
+        .form-footer{margin-top:24px;text-align:center}
+        .form-link{color:rgba(255,255,255,.5);text-decoration:none;font-size:13px;transition:.2s}
+        .form-link:hover{color:#EF5350}
+        /* PIN INPUTS */
+        .pin-wrap{display:flex;gap:10px;justify-content:center;margin-bottom:5px}
+        .pin-input{width:52px;height:58px;text-align:center;font-size:22px;font-weight:700;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:12px;color:#fff;font-family:'Inter',sans-serif;outline:none;transition:.25s;-moz-appearance:textfield}
+        .pin-input::-webkit-outer-spin-button,.pin-input::-webkit-inner-spin-button{-webkit-appearance:none}
+        .pin-input:focus{border-color:rgba(211,47,47,.7);background:rgba(255,255,255,.1)}
+        .pin-input.filled{border-color:rgba(1,181,116,.5)}
+        /* TIMER */
+        .timer-box{padding:14px 18px;border-radius:12px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);text-align:center;margin-bottom:20px}
+        .timer-label{font-size:11px;text-transform:uppercase;letter-spacing:1px;color:rgba(255,255,255,.5);margin-bottom:5px}
+        .timer-val{font-size:26px;font-weight:700;color:#22c55e;transition:.5s;font-variant-numeric:tabular-nums}
+        .timer-bar-bg{width:100%;height:4px;background:rgba(255,255,255,.1);border-radius:2px;overflow:hidden;margin-top:8px}
+        .timer-bar{height:100%;background:#22c55e;border-radius:2px;transition:width 1s linear,background .5s}
+        .timer-expired{display:none;font-size:12px;color:#ef4444;margin-top:8px;font-weight:600}
+        /* STEPS */
+        .step{display:none}.step.active{display:block;animation:fadeStep .4s ease}
+        @keyframes fadeStep{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+        /* NAV TOP */
+        .nav-top{position:fixed;top:20px;left:20px;z-index:100;display:flex;gap:10px}
+        .nav-pill{background:rgba(255,255,255,.1);backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,.15);color:rgba(255,255,255,.8);text-decoration:none;padding:9px 18px;border-radius:50px;font-size:13px;font-weight:600;display:flex;align-items:center;gap:7px;transition:.2s;cursor:pointer}
+        .nav-pill:hover{background:rgba(211,47,47,.3);border-color:rgba(211,47,47,.5);color:#fff}
+        /* STEP INDICATOR */
+        .step-indicator{display:flex;justify-content:center;gap:8px;margin-bottom:28px}
+        .step-dot{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.2);transition:.3s}
+        .step-dot.active{background:#D32F2F;width:20px;border-radius:4px}
+        .step-dot.done{background:#22c55e}
+    </style>
 </head>
+<body>
+    <!-- FONDO -->
+    <div class="auth-bg"><div class="auth-bg-overlay"></div></div>
 
-<body class="auth-page">
-
-    <div class="auth-bg">
-        <div class="auth-bg-image" id="bgImage"></div>
-        <div class="auth-bg-overlay"></div>
+    <!-- NAVEGACIÓN -->
+    <div class="nav-top">
+        <a href="{% url 'dashboard' %}" class="nav-pill">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+            Inicio
+        </a>
+        <a href="{% url 'login' %}" class="nav-pill">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+            Volver al Login
+        </a>
     </div>
 
     <div class="auth-center">
         <div class="glass-card">
-            <!-- Panel izquierdo: similar al login -->
-            <div class="glass-panel-left">
-                <div class="carousel-track">
-                    <div class="carousel-slide active" style="background-image: url('{% static 'img/slide1.png' %}')"></div>
-                </div>
-                <div class="carousel-overlay">
-                    <div class="carousel-brand">
-                        <img src="{% static 'img/logo_dyco.png' %}" alt="Logo Dyco" class="carousel-logo">
-                        <h2 class="carousel-title">Constructora Dyco</h2>
+            <!-- PANEL IZQUIERDO -->
+            <div class="panel-left">
+                <div class="slide-bg"></div>
+                <div class="slide-overlay">
+                    <div class="brand">
+                        <div class="brand-logo">D</div>
+                        <span class="brand-name">Constructora Dyco</span>
+                    </div>
+                    <div>
+                        <div class="slide-info">
+                            <h3>Recuperación segura</h3>
+                            Sigue los pasos para recuperar el acceso a tu cuenta de manera segura y rápida.
+                        </div>
+                        <div class="slide-dots">
+                            <div class="slide-dot active" id="dot0"></div>
+                            <div class="slide-dot" id="dot1"></div>
+                            <div class="slide-dot" id="dot2"></div>
+                        </div>
                     </div>
                 </div>
             </div>
 
-            <div class="glass-panel-right">
-                <div class="form-header">
-                    <div class="form-icon">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24" fill="none"
-                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
-                            <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
-                        </svg>
-                    </div>
+            <!-- PANEL DERECHO -->
+            <div class="panel-right">
+                <!-- INDICADOR PASOS -->
+                <div class="step-indicator">
+                    <div class="step-dot active" id="si0"></div>
+                    <div class="step-dot" id="si1"></div>
+                    <div class="step-dot" id="si2"></div>
+                </div>
+
+                <div class="form-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                </div>
+
+                <div id="alertBox" style="display:none"></div>
+
+                <!-- PASO 1: CORREO -->
+                <div class="step active" id="step1">
                     <h1 class="form-title">Recuperar Acceso</h1>
-                    <p class="form-subtitle">
-                        {% if step == 2 %}Introduce el código recibido{% else %}Ingresa tu correo para recibir un código{% endif %}
-                    </p>
-                </div>
-
-                {% if error %}
-                <div class="auth-alert auth-alert-error">
-                    {{ error }}
-                </div>
-                {% endif %}
-
-                {% if success %}
-                <div class="auth-alert auth-alert-success">
-                    {{ success }}
-                </div>
-                {% endif %}
-
-                {% if step == 1 %}
-                <form method="POST" class="auth-form" id="recoveryForm">
-                    {% csrf_token %}
-                    <div class="field-group">
-                        <label class="field-label" for="email">
-                            Correo Electrónico
-                        </label>
-                        <div class="field-wrap">
-                            <input type="email" name="email" id="email" class="field-input"
-                                placeholder="ejemplo@correo.com" required autocomplete="email">
+                    <p class="form-sub">Ingresa tu correo registrado para recibir el código de verificación.</p>
+                    <form onsubmit="enviarCodigo(event)">
+                        <div class="field-g">
+                            <label class="field-label">Correo Electrónico</label>
+                            <input type="email" class="field-input" id="fEmail" placeholder="ejemplo@dyco.com" required autocomplete="email">
                         </div>
-                    </div>
+                        <button type="submit" class="btn-auth" id="btnEnviar">
+                            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+                            <span id="btnEnviarTxt">Enviar Código</span>
+                        </button>
+                    </form>
+                </div>
 
-                    <button type="submit" class="btn-auth" id="btnRecovery">
-                        <span>Enviar código</span>
-                    </button>
-                </form>
-                {% elif step == 2 %}
-                 <form method="POST" class="auth-form" id="pinForm">
-                    {% csrf_token %}
-                    <div class="field-group">
-                        <label class="field-label" for="pin">
-                            Código de 6 dígitos
-                        </label>
-                        <div class="field-wrap">
-                            <input type="text" name="pin" id="pin" class="field-input"
-                                placeholder="123456" required maxlength="6" pattern="\d{6}">
+                <!-- PASO 2: CÓDIGO PIN -->
+                <div class="step" id="step2">
+                    <h1 class="form-title">Verificar Código</h1>
+                    <p class="form-sub" id="emailConfirm">Enviamos un código de 6 dígitos a tu correo.</p>
+
+
+                    <form onsubmit="verificarCodigo(event)">
+                        <div class="field-g">
+                            <label class="field-label">Código de verificación</label>
+                            <div class="pin-wrap">
+                                <input class="pin-input" id="p0" type="number" min="0" max="9" maxlength="1" onkeyup="nextPin(event,0)" oninput="limitPin(this,0)">
+                                <input class="pin-input" id="p1" type="number" min="0" max="9" maxlength="1" onkeyup="nextPin(event,1)" oninput="limitPin(this,1)">
+                                <input class="pin-input" id="p2" type="number" min="0" max="9" maxlength="1" onkeyup="nextPin(event,2)" oninput="limitPin(this,2)">
+                                <input class="pin-input" id="p3" type="number" min="0" max="9" maxlength="1" onkeyup="nextPin(event,3)" oninput="limitPin(this,3)">
+                                <input class="pin-input" id="p4" type="number" min="0" max="9" maxlength="1" onkeyup="nextPin(event,4)" oninput="limitPin(this,4)">
+                                <input class="pin-input" id="p5" type="number" min="0" max="9" maxlength="1" onkeyup="nextPin(event,5)" oninput="limitPin(this,5)">
+                            </div>
                         </div>
-                    </div>
+                        <button type="submit" class="btn-auth" id="btnVerificar">
+                            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                            Verificar Código
+                        </button>
 
-                    <button type="submit" class="btn-auth" id="btnVerify">
-                        <span>Verificar Código</span>
-                    </button>
-                    <p style="text-align: center; margin-top: 15px;">
-                        <a href="/recuperar-contrasena/" class="form-link" style="font-size: 11px;">Reintentar con otro correo</a>
-                    </p>
-                </form>
-                {% endif %}
+                        <div style="text-align:center; margin-top:16px; margin-bottom:16px;">
+                            <div id="timerBox" style="display:inline-flex;align-items:center;gap:8px;background:rgba(211,47,47,0.12);border:1.5px solid rgba(211,47,47,0.35);border-radius:12px;padding:8px 18px;">
+                                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#D32F2F" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                                <span style="font-size:13px;font-weight:700;color:#D32F2F;">Expira en: <span id="countdown">05:00</span></span>
+                            </div>
+                            <p id="timerExpired" style="display:none;color:#D32F2F;font-size:12px;font-weight:700;margin-top:6px;">⚠ El código ha expirado. Solicita uno nuevo.</p>
+                        </div>
+                        <p style="text-align:center;margin-top:14px">
+                            <a href="#" onclick="reenviarCodigo()" class="form-link" style="font-size:12px">¿No recibiste el código? Reenviar</a>
+                        </p>
+                    </form>
+                </div>
+
+                <!-- PASO 3: ÉXITO -->
+                <div class="step" id="step3">
+                    <div style="text-align:center;padding:20px 0">
+                        <div style="width:70px;height:70px;background:rgba(34,197,94,.15);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 20px;font-size:32px">✓</div>
+                        <h1 class="form-title" style="text-align:center;margin-bottom:10px">¡Código Verificado!</h1>
+                        <p style="color:rgba(255,255,255,.5);font-size:14px;margin-bottom:30px">Serás redirigido para establecer tu nueva contraseña.</p>
+                        <!-- En Django: POST del PIN para que el backend redirija al token -->
+                        <form method="POST" action="{% url 'recuperar_contrasena' %}" id="fStep3" style="display:none">
+                            {% csrf_token %}
+                            <input type="hidden" name="pin" id="pinHidden">
+                            <input type="hidden" name="email" id="emailHidden2">
+                        </form>
+                        <button class="btn-auth" onclick="irAResetear()">
+                            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+                            Establecer Nueva Contraseña
+                        </button>
+                    </div>
+                </div>
 
                 <div class="form-footer">
-                    <p><a href="/login/" class="form-link">Volver al inicio de sesión</a></p>
+                    <a href="{% url 'login' %}" class="form-link">← Volver al inicio de sesión</a>
                 </div>
             </div>
         </div>
     </div>
 
-    <script>
-        const bgImage = document.getElementById('bgImage');
-        bgImage.style.backgroundImage = "url('{% static 'img/slide1.png' %}')";
-        
-        const form = document.getElementById('recoveryForm');
-        if (form) {
-            form.addEventListener('submit', function () {
-                const btn = document.getElementById('btnRecovery');
-                btn.style.opacity = '0.7';
-                btn.querySelector('span').textContent = 'Enviando...';
-            });
-        }
-    </script>
-</body>
+<script>
+    let timerInterval = null;
+    let currentStep = 1;
+    const TIMER_DURATION = 300; // 5 minutos
 
+    // ===== NAVEGACIÓN DE PASOS =====
+    function goToStep(n) {
+        currentStep = n;
+        document.querySelectorAll('.step').forEach((s, i) => s.classList.toggle('active', i + 1 === n));
+        // Actualizar dots laterales
+        [0,1,2].forEach(i => {
+            const dot = document.getElementById('dot' + i);
+            const si = document.getElementById('si' + i);
+            dot.classList.toggle('active', i + 1 === n);
+            si.classList.remove('active','done');
+            if (i + 1 === n) si.classList.add('active');
+            else if (i + 1 < n) si.classList.add('done');
+        });
+        hideAlert();
+    }
+
+    // ===== PASO 1: ENVIAR CÓDIGO =====
+    function enviarCodigo(e) {
+        e.preventDefault();
+        const email = document.getElementById('fEmail').value;
+        if (!email) return;
+        const btn = document.getElementById('btnEnviar');
+        const txt = document.getElementById('btnEnviarTxt');
+        btn.disabled = true;
+        txt.textContent = 'Enviando...';
+        setTimeout(() => {
+            btn.disabled = false;
+            txt.textContent = 'Enviar Código';
+            document.getElementById('emailConfirm').textContent = `Enviamos un código de 6 dígitos a ${email}`;
+            showAlert(`✓ Código enviado a <strong>${email}</strong>`, 'ok');
+            goToStep(2);
+            iniciarTimer(TIMER_DURATION);
+        }, 1500);
+    }
+
+    // ===== PASO 2: VERIFICAR CÓDIGO =====
+    function verificarCodigo(e) {
+        e.preventDefault();
+        const pin = [0,1,2,3,4,5].map(i => document.getElementById('p'+i).value).join('');
+        if (pin.length < 6) { showAlert('⚠ Por favor ingresa los 6 dígitos del código.', 'err'); return; }
+        const btn = document.getElementById('btnVerificar');
+        btn.disabled = true;
+        btn.innerHTML = '<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> Verificando...';
+        setTimeout(() => {
+            clearInterval(timerInterval);
+            // Guardar pin para POST posterior
+            const pinHidden = document.getElementById('pinHidden');
+            const emailHidden2 = document.getElementById('emailHidden2');
+            if (pinHidden) pinHidden.value = pin;
+            if (emailHidden2) emailHidden2.value = document.getElementById('fEmail').value;
+            goToStep(3);
+        }, 1200);
+    }
+
+    function irAResetear() {
+        const f = document.getElementById('fStep3');
+        if (f) { f.submit(); } // POST al backend Django para validar PIN y redirigir al token
+    }
+
+    // ===== REENVIAR =====
+    function reenviarCodigo() {
+        clearInterval(timerInterval);
+        [0,1,2,3,4,5].forEach(i => { document.getElementById('p'+i).value=''; document.getElementById('p'+i).classList.remove('filled'); document.getElementById('p'+i).disabled=false; });
+        document.getElementById('timerExpired').style.display='none';
+        document.getElementById('btnVerificar').disabled=false;
+        document.getElementById('btnVerificar').innerHTML='<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> Verificar Código';
+        showAlert('✓ Nuevo código enviado a tu correo.', 'ok');
+        iniciarTimer(TIMER_DURATION);
+        document.getElementById('p0').focus();
+    }
+
+    // ===== PIN INPUTS =====
+    function limitPin(input, idx) {
+        let val = input.value.toString().replace(/\D/g,'').slice(-1);
+        input.value = val;
+        input.classList.toggle('filled', val !== '');
+    }
+    function nextPin(e, idx) {
+        const val = document.getElementById('p'+idx).value;
+        if (val && idx < 5) document.getElementById('p'+(idx+1)).focus();
+        if (e.key === 'Backspace' && !val && idx > 0) document.getElementById('p'+(idx-1)).focus();
+        if (e.key === 'ArrowRight' && idx < 5) document.getElementById('p'+(idx+1)).focus();
+        if (e.key === 'ArrowLeft' && idx > 0) document.getElementById('p'+(idx-1)).focus();
+    }
+
+    // ===== TIMER =====
+    function iniciarTimer(seconds) {
+        let remaining = seconds;
+        const valEl = document.getElementById('countdown');
+        const expEl = document.getElementById('timerExpired');
+        expEl.style.display = 'none';
+        if (valEl) valEl.style.color = '';
+
+        function tick() {
+            if (remaining <= 0) {
+                clearInterval(timerInterval);
+                if (valEl) {
+                    valEl.textContent = '00:00';
+                    valEl.style.color = '#ef4444';
+                }
+                expEl.style.display = 'block';
+                [0,1,2,3,4,5].forEach(i => document.getElementById('p'+i).disabled=true);
+                document.getElementById('btnVerificar').disabled=true;
+                return;
+            }
+            const m = Math.floor(remaining / 60), s = remaining % 60;
+            if (valEl) valEl.textContent = `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+            if (remaining <= 30 && valEl) { valEl.style.color='#ef4444'; }
+            remaining--;
+        }
+        tick();
+        timerInterval = setInterval(tick, 1000);
+    }
+
+    // ===== ALERTAS =====
+    function showAlert(msg, type) {
+        const a = document.getElementById('alertBox');
+        a.className = `alert alert-${type}`;
+        a.innerHTML = msg;
+        a.style.display = 'flex';
+    }
+    function hideAlert() { document.getElementById('alertBox').style.display='none'; }
+</script>
+</body>
 </html>

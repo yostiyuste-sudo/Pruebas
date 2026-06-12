@@ -1,822 +1,796 @@
 {% load static %}
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard Premium - Constructora Dyco</title>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <title>Dashboard Admin - Constructora Dyco</title>
+    <meta name="description" content="Panel de control administrativo - Constructora Dyco">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        :root {
-            --bg-principal: #f8fafc;
-            --primario: #a82e2e;
-            --primario-soft: rgba(168, 46, 46, 0.1);
-            --secundario: #335d80;
-            --destacado: #01B574;
-            --texto: #0f172a;
-            --texto-suave: #64748b;
-            --blanco: #FFFFFF;
-            --sombra: 0 4px 20px rgba(0, 0, 0, 0.04);
-            --transicion: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            --gris-borde: #e2e8f0;
-        }
+        :root{--bg:#f8fafc;--pri:#a82e2e;--pri2:#862424;--sec:#335d80;--ok:#01B574;--warn:#F59E0B;--cyan:#00C6E0;--txt:#0f172a;--txt2:#64748b;--white:#FFF;--shadow:0 4px 20px rgba(0,0,0,0.04);--ease:all .4s cubic-bezier(.175,.885,.32,1.275)}
+        *{margin:0;padding:0;box-sizing:border-box}
+        body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--txt);min-height:100vh;overflow-x:hidden}
 
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: var(--bg-principal);
-            color: var(--texto);
-            display: flex;
-            min-height: 100vh;
-            overflow-x: hidden;
-        }
+        /* ── SIDEBAR ── */
+        .sidebar{position:fixed;top:0;left:0;height:100vh;width:90px;background:#1a2232;display:flex;flex-direction:column;z-index:1000;transition:var(--ease);padding-bottom:30px;overflow:hidden;align-items:center}
+        .sidebar:hover{width:290px;align-items:stretch}
+        .sb-head{padding:40px 0;display:flex;align-items:center;justify-content:center;gap:12px;width:100%;transition:.3s}
+        .sidebar:hover .sb-head{padding:40px 25px;justify-content:flex-start}
+        .logo{min-width:48px;height:48px;background:var(--pri);color:#fff;display:flex;align-items:center;justify-content:center;border-radius:14px;font-weight:800;font-size:24px}
+        .logo-t{font-weight:800;font-size:22px;color:#fff;opacity:0;transition:.3s;white-space:nowrap;display:none;margin-left:5px}
+        .sidebar:hover .logo-t{opacity:1;display:block}
+        .profile{width:60px;height:60px;margin-bottom:30px;border-radius:20px;background:rgba(255, 255, 255, 0.03);display:flex;align-items:center;justify-content:center;transition:.3s;overflow:hidden}
+        .sidebar:hover .profile{width:250px;height:auto;padding:18px 20px;margin:0 20px 40px 20px;border-radius:24px;justify-content:flex-start;gap:15px;background:rgba(255,255,255,0.05);}
+        .avatar{min-width:48px;height:48px;background:var(--pri);border-radius:50%;border:1.5px solid rgba(255,255,255,0.1);display:flex;align-items:center;justify-content:center;font-weight:800;color:#fff;font-size:17px}
+        .p-info{opacity:0;transition:.3s;white-space:nowrap;display:none}
+        .sidebar:hover .p-info{opacity:1;display:block}
+        .p-name{font-weight:800;font-size:17px;color:#fff;display:block;line-height:1.2}
+        .p-role{font-size:14px;color:#8F9BBA;font-weight:500}
+        .nav{flex:1;width:100%;padding:0 15px;display:flex;flex-direction:column;align-items:center;gap:8px}
+        .sidebar:hover .nav{align-items:stretch;padding:0 20px}
+        .nav-link{display:flex;align-items:center;justify-content:center;width:56px;min-height:56px;text-decoration:none;color:#94a3b8;border-radius:16px;transition:.3s;font-weight:700;font-size:16px;white-space:nowrap;position:relative}
+        .sidebar:hover .nav-link{width:100%;justify-content:flex-start;padding:16px 22px;border-radius:20px;gap:18px}
+        .nav-link:hover{background:rgba(255,255,255,.05);color:#fff}
+        .nav-link.active{background:rgba(168, 46, 46, 0.15);color:#fff!important;border-left:4px solid var(--pri);border-radius:20px 0 0 20px;}
+        .nav-link.active svg{stroke:var(--pri)}
+        .nav-txt{opacity:0;transition:.3s;display:none}
+        .sidebar:hover .nav-txt{opacity:1;display:block}
+        .logout-c{margin-top:auto;width:100%;border-top:1px solid rgba(255,255,255,.05);display:flex;justify-content:center}
+        .sidebar:hover .logout-c{padding:10px 20px 0 20px;justify-content:flex-start}
+        .btn-logout{display:flex;align-items:center;justify-content:center;width:56px;height:75px;text-decoration:none;color:#94a3b8;font-weight:700;font-size:16px;transition:.3s;white-space:nowrap}
+        .sidebar:hover .btn-logout{width:100%;justify-content:flex-start;padding:0 20px;gap:18px}
+        .btn-logout:hover{color:#ffffff}
+        .btn-logout span{opacity:0;transition:.3s;display:none}
+        .sidebar:hover .btn-logout span{opacity:1;display:block}
 
-        /* --- SIDEBAR --- */
-        .barra-lateral {
-            position: fixed; top: 0; left: 0; height: 100vh;
-            width: 90px; background-color: #1a2232; border-right: 1px solid #111827;
-            display: flex; flex-direction: column; z-index: 1000;
-            transition: var(--transicion); padding-bottom: 30px; overflow: hidden;
-            align-items: center;
-        }
-        .barra-lateral:hover { width: 290px; align-items: stretch; }
+        /* ── WRAPPER ── */
+        .wrapper{margin-left:90px;flex:1;padding:40px;transition:var(--ease);width:calc(100% - 90px)}
+        .sidebar:hover~.wrapper{margin-left:290px;width:calc(100% - 290px)}
+
+        /* ── KPI CARDS ── */
+        .kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:20px}
+        @media(max-width:1100px){.kpi-grid{grid-template-columns:repeat(2,1fr)}}
+        @media(max-width:600px){.kpi-grid{grid-template-columns:1fr}}
+        .kpi-card{background:#fff;padding:20px;border-radius:18px;box-shadow:var(--shadow);display:flex;align-items:flex-start;gap:15px;animation:fadeUp .5s ease forwards;transition:.3s}
+        .kpi-card:hover{transform:translateY(-3px);box-shadow:0 25px 60px rgba(0,0,0,.09)}
+        .kpi-icon{width:50px;height:50px;border-radius:14px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+        .ki-red{background:rgba(211,47,47,.1)}
+        .ki-green{background:rgba(1,181,116,.1)}
+        .ki-blue{background:rgba(67,24,255,.1)}
+        .ki-amber{background:rgba(245,158,11,.1)}
+        .kpi-body{flex:1;min-width:0}
+        .kpi-val{font-size:28px;font-weight:800;line-height:1;margin-bottom:3px}
+        .kpi-label{font-size:13px;color:var(--txt2);font-weight:600;margin-bottom:5px}
+        .kpi-delta{font-size:12px;font-weight:700;display:flex;align-items:center;gap:3px}
+        .up{color:#01B574}.down{color:#D32F2F}
+
+        /* ── GRID ── */
+        .grid{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;margin-bottom:18px}
+        .col1{grid-column:span 1}.col2{grid-column:span 2}.col3{grid-column:span 3}.col4{grid-column:span 4}
+        @media(max-width:1400px){.grid{grid-template-columns:repeat(2,1fr)}.col2,.col3,.col4{grid-column:span 2}}
+        @media(max-width:900px){.grid{grid-template-columns:1fr!important}.col1,.col2,.col3,.col4{grid-column:span 1}}
+
+        /* ── CARD ── */
+        .card{background:#fff;padding:24px;border-radius:16px;box-shadow:var(--shadow);border:1px solid #e2e8f0;margin-bottom:24px;position:relative;animation:fadeUp .6s ease forwards}
+        .card-head{background:var(--pri);color:#fff;margin:-24px -24px 24px -24px;padding:14px 20px;border-top-left-radius:16px;border-top-right-radius:16px;display:flex;justify-content:space-between;align-items:center}
+        .card-title{font-size:15px;font-weight:700;color:#fff;line-height:1.2}
+        .card-sub{display:none}
+        @keyframes fadeUp{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
+
+        /* ── DONUT ── */
+        .donut-wrap{position:relative;height:200px;display:flex;align-items:center;justify-content:center}
+        .donut-center{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;pointer-events:none}
+        .donut-val{font-size:28px;font-weight:800;line-height:1}
+        .donut-lbl{font-size:11px;color:var(--txt2);font-weight:600;margin-top:3px}
+
+        /* ── LEGEND ── */
+        .leg{display:flex;flex-direction:column;gap:8px;margin-top:14px}
+        .leg-row{display:flex;justify-content:space-between;align-items:center;font-size:13px;padding:4px 0;border-bottom:1px solid #F4F7FE}
+        .leg-row:last-child{border:none}
+        .leg-left{display:flex;align-items:center;gap:8px;color:var(--txt2);font-weight:600}
+        .leg-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+        .leg-right{font-weight:800;color:var(--txt)}
+        .leg-pct{color:var(--txt2);font-size:11px;font-weight:600;margin-left:3px}
+
+        /* ── FILTER BUTTONS & SELECTS ── */
+        .fbtn-group{display:flex;gap:6px;flex-wrap:wrap}
+        .fbtn{padding:6px 14px;border-radius:10px;border:1.5px solid #E9EDF7;background:#fff;color:var(--txt2);font-family:'Outfit',sans-serif;font-weight:700;font-size:12px;cursor:pointer;transition:.2s;white-space:nowrap}
+        .fbtn.active{border-color:var(--pri);color:var(--pri);background:rgba(211,47,47,.06)}
+        .fbtn:hover:not(.active){border-color:#d0d5e0;color:var(--txt)}
         
-        .barra-cabecera { padding: 40px 0; display: flex; align-items: center; justify-content: center; gap: 12px; width: 100%; transition: 0.3s; }
-        .barra-lateral:hover .barra-cabecera { padding: 40px 25px; justify-content: flex-start; }
-        
-        .logo-d { 
-            min-width: 48px; height: 48px; 
-            background: #a82e2e; color: white; display: flex; align-items: center; justify-content: center;
-            border-radius: 14px; font-weight: 800; font-size: 24px;
-        }
-        .logo-texto { font-weight: 800; font-size: 22px; color: #ffffff; letter-spacing: -0.5px; opacity: 0; transition: 0.3s; white-space: nowrap; display: none; margin-left: 5px; }
-        .barra-lateral:hover .logo-texto { opacity: 1; display: block; }
+        .chart-filter{padding:6px 10px; border-radius:10px; border:1.5px solid #E9EDF7; font-family:'Outfit',sans-serif; font-weight:700; font-size:12px; color:var(--txt); background:#fff; cursor:pointer; outline:none; transition:.2s; max-width: 140px;}
+        .chart-filter:hover{border-color:var(--pri)}
 
-        .perfil-sidebar { 
-            width: 60px; height: 60px; margin-bottom: 30px; border-radius: 20px; 
-            background: rgba(255, 255, 255, 0.03); display: flex; align-items: center; justify-content: center; 
-            transition: 0.3s; overflow: hidden;
-        }
-        .barra-lateral:hover .perfil-sidebar { width: 250px; height: auto; padding: 18px 20px; margin: 0 20px 40px 20px; border-radius: 24px; justify-content: flex-start; gap: 15px; background: rgba(255,255,255,0.05); }
-        
-        .avatar-s { 
-            min-width: 48px; height: 48px; background: #a82e2e; border: 1.5px solid rgba(255,255,255,0.1); 
-            border-radius: 50%; display: flex; align-items: center; justify-content: center; 
-            font-weight: 800; color: white; font-size: 17px;
-        }
-        .p-info { opacity: 0; transition: 0.3s; white-space: nowrap; display: none; }
-        .barra-lateral:hover .p-info { opacity: 1; display: block; }
-        .p-nombre { font-weight: 800; font-size: 17px; color: #ffffff; display: block; line-height: 1.2; }
-        .p-rol { font-size: 14px; color: #94a3b8; font-weight: 500; }
+        /* ── DATE PICKER ── */
+        .date-sect{display:none;align-items:center;gap:10px;margin-top:12px;padding:12px 14px;background:var(--bg);border-radius:12px;flex-wrap:wrap}
+        .date-sect.show{display:flex}
+        .date-lbl{font-size:13px;font-weight:700;color:var(--txt2)}
+        .date-inp{padding:8px 14px;border-radius:10px;border:1.5px solid #E9EDF7;font-family:'Outfit',sans-serif;font-weight:600;font-size:13px;color:var(--txt);background:#fff;cursor:pointer;outline:none;transition:.2s}
+        .date-inp:hover,.date-inp:focus{border-color:var(--pri)}
 
-        .navegacion { flex: 1; width: 100%; padding: 0 15px; display: flex; flex-direction: column; align-items: center; gap: 8px; }
-        .barra-lateral:hover .navegacion { align-items: stretch; padding: 0 20px; }
+        /* ── CHART HEIGHTS ── */
+        .ch200{height:200px;position:relative}
+        .ch260{height:260px;position:relative}
+        .ch260-scroll{height:260px;position:relative;overflow-x:auto;overflow-y:hidden}
+        .ch260-scroll canvas{min-width:100%}
         
-        .nav-enlace { 
-            display: flex; align-items: center; justify-content: center; width: 56px; min-height: 56px; 
-            text-decoration: none; color: #94a3b8; border-radius: 16px; 
-            transition: 0.3s; font-weight: 700; font-size: 16px; white-space: nowrap;
+        /* ── CUSTOM SLIDER ── */
+        .scroll-range {
+            -webkit-appearance: none;
+            width: 100%;
+            margin-top: 8px;
+            background: transparent;
         }
-        .barra-lateral:hover .nav-enlace { width: 100%; justify-content: flex-start; padding: 16px 22px; border-radius: 20px; gap: 18px; }
-        
-        .nav-enlace:hover { background: rgba(255, 255, 255, 0.05); color: #ffffff; }
-        .nav-enlace.activo { 
-            background: rgba(168, 46, 46, 0.15); color: #ffffff !important; 
-            border-left: 4px solid #a82e2e;
-            border-radius: 20px 0 0 20px;
+        .scroll-range:focus { outline: none; }
+        .scroll-range::-webkit-slider-runnable-track {
+            width: 100%;
+            height: 20px;
+            cursor: pointer;
+            background: #1B2559;
+            border-radius: 20px;
+            border: 2px solid #D32F2F;
         }
-        .nav-enlace.activo svg { stroke: #a82e2e; }
-        .nav-text { opacity: 0; transition: 0.3s; display: none; }
-        .barra-lateral:hover .nav-text { opacity: 1; display: block; }
-
-        .cerrar-sesion-cont { 
-            margin-top: auto; width: 100%; border-top: 1px solid rgba(255, 255, 255, 0.05);
-            display: flex; justify-content: center;
+        .scroll-range::-webkit-slider-thumb {
+            height: 18px;
+            width: 50px;
+            border-radius: 20px;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="40" height="12" viewBox="0 0 40 12"><path fill="%23fff" d="M12,6 L16,2 L16,10 Z" /><path fill="%23fff" d="M28,6 L24,2 L24,10 Z" /></svg>') center no-repeat, linear-gradient(90deg, #FF6B6B 0%, #F59E0B 100%);
+            cursor: pointer;
+            -webkit-appearance: none;
+            margin-top: -1px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.3);
         }
-        .barra-lateral:hover .cerrar-sesion-cont { padding: 10px 20px 0 20px; justify-content: flex-start; }
-        
-        .btn-cerrar {
-            display: flex; align-items: center; justify-content: center; width: 56px; height: 75px;
-            text-decoration: none; color: #94a3b8; font-weight: 700; font-size: 16px;
-            transition: 0.3s; white-space: nowrap;
+        .scroll-range::-moz-range-track {
+            width: 100%;
+            height: 20px;
+            cursor: pointer;
+            background: #1B2559;
+            border-radius: 20px;
+            border: 2px solid #D32F2F;
         }
-        .barra-lateral:hover .btn-cerrar { width: 100%; justify-content: flex-start; padding: 0 20px; gap: 18px; }
-        
-        .btn-cerrar:hover { color: #ffffff; }
-        .btn-cerrar span { opacity: 0; transition: 0.3s; display: none; }
-        .barra-lateral:hover .btn-cerrar span { opacity: 1; display: block; }
-
-        /* --- WRAPPER --- */
-        .wrapper { margin-left: 90px; flex: 1; padding: 40px; transition: var(--transicion); }
-        .barra-lateral:hover ~ .wrapper { margin-left: 290px; }
-
-        /* KPI CARDS */
-        .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 25px; margin-bottom: 40px; }
-        .kpi-card { background: white; padding: 25px; border-radius: 25px; box-shadow: var(--sombra); display: flex; align-items: center; gap: 20px; transition: 0.3s; border: 1px solid var(--gris-borde); }
-        .kpi-card:hover { transform: translateY(-5px); }
-        .kpi-icon { width: 56px; height: 56px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 24px; background: var(--bg-principal); }
-        .kpi-val { font-size: 24px; font-weight: 800; color: var(--texto); }
-        .kpi-label { font-size: 14px; font-weight: 600; color: var(--texto-suave); }
-
-        /* CHARTS GRID */
-        .charts-main-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 25px; margin-bottom: 25px; }
-        
-        .chart-card { 
-            background: white; 
-            padding: 24px; 
-            border-radius: 16px; 
-            box-shadow: var(--sombra); 
-            border: 1px solid var(--gris-borde);
-            position: relative;
-        }
-        .chart-title { 
-            background: #a82e2e;
-            color: white !important;
-            margin: -24px -24px 24px -24px !important;
-            padding: 14px 20px;
-            font-size: 15px; 
-            font-weight: 700; 
-            border-top-left-radius: 16px;
-            border-top-right-radius: 16px;
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center; 
-        }
-        .chart-title svg {
-            stroke: white !important;
-        }
-        
-        /* CIRCULAR DIAGRAM */
-        .pie-container { display: flex; align-items: center; justify-content: center; height: 220px; position: relative; }
-        .pie-chart-wrapper { width: 180px; height: 180px; position: relative; }
-        .pie-center-label {
-            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-            text-align: center; pointer-events: none;
-        }
-        .pie-center-val { font-size: 24px; font-weight: 800; color: var(--texto); line-height: 1; }
-        .pie-center-text { font-size: 11px; color: var(--texto-suave); font-weight: 600; margin-top: 2px; }
-        
-        .pie-legend { display: flex; flex-direction: column; gap: 12px; margin-left: 20px; }
-        .legend-item { display: flex; flex-direction: column; gap: 2px; }
-        .legend-header { display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 700; color: var(--texto); }
-        .legend-perc { font-size: 12px; color: var(--texto-suave); font-weight: 600; padding-left: 20px; }
-        .dot { width: 10px; height: 10px; border-radius: 50%; }
-
-        /* BARS DIAGRAM */
-        .bars-container { display: flex; flex-direction: column; gap: 20px; padding: 10px 0; }
-        .bar-row { display: flex; flex-direction: column; gap: 8px; }
-        .bar-info { display: flex; justify-content: space-between; font-size: 13px; font-weight: 700; }
-        .bar-bg { background: #E9EDF7; height: 12px; border-radius: 10px; overflow: hidden; position: relative; }
-        .bar-fill { height: 100%; border-radius: 10px; transition: 1s width cubic-bezier(0.1, 0.1, 0.1, 1); }
-
-        /* LINE DIAGRAM */
-        .line-chart-container { height: 250px; position: relative; margin-top: 20px; padding-bottom: 30px; }
-        .line-svg { width: 100%; height: 100%; overflow: visible; }
-        .line-path { fill: none; stroke: var(--primario); stroke-width: 4; stroke-linecap: round; stroke-linejoin: round; filter: drop-shadow(0 10px 10px rgba(211, 47, 47, 0.2)); }
-        .month-labels { display: flex; justify-content: space-between; margin-top: 15px; padding: 0 10px; }
-        .month-label { font-size: 11px; font-weight: 800; color: var(--texto-suave); }
-
-        /* TOP CONTACTS CARD */
-        .top-list { display: flex; flex-direction: column; gap: 15px; }
-        .top-item { display: flex; align-items: center; gap: 15px; background: var(--bg-principal); padding: 15px; border-radius: 20px; transition: 0.3s; border: 1px solid var(--gris-borde); }
-        .top-item:hover { transform: translateX(10px); background: #ebf0ff; }
-        .item-avatar { width: 45px; height: 45px; background: white; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-weight: 800; color: var(--primario); border: 1px solid var(--gris-borde); }
-        .item-info { flex: 1; }
-        .item-name { font-weight: 800; font-size: 14px; display: block; }
-        .item-count { font-size: 12px; color: var(--texto-suave); font-weight: 600; }
-        .item-badge { background: var(--primario); color: white; padding: 5px 12px; border-radius: 10px; font-size: 12px; font-weight: 800; }
-
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-        .chart-card { animation: fadeIn 0.6s ease-out forwards; }
-        
-        /* Star icon for emails */
-        .btn-star svg {
-            fill: none;
-            stroke: #cbd5e0;
-            transition: all 0.2s ease;
-        }
-        .btn-star.active svg {
-            fill: #f59e0b;
-            stroke: #f59e0b;
-        }
-        /* NEW BUTTON STYLE */
-        .btn-banner {
-            background-color: #1e293b;
-            color: white;
-            text-decoration: none;
-            padding: 10px 20px;
-            border-radius: 8px;
-            font-weight: 700;
-            font-size: 14px;
-            transition: var(--transicion);
-            display: inline-flex;
-            align-items: center;
+        .scroll-range::-moz-range-thumb {
+            height: 18px;
+            width: 50px;
+            border-radius: 20px;
             border: none;
-        }
-        .btn-banner:hover {
-            background-color: #0f172a;
-            transform: translateY(-2px);
-        }
-
-        /* --- RESPONSIVE STYLES --- */
-        .hamburger-btn {
-            display: none;
-        }
-        .sidebar-overlay {
-            display: none;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="40" height="12" viewBox="0 0 40 12"><path fill="%23fff" d="M12,6 L16,2 L16,10 Z" /><path fill="%23fff" d="M28,6 L24,2 L24,10 Z" /></svg>') center no-repeat, linear-gradient(90deg, #FF6B6B 0%, #F59E0B 100%);
+            cursor: pointer;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.3);
         }
 
-        @media (max-width: 768px) {
-            .barra-lateral {
-                width: 280px !important;
-                position: fixed !important;
-                left: -280px !important;
-                height: 100vh !important;
-                transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), left 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
-                z-index: 10000 !important;
-            }
-            .barra-lateral.activo {
-                left: 0 !important;
-                box-shadow: 15px 0 50px rgba(0,0,0,0.15) !important;
-            }
-            .barra-lateral:hover {
-                width: 280px !important;
-            }
-            .barra-lateral:hover .logo-texto {
-                display: block !important;
-                opacity: 1 !important;
-            }
-            .barra-lateral:hover .p-info {
-                display: block !important;
-                opacity: 1 !important;
-            }
-            .barra-lateral:hover .nav-text {
-                display: block !important;
-                opacity: 1 !important;
-            }
-            .barra-lateral:hover .btn-cerrar span {
-                display: block !important;
-                opacity: 1 !important;
-            }
-            .barra-lateral:hover ~ .wrapper {
-                margin-left: 0 !important;
-                width: 100% !important;
-            }
-            
-            .wrapper {
-                margin-left: 0 !important;
-                width: 100% !important;
-                padding: 20px !important;
-            }
-            
-            .charts-main-grid {
-                grid-template-columns: 1fr !important;
-                gap: 20px !important;
-            }
-            
-            .chart-card[style*="grid-column: span 2"] {
-                grid-column: span 1 !important;
-            }
-            
-            .hamburger-btn {
-                display: flex !important;
-                align-items: center;
-                justify-content: center;
-                background: white;
-                border: 1px solid #e2e8f0;
-                border-radius: 12px;
-                width: 44px;
-                height: 44px;
-                color: #1e293b;
-                cursor: pointer;
-                box-shadow: 0 4px 12px rgba(0,0,0,0.03);
-                z-index: 1001;
-                margin-right: 15px;
-                outline: none;
-                flex-shrink: 0;
-            }
-            .hamburger-btn svg {
-                stroke: var(--primario);
-            }
-            
-            .sidebar-overlay {
-                display: none;
-                position: fixed;
-                top: 0;
-                left: 0;
-                width: 100vw;
-                height: 100vh;
-                background: rgba(0, 0, 0, 0.4);
-                backdrop-filter: blur(4px);
-                z-index: 9999;
-            }
-            .sidebar-overlay.activo {
-                display: block;
-            }
-            
-            .perfil-sidebar {
-                width: 240px !important;
-                height: auto !important;
-                padding: 18px 20px !important;
-                margin: 0 20px 40px 20px !important;
-                border-radius: 24px !important;
-                justify-content: flex-start !important;
-                gap: 15px !important;
-            }
-            .p-info {
-                display: block !important;
-                opacity: 1 !important;
-            }
-            .nav-enlace {
-                width: 100% !important;
-                justify-content: flex-start !important;
-                padding: 16px 22px !important;
-                border-radius: 20px !important;
-                gap: 18px !important;
-            }
-            .nav-text {
-                display: block !important;
-                opacity: 1 !important;
-            }
-            .cerrar-sesion-cont {
-                padding: 10px 20px 0 20px !important;
-                justify-content: flex-start !important;
-            }
-            .btn-cerrar {
-                width: 100% !important;
-                justify-content: flex-start !important;
-                padding: 0 20px !important;
-                gap: 18px !important;
-            }
-            .btn-cerrar span {
-                display: block !important;
-                opacity: 1 !important;
-            }
-        }
+        /* ── COMPARE ── */
+        .cmp-layout{display:grid;grid-template-columns:1fr 70px 1fr;gap:24px;align-items:start;margin-top:4px}
+        @media(max-width:800px){.cmp-layout{grid-template-columns:1fr;gap:30px}}
+        .cmp-side{display:flex;flex-direction:column;align-items:center;gap:14px}
+        .cmp-sel{width:100%;padding:9px 16px;border-radius:12px;border:1.5px solid #E9EDF7;font-family:'Outfit',sans-serif;font-weight:700;font-size:14px;color:var(--txt);background:#fff;cursor:pointer;outline:none;transition:.2s}
+        .cmp-sel:hover,.cmp-sel:focus{border-color:var(--pri)}
+        .cmp-chart{position:relative;width:200px;height:200px}
+        .cmp-center{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;pointer-events:none}
+        .cmp-val{font-size:28px;font-weight:800;line-height:1}
+        .cmp-vlbl{font-size:11px;color:var(--txt2);font-weight:600;margin-top:3px}
+        .cmp-divider{display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding-top:56px;gap:12px}
+        .vs-badge{width:52px;height:52px;border-radius:50%;background:linear-gradient(135deg,#D32F2F,#FF6B6B);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:15px;box-shadow:0 8px 24px rgba(211,47,47,.35);flex-shrink:0}
+        .vs-line{width:2px;height:120px;background:linear-gradient(to bottom,#E9EDF7,transparent)}
+        .cmp-leg{width:100%}
+        .cleg-row{display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid #F4F7FE;font-size:13px}
+        .cleg-row:last-child{border:none}
+        .cleg-left{display:flex;align-items:center;gap:8px;color:var(--txt2);font-weight:600}
+        .cleg-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+        .cleg-right{font-weight:800;color:var(--txt)}
+        .cleg-pct{color:var(--txt2);font-size:11px;font-weight:600;margin-left:3px}
+
+        /* ── SECTION LABEL ── */
+        .section-label{font-size:12px;font-weight:800;color:var(--txt2);letter-spacing:.08em;text-transform:uppercase;margin-bottom:12px;display:flex;align-items:center;gap:8px}
+        .section-label::after{content:'';flex:1;height:1px;background:#E9EDF7}
     </style>
 </head>
-
 <body>
-    <div id="sidebar-overlay" class="sidebar-overlay"></div>
-    <aside class="barra-lateral">
-        <div class="barra-cabecera">
-            <div class="logo-d">D</div>
-            <div class="logo-texto">CONSTRUCTORA</div>
-        </div>
-        <div class="perfil-sidebar">
-            <div class="avatar-s">{{ usuario_logueado.nombre_usuario|make_list|first|upper }}</div>
-            <div class="p-info">
-                <span class="p-nombre">{{ usuario_logueado.nombre_usuario }}</span>
-                <p class="p-rol">{{ usuario_logueado.rol.nombre_rol }}</p>
-            </div>
-        </div>
-        <nav class="navegacion">
-            <a href="{% url 'dashboard' %}" class="nav-enlace activo">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
-                <span class="nav-text">Inicio</span>
-            </a>
-            <a href="{% url 'contactos' %}" class="nav-enlace">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
-                <span class="nav-text">Registro de Contacto</span>
-            </a>
-            <a href="{% url 'interacciones' %}" class="nav-enlace">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-                <span class="nav-text">Interacciones</span>
-            </a>
-            {% if usuario_logueado.rol.nombre_rol == "Administrador" %}
-            <a href="{% url 'usuarios' %}" class="nav-enlace">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-                <span class="nav-text">Gestión de Usuarios</span>
-            </a>
+
+<!-- ════════════ SIDEBAR ════════════ -->
+<aside class="sidebar">
+    <div class="sb-head">
+        <div class="logo">D</div>
+        <div class="logo-t">CONSTRUCTORA</div>
+    </div>
+    <div class="profile">
+        <div class="avatar">
+            {% if usuario_logueado %}
+                {{ usuario_logueado.nombre_usuario|make_list|first|upper }}
+            {% else %}
+                U
             {% endif %}
-        </nav>
-        <div class="cerrar-sesion-cont">
-            <a href="{% url 'logout' %}" class="btn-cerrar">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
-                <span>Cerrar Sesión</span>
-            </a>
         </div>
-    </aside>
+        <div class="p-info">
+            <span class="p-name">{% if usuario_logueado %}{{ usuario_logueado.nombre_usuario }}{% else %}Usuario{% endif %}</span>
+            <p class="p-role">{% if usuario_logueado %}{{ usuario_logueado.rol.nombre_rol }}{% else %}Usuario{% endif %}</p>
+        </div>
+    </div>
+    <nav class="nav">
+        <a href="{% url 'dashboard' %}" class="nav-link active">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+            <span class="nav-txt">Inicio</span>
+        </a>
+        <a href="{% url 'incidencias' %}" class="nav-link">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+            <span class="nav-txt">Incidencias</span>
+        </a>
+        {% if usuario_logueado.rol.nombre_rol == 'Administrador' %}
+        <a href="{% url 'usuarios' %}" class="nav-link">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+            <span class="nav-txt">Gestión de Usuarios</span>
+        </a>
+        {% endif %}
+        <a href="{% url 'contactos' %}" class="nav-link">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="23" y1="11" x2="17" y2="11"/><line x1="20" y1="8" x2="20" y2="14"/></svg>
+            <span class="nav-txt">Registro de Contacto</span>
+        </a>
+        <a href="{% url 'interacciones' %}" class="nav-link">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+            <span class="nav-txt">Interacciones</span>
+        </a>
+    </nav>
+    <div class="logout-c">
+        <a href="{% url 'logout' %}" class="btn-logout">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+            <span>Cerrar Sesión</span>
+        </a>
+    </div>
+</aside>
 
-    <div class="wrapper">
-        <header style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px; flex-wrap: wrap; gap: 15px; background: white; padding: 20px 28px; border-radius: 16px; border: 1px solid var(--gris-borde); box-shadow: var(--sombra);">
-            <div style="display: flex; align-items: center; gap: 10px;">
-                <button id="hamburger-btn" class="hamburger-btn" style="display: none;">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                        <line x1="3" y1="12" x2="21" y2="12"></line>
-                        <line x1="3" y1="6" x2="21" y2="6"></line>
-                        <line x1="3" y1="18" x2="21" y2="18"></line>
-                    </svg>
-                </button>
-                <div>
-                    <h1 style="font-size: 24px; font-weight: 800; color: #0f172a; margin: 0;">Constructora DYCO</h1>
-                    <p style="color: var(--texto-suave); font-weight: 500; font-size: 13px; margin: 0;">Inicio &bull; Bienvenido de nuevo, {{ usuario_logueado.nombre_usuario }}</p>
-                </div>
-            </div>
-            <div style="display: flex; align-items: center; gap: 15px;">
-                <a href="{% url 'contactos' %}" class="btn-banner">Registrar Contacto</a>
-                <div style="width: 44px; height: 44px; background: #e2e8f0; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; color: #334155; font-size: 15px;" title="{{ usuario_logueado.nombre_usuario }}">
-                    {{ usuario_logueado.nombre_usuario|make_list|first|upper }}
-                </div>
-            </div>
-        </header>
+<!-- ════════════ MAIN ════════════ -->
+<div class="wrapper">
 
-        <!-- KPI Grid Removed or modified -->
-
-
-        <div class="charts-main-grid">
-            <!-- 1. CIRCULAR: Personas Naturales vs Jurídicas -->
-            <div class="chart-card">
-                <h3 class="chart-title">Distribución de Contactos</h3>
-                <div class="pie-container">
-                    <div class="pie-chart-wrapper">
-                        <canvas id="contactosChart"></canvas>
-                        <div class="pie-center-label">
-                            <div class="pie-center-val" id="val-total-contactos">{{ total_contactos }}</div>
-                            <div class="pie-center-text">Total</div>
-                        </div>
-                    </div>
-                    
-                    <div class="pie-legend">
-                        <div class="legend-item">
-                            <div class="legend-header"><div class="dot" style="background: #EE1D23;"></div> Naturales</div>
-                            <div class="legend-perc" id="val-natural-perc">{{ natural_count }} ({{ natural_perc|floatformat:1 }}%)</div>
-                        </div>
-                        <div class="legend-item">
-                            <div class="legend-header"><div class="dot" style="background: #B7B0A8;"></div> Jurídicas</div>
-                            <div class="legend-perc" id="val-juridica-perc">{{ juridica_count }} ({{ juridica_perc|floatformat:1 }}%)</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 2. CIRCULAR: Equipo Activo vs Inactivo -->
-            {% if usuario_logueado.rol.nombre_rol == "Administrador" %}
-            <div class="chart-card">
-                <h3 class="chart-title">Estado del Equipo</h3>
-                <div class="pie-container">
-                    <div class="pie-chart-wrapper">
-                        <canvas id="usuariosChart"></canvas>
-                        <div class="pie-center-label">
-                            <div class="pie-center-val" id="val-total-usuarios">{{ total_usuarios }}</div>
-                            <div class="pie-center-text">Usuarios</div>
-                        </div>
-                    </div>
-                    
-                    <div class="pie-legend">
-                        <div class="legend-item">
-                            <div class="legend-header"><div class="dot" style="background: #EE1D23;"></div> Activos</div>
-                            <div class="legend-perc" id="val-usuarios-activos-perc">{{ usuarios_activos }} ({{ usuarios_activos_perc|floatformat:1 }}%)</div>
-                        </div>
-                        <div class="legend-item">
-                            <div class="legend-header"><div class="dot" style="background: #B7B0A8;"></div> Inactivos</div>
-                            <div class="legend-perc" id="val-usuarios-inactivos-perc">{{ usuarios_inactivos }} ({{ usuarios_inactivos_perc|floatformat:1 }}%)</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            {% endif %}
-
-            <!-- 3. BARRAS: Tipos de Interacción -->
-            <div class="chart-card" style="grid-column: span 2;">
-                <h3 class="chart-title">Volumen de Actividades</h3>
-                <div style="height: 220px; position: relative;">
-                    <canvas id="actividadesChart"></canvas>
-                </div>
-            </div>
-
-            <!-- 3. LINEAL: Interacciones por Mes -->
-            <div class="chart-card" style="grid-column: span 2;">
-                <h3 class="chart-title">Tendencia Mensual de Interacciones</h3>
-                <div style="height: 280px; position: relative;">
-                    <canvas id="tendenciaChart"></canvas>
-                </div>
-            </div>
-
-            <!-- 4. TARJETA: Contactos con más Interacciones -->
-            <div class="chart-card" style="grid-column: span 2;">
-                <h3 class="chart-title">Contactos con más Frecuencia</h3>
-                <div class="top-list" id="top-contactos-container">
-                    {% for c in top_contactos %}
-                    <div class="top-item">
-                        <div class="item-avatar">{{ c.nombre|make_list|first|upper|default:c.razon_social|make_list|first|upper }}</div>
-                        <div class="item-info">
-                            <span class="item-name">{{ c.nombre|default:c.razon_social }}</span>
-                            <span class="item-count">{{ c.tipo_contacto.nombre_tipo }}</span>
-                        </div>
-                        <div class="item-badge">{{ c.num_inter }} Actividades</div>
-                    </div>
-                    {% endfor %}
-                </div>
+    <!-- Header -->
+    <div style="background: #fff; border-radius: 16px; padding: 20px 24px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; box-shadow: var(--shadow); border: 1px solid #e2e8f0;">
+        <div>
+            <h1 style="font-size:24px; font-weight:800; color: #1a1a1a; margin-bottom: 4px;">Constructora DYCO</h1>
+            <p style="color:var(--txt2); font-weight:500; font-size:14px; margin:0;">Inicio • Bienvenido de nuevo, {% if usuario_logueado %}{{ usuario_logueado.nombre_usuario }}{% else %}Usuario{% endif %}</p>
+        </div>
+        <div style="display: flex; gap: 12px; align-items: center;">
+            <a href="{% url 'contactos' %}" style="background: #1B2559; color: #fff; text-decoration: none; padding: 10px 20px; border-radius: 10px; font-weight: 700; font-size: 14px; transition: 0.3s;">Registrar Contacto</a>
+            <div style="width: 40px; height: 40px; background: #E9EDF7; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; color: #1B2559; font-size: 16px;">
+                {% if usuario_logueado %}{{ usuario_logueado.nombre_usuario|make_list|first|upper }}{% else %}U{% endif %}
             </div>
         </div>
     </div>
-    <!-- JSON de estadísticas del Dashboard -->
-    <script id="dashboard-data-json" type="application/json">
-    {
-        "total_contactos": {{ total_contactos }},
-        "natural_count": {{ natural_count|default:0 }},
-        "juridica_count": {{ juridica_count|default:0 }},
-        "natural_perc": {{ natural_perc|default:0 }},
-        "juridica_perc": {{ juridica_perc|default:0 }},
-        "total_usuarios": {{ total_usuarios|default:0 }},
-        "usuarios_activos": {{ usuarios_activos|default:0 }},
-        "usuarios_inactivos": {{ usuarios_inactivos|default:0 }},
-        "usuarios_activos_perc": {{ usuarios_activos_perc|default:0 }},
-        "usuarios_inactivos_perc": {{ usuarios_inactivos_perc|default:0 }},
-        "acciones_labels": {{ acciones_labels|safe }},
-        "acciones_counts": {{ acciones_counts|safe }},
-        "tendencia_labels": {{ tendencia_labels|safe }},
-        "tendencia_counts": {{ tendencia_counts|safe }}
+
+
+
+    <!-- ── Dashboard Grid ── -->
+    <div class="grid" style="grid-template-columns: repeat(2, 1fr);">
+        
+        <!-- 1. Distribución por Tipo de Interacción (Donut) -->
+        <div class="card col1">
+            <div class="card-head">
+                <div>
+                    <div class="card-title">Distribución por Tipo de Interacción</div>
+                    <div class="card-sub">Proporción de llamadas, notas, correos y otros</div>
+                </div>
+                <select class="chart-filter" onchange="filterChart(this, 'interTipo')">
+                    <option value="creacion">Desde Creación</option>
+                    <option value="ano">Por Año</option>
+                    <option value="mes">Por Mes</option>
+                    <option value="semana">Por Semana</option>
+                </select>
+            </div>
+            <div class="donut-wrap">
+                <canvas id="chartInterTipo" style="max-width:200px;max-height:200px"></canvas>
+                <div class="donut-center">
+                    <div class="donut-val">0</div>
+                    <div class="donut-lbl">Tipos</div>
+                </div>
+            </div>
+            <div class="leg">
+                <div class="leg-row">
+                    <div class="leg-left"><div class="leg-dot" style="background:#D32F2F"></div>Correos</div>
+                    <div class="leg-right">0<span class="leg-pct">(0%)</span></div>
+                </div>
+                <div class="leg-row">
+                    <div class="leg-left"><div class="leg-dot" style="background:#F59E0B"></div>Llamadas</div>
+                    <div class="leg-right">0<span class="leg-pct">(0%)</span></div>
+                </div>
+                <div class="leg-row">
+                    <div class="leg-left"><div class="leg-dot" style="background:#4318FF"></div>Reuniones</div>
+                    <div class="leg-right">0<span class="leg-pct">(0%)</span></div>
+                </div>
+                <div class="leg-row">
+                    <div class="leg-left"><div class="leg-dot" style="background:#00C6E0"></div>Notas</div>
+                    <div class="leg-right">0<span class="leg-pct">(0%)</span></div>
+                </div>
+                <div class="leg-row">
+                    <div class="leg-left"><div class="leg-dot" style="background:#01B574"></div>Otros</div>
+                    <div class="leg-right">0<span class="leg-pct">(0%)</span></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Actividad Reciente (List) -->
+        <div class="card col1">
+            <div class="card-head">
+                <div>
+                    <div class="card-title">Actividad Reciente</div>
+                    <div class="card-sub">Últimas interacciones realizadas</div>
+                </div>
+                <select class="chart-filter" onchange="filterChart(this, 'actividadReciente')">
+                    <option value="creacion">Desde Creación</option>
+                    <option value="ano">Por Año</option>
+                    <option value="mes">Por Mes</option>
+                    <option value="semana">Por Semana</option>
+                </select>
+            </div>
+            <div class="recent-list" style="display:flex; flex-direction:column; gap:12px; margin-top:10px; max-height:260px; overflow-y:auto; padding-right:5px;" id="recentListContainer">
+                <div style="text-align:center; padding:20px; color:var(--txt2); font-size:13px; font-weight:600;">
+                    No hay interacciones recientes registradas.
+                </div>
+            </div>
+        </div>
+
+        {% if usuario_logueado.rol.nombre_rol == 'Administrador' %}
+        <!-- Contactos por Tipo -->
+        <div class="card col1">
+            <div class="card-head">
+                <div>
+                    <div class="card-title">Contactos por Tipo</div>
+                    <div class="card-sub">Total registrados</div>
+                </div>
+                <select class="chart-filter" onchange="filterChart(this, 'contactosTipo')">
+                    <option value="creacion">Desde Creación</option>
+                    <option value="ano">Por Año</option>
+                    <option value="mes">Por Mes</option>
+                    <option value="semana">Por Semana</option>
+                </select>
+            </div>
+            <div class="donut-wrap">
+                <canvas id="chartContactosTipo" style="max-width:200px;max-height:200px"></canvas>
+                <div class="donut-center">
+                    <div class="donut-val">0</div>
+                    <div class="donut-lbl">Contactos</div>
+                </div>
+            </div>
+            <div class="leg">
+                <div class="leg-row">
+                    <div class="leg-left"><div class="leg-dot" style="background:#4318FF"></div>Naturales</div>
+                    <div class="leg-right">0<span class="leg-pct">(0%)</span></div>
+                </div>
+                <div class="leg-row">
+                    <div class="leg-left"><div class="leg-dot" style="background:#00C6E0"></div>Jurídicas</div>
+                    <div class="leg-right">0<span class="leg-pct">(0%)</span></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Usuarios por Estado -->
+        <div class="card col1">
+            <div class="card-head">
+                <div>
+                    <div class="card-title">Usuarios por Estado</div>
+                    <div class="card-sub">Total en el sistema</div>
+                </div>
+                <select class="chart-filter" onchange="filterChart(this, 'usuarios')">
+                    <option value="creacion">Desde Creación</option>
+                    <option value="ano">Por Año</option>
+                    <option value="mes">Por Mes</option>
+                    <option value="semana">Por Semana</option>
+                </select>
+            </div>
+            <div class="donut-wrap">
+                <canvas id="chartUsuarios" style="max-width:200px;max-height:200px"></canvas>
+                <div class="donut-center">
+                    <div class="donut-val">0</div>
+                    <div class="donut-lbl">Usuarios</div>
+                </div>
+            </div>
+            <div class="leg">
+                <div class="leg-row">
+                    <div class="leg-left"><div class="leg-dot" style="background:#01B574"></div>Activos</div>
+                    <div class="leg-right">0<span class="leg-pct">(0%)</span></div>
+                </div>
+                <div class="leg-row">
+                    <div class="leg-left"><div class="leg-dot" style="background:#CBD5E1"></div>Inactivos</div>
+                    <div class="leg-right">0<span class="leg-pct">(0%)</span></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Actividad por Categoría (Bar) -->
+        <div class="card col1">
+            <div class="card-head">
+                <div>
+                    <div class="card-title">Actividad por Categoría</div>
+                    <div class="card-sub">Filtrar por tipo, contacto o día</div>
+                </div>
+                <select class="chart-filter" onchange="filterChart(this, 'actividadCategoria')">
+                    <option value="tipo">Por Tipo de Actividad</option>
+                    <option value="contacto">Por Contacto Específico</option>
+                    <option value="dia">Por Día de la Semana</option>
+                </select>
+            </div>
+            <div class="ch260">
+                <canvas id="chartActividadCategoria"></canvas>
+            </div>
+        </div>
+
+        <!-- Comparativa Mensual (Donut) -->
+        <div class="card col1">
+            <div class="card-head">
+                <div>
+                    <div class="card-title">Comparativa Mensual</div>
+                    <div class="card-sub">VS de Interacciones</div>
+                </div>
+                <div style="display:flex;gap:5px;align-items:center">
+                    <select id="cmpM1" class="chart-filter" onchange="updateMesVsMes()" style="padding:4px 6px">
+                        <option value="0">Ene</option><option value="1">Feb</option><option value="2">Mar</option><option value="3">Abr</option><option value="4" selected>May</option><option value="5">Jun</option><option value="6">Jul</option><option value="7">Ago</option><option value="8">Sep</option><option value="9">Oct</option><option value="10">Nov</option><option value="11">Dic</option>
+                    </select>
+                    <span style="font-size:12px;font-weight:bold;color:var(--txt2)">vs</span>
+                    <select id="cmpM2" class="chart-filter" onchange="updateMesVsMes()" style="padding:4px 6px">
+                        <option value="0">Ene</option><option value="1">Feb</option><option value="2">Mar</option><option value="3">Abr</option><option value="4">May</option><option value="5" selected>Jun</option><option value="6">Jul</option><option value="7">Ago</option><option value="8">Sep</option><option value="9">Oct</option><option value="10">Nov</option><option value="11">Dic</option>
+                    </select>
+                </div>
+            </div>
+            <div class="donut-wrap">
+                <canvas id="chartMesVsMes" style="max-width:200px;max-height:200px"></canvas>
+            </div>
+            <div class="leg" id="legMesVsMes"></div>
+        </div>
+
+        <!-- Tendencia de Interacciones (Line) - WIDE -->
+        <div class="card col2">
+            <div class="card-head">
+                <div>
+                    <div class="card-title">Tendencia de Interacciones</div>
+                    <div class="card-sub" id="temporalSub">Evolución en el tiempo</div>
+                </div>
+                <div style="display:flex; gap:10px; align-items:center;">
+                    <input type="date" class="date-inp" id="dashSpecificDay" title="Día en específico" style="padding:6px 10px; font-size:12px">
+                    <div class="fbtn-group">
+                        <button id="btnAnual" class="fbtn active" onclick="setTemporal('anual',this)">Este Año</button>
+                        <button id="btnMensualDash" class="fbtn" onclick="setTemporal('mensual',this)">Vista Diaria</button>
+                    </div>
+                </div>
+            </div>
+            <div class="ch260">
+                <canvas id="chartTemporal"></canvas>
+            </div>
+            <div id="dashTemporalScrollWrap" style="display:none;margin-top:12px">
+                <input type="range" id="dashDaySlider" class="scroll-range" min="0" max="30" value="0" oninput="onDashSliderChange(this.value)">
+                <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--txt2);font-weight:600;margin-top:6px">
+                    <span id="dashSliderStart">1 Ene</span>
+                    <span id="dashSliderEnd">Hoy</span>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+        
+    </div>
+
+</div><!-- /wrapper -->
+
+<script>
+// ════════════════════════════════════════════
+//  GLOBAL CONFIG
+// ════════════════════════════════════════════
+Chart.defaults.font.family = "'Outfit', sans-serif";
+Chart.defaults.font.size   = 12;
+Chart.defaults.color       = '#A3AED0';
+
+const C = {
+    green : '#01B574',
+    amber : '#F59E0B',
+    red   : '#EF4444',
+    pri   : '#D32F2F',
+    blue  : '#4318FF',
+    cyan  : '#00C6E0',
+    gray  : '#CBD5E1',
+    bg    : '#F4F7FE'
+};
+
+// ════════════════════════════════════════════
+//  DATA
+// ════════════════════════════════════════════
+const D = {
+    interResult : { exitosas: 0, enProceso: 0, noLogradas: 0 },
+    interTipo   : { correos: 0, llamadas: 0, reuniones: 0, notas: 0 },
+    contactosTipo: { naturales: 0, juridicas: 0 },
+    usuarios    : { activos: 0, inactivos: 0 },
+    temporal    : {
+        anual   : {
+            labels: (function(){
+                const months=['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
+                return months.slice(0, new Date().getMonth()+1);
+            })(),
+            data: (function(){
+                const n = new Date().getMonth()+1;
+                return Array(n).fill(0);
+            })()
+        },
+        mensual : (function(){
+            const labels=[]; const data=[];
+            const now=new Date(); const start=new Date(now.getFullYear(),0,1);
+            for(let d=new Date(start);d<=now;d.setDate(d.getDate()+1)){
+                const dd=String(d.getDate()).padStart(2,'0');
+                const mm=String(d.getMonth()+1).padStart(2,'0');
+                labels.push(dd+'/'+mm); data.push(0);
+            }
+            return {labels, data};
+        })()
+    },
+    comparacion : {
+        'Enero'  : { exitosas:0, enProceso:0,  noLogradas:0  },
+        'Febrero': { exitosas:0, enProceso:0, noLogradas:0  },
+        'Marzo'  : { exitosas:0, enProceso:0, noLogradas:0  },
+        'Abril'  : { exitosas:0, enProceso:0, noLogradas:0  },
+        'Mayo'   : { exitosas:0, enProceso:0, noLogradas:0  },
+        'Junio'  : { exitosas:0, enProceso:0,  noLogradas:0  }
+    },
+    dias15 : {
+        labels: ['27/5','28/5','29/5','30/5','31/5','1/6','2/6','3/6','4/6','5/6','6/6','7/6','8/6','9/6','10/6'],
+        data  : [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
     }
-    </script>
+};
 
-    <script>
-        window.myCharts = window.myCharts || {};
+// ════════════════════════════════════════════
+//  HELPERS
+// ════════════════════════════════════════════
+function makeGradient(ctx, c1, c2, h = 280) {
+    const g = ctx.createLinearGradient(0, 0, 0, h);
+    g.addColorStop(0, c1);
+    g.addColorStop(1, c2);
+    return g;
+}
 
-        document.addEventListener('DOMContentLoaded', function() {
-            const ctx = document.getElementById('contactosChart');
-            if (!ctx) return;
-            
-            const countN = Number("{{ natural_count|default:0 }}");
-            const countJ = Number("{{ juridica_count|default:0 }}");
-            const total = countN + countJ;
-            
-            window.myCharts['contactosChart'] = new Chart(ctx, {
-                type: 'doughnut',
-                data: {
-                    labels: ['Naturales', 'Jurídicas'],
-                    datasets: [{
-                        data: total === 0 ? [1, 1] : [countN, countJ],
-                        backgroundColor: total === 0 ? ['#E9EDF7', '#EDF2F7'] : ['#a82e2e', '#335d80'],
-                        borderWidth: 0,
-                        hoverOffset: 12
-                    }]
-                },
-                options: {
-                    cutout: '78%',
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: { display: false },
-                        tooltip: {
-                            enabled: total > 0,
-                            backgroundColor: '#1B2559',
-                            titleFont: { family: 'Outfit', size: 14, weight: 'bold' },
-                            bodyFont: { family: 'Outfit', size: 13 },
-                            padding: 12,
-                            cornerRadius: 12,
-                            displayColors: false
-                        }
-                    },
-                    animation: {
-                        animateScale: true,
-                        animateRotate: true,
-                        duration: 1500,
-                        easing: 'easeOutQuart'
-                    }
+function donutOpts(cutout = '72%') {
+    return {
+        responsive: true,
+        maintainAspectRatio: false,
+        cutout,
+        plugins : { legend: { display: false }, tooltip: { bodyFont: { weight:'700' } } },
+        animation: { animateRotate: true, duration: 900 }
+    };
+}
+
+// ════════════════════════════════════════════
+//  INIT
+// ════════════════════════════════════════════
+let chartTemporal, chartActividadCategoria, chartMesVsMes;
+
+document.addEventListener('DOMContentLoaded', () => {
+    initDonuts();
+    initTemporal();
+    initActividadCategoria();
+    initMesVsMes();
+});
+
+// ── Manejador de Filtros (Global) ────────────
+window.filterChart = function(selectEl, chartId) {
+    const filterValue = selectEl.value;
+    console.log(`Filtrando gráfica [${chartId}] con opción: ${filterValue}`);
+    // Aquí puedes añadir la lógica futura para traer nuevos datos del backend
+}
+
+// ── 1. Donuts ────────────────────────
+function initDonuts() {
+    new Chart(document.getElementById('chartInterTipo'), {
+        type: 'doughnut',
+        data: {
+            labels: ['Correos','Llamadas','Reuniones','Notas','Otros'],
+            datasets: [{
+                data: [0, 0, 0, 0, 0],
+                backgroundColor: [C.pri, C.amber, C.blue, C.cyan, C.green],
+                borderWidth: 0,
+                hoverOffset: 10
+            }]
+        },
+        options: donutOpts()
+    });
+
+    new Chart(document.getElementById('chartContactosTipo'), {
+        type: 'doughnut',
+        data: {
+            labels: ['Personas Naturales','Personas Jurídicas'],
+            datasets: [{
+                data: [0, 0],
+                backgroundColor: [C.blue, C.cyan],
+                borderWidth: 0,
+                hoverOffset: 10
+            }]
+        },
+        options: donutOpts()
+    });
+
+    new Chart(document.getElementById('chartUsuarios'), {
+        type: 'doughnut',
+        data: {
+            labels: ['Activos','Inactivos'],
+            datasets: [{
+                data: [0, 0],
+                backgroundColor: [C.green, C.gray],
+                borderWidth: 0,
+                hoverOffset: 10
+            }]
+        },
+        options: donutOpts()
+    });
+}
+
+// ── Comparativa Mensual ────────────────────────
+function initMesVsMes() {
+    chartMesVsMes = new Chart(document.getElementById('chartMesVsMes'), {
+        type: 'doughnut',
+        data: {
+            labels: ['Mes 1', 'Mes 2'],
+            datasets: [{
+                data: [50, 50],
+                backgroundColor: [C.pri, C.blue],
+                borderWidth: 0,
+                hoverOffset: 10
+            }]
+        },
+        options: donutOpts()
+    });
+    updateMesVsMes();
+}
+
+window.updateMesVsMes = function() {
+    const m1 = document.getElementById('cmpM1').options[document.getElementById('cmpM1').selectedIndex].text;
+    const m2 = document.getElementById('cmpM2').options[document.getElementById('cmpM2').selectedIndex].text;
+    // Simulate some data
+    const val1 = Math.floor(Math.random() * 100) + 10;
+    const val2 = Math.floor(Math.random() * 100) + 10;
+    const total = val1 + val2;
+    const pct1 = Math.round((val1/total)*100);
+    const pct2 = Math.round((val2/total)*100);
+    
+    chartMesVsMes.data.labels = [m1, m2];
+    chartMesVsMes.data.datasets[0].data = [val1, val2];
+    chartMesVsMes.update();
+
+    document.getElementById('legMesVsMes').innerHTML = `
+        <div class="leg-row">
+            <div class="leg-left"><div class="leg-dot" style="background:${C.pri}"></div>${m1}</div>
+            <div class="leg-right">${val1}<span class="leg-pct">(${pct1}%)</span></div>
+        </div>
+        <div class="leg-row">
+            <div class="leg-left"><div class="leg-dot" style="background:${C.blue}"></div>${m2}</div>
+            <div class="leg-right">${val2}<span class="leg-pct">(${pct2}%)</span></div>
+        </div>
+    `;
+}
+
+// ── 2. Actividad por Categoría (Bar) ─────────
+function initActividadCategoria() {
+    const ctx  = document.getElementById('chartActividadCategoria').getContext('2d');
+    const labels = ['Llamadas', 'Correos', 'Reuniones', 'Notas', 'Otros'];
+    const data = [0, 0, 0, 0, 0];
+    const bars = data.map(() => 'rgba(67,24,255,.72)');
+    const bHov = data.map(() => 'rgba(67,24,255,.9)');
+
+    chartActividadCategoria = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels  : labels,
+            datasets: [{
+                label                 : 'Actividades',
+                data                  : data,
+                backgroundColor       : bars,
+                hoverBackgroundColor  : bHov,
+                borderRadius          : 7,
+                borderSkipped         : false
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend : { display: false },
+                tooltip: {
+                    bodyFont: { weight: '700' },
+                    callbacks: { label: c => ` ${c.parsed.y} actividades` }
                 }
-            });
-
-            // NUEVO: Configuración del Diagrama de Equipo (Doughnut)
-            const ctxUsers = document.getElementById('usuariosChart');
-            if (ctxUsers) {
-                const countAct = Number("{{ usuarios_activos|default:0 }}");
-                const countInact = Number("{{ usuarios_inactivos|default:0 }}");
-                const totalU = countAct + countInact;
-                
-                window.myCharts['usuariosChart'] = new Chart(ctxUsers, {
-                    type: 'doughnut',
-                    data: {
-                        labels: ['Activos', 'Inactivos'],
-                        datasets: [{
-                            data: totalU === 0 ? [1, 1] : [countAct, countInact],
-                            backgroundColor: totalU === 0 ? ['#E9EDF7', '#EDF2F7'] : ['#a82e2e', '#335d80'],
-                            borderWidth: 0,
-                            hoverOffset: 12
-                        }]
-                    },
-                    options: {
-                        cutout: '78%',
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        plugins: {
-                            legend: { display: false },
-                            tooltip: {
-                                enabled: totalU > 0,
-                                backgroundColor: '#1B2559',
-                                titleFont: { family: 'Outfit', size: 14, weight: 'bold' },
-                                bodyFont: { family: 'Outfit', size: 13 },
-                                padding: 12,
-                                cornerRadius: 12,
-                                displayColors: false
-                            }
-                        },
-                        animation: {
-                            animateScale: true,
-                            animateRotate: true,
-                            duration: 1500,
-                            easing: 'easeOutQuart'
-                        }
-                    }
-                });
+            },
+            scales: {
+                x: {
+                    grid: { display: false },
+                    ticks: { font: { size: 12, weight: '600' } }
+                },
+                y: {
+                    grid  : { color: '#F4F7FE' },
+                    ticks : { font: { weight: '600' } },
+                    beginAtZero: true
+                }
             }
-
-            // 2. Configuración del Diagrama de Barras (Vertical)
-            const ctxBarras = document.getElementById('actividadesChart');
-            if (ctxBarras) {
-                const labelsAcciones = {{ acciones_labels|safe }};
-                const countsAcciones = {{ acciones_counts|safe }};
-                
-                window.myCharts['actividadesChart'] = new Chart(ctxBarras, {
-                    type: 'bar',
-                    data: {
-                        labels: labelsAcciones,
-                        datasets: [{
-                            label: 'Actividades',
-                            data: countsAcciones,
-                            backgroundColor: ['#a82e2e', '#335d80', '#9ac5e6'],
-                            borderRadius: 8,
-                            barThickness: 30
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        plugins: {
-                            legend: { display: false },
-                            tooltip: {
-                                backgroundColor: '#1B2559',
-                                titleFont: { family: 'Outfit', size: 14, weight: 'bold' },
-                                bodyFont: { family: 'Outfit', size: 13 },
-                                cornerRadius: 10
-                            }
-                        },
-                        scales: {
-                            y: {
-                                beginAtZero: true,
-                                grid: { color: '#F4F7FE', drawBorder: false },
-                                ticks: { font: { family: 'Outfit', weight: '600', size: 12 }, color: '#A3AED0' }
-                            },
-                            x: {
-                                grid: { display: false },
-                                ticks: { font: { family: 'Outfit', weight: '600', size: 12 }, color: '#A3AED0' }
-                            }
-                        },
-                        animation: { duration: 2000, easing: 'easeOutQuart' }
-                    }
-                });
-            }
-            // 3. Configuración del Diagrama de Tendencia (Líneas)
-            const ctxLinea = document.getElementById('tendenciaChart');
-            if (ctxLinea) {
-                const labelsTendencia = {{ tendencia_labels|safe }};
-                const countsTendencia = {{ tendencia_counts|safe }};
-
-                window.myCharts['tendenciaChart'] = new Chart(ctxLinea, {
-                    type: 'line',
-                    data: {
-                        labels: labelsTendencia,
-                        datasets: [{
-                            label: 'Interacciones',
-                            data: countsTendencia,
-                            fill: true,
-                            backgroundColor: 'rgba(168, 46, 46, 0.08)',
-                            borderColor: '#a82e2e',
-                            borderWidth: 3,
-                            pointBackgroundColor: '#fff',
-                            pointBorderColor: '#a82e2e',
-                            pointRadius: 4,
-                            tension: 0.4
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        plugins: {
-                            legend: { display: false },
-                            tooltip: {
-                                backgroundColor: '#1B2559',
-                                titleFont: { family: 'Outfit', size: 14, weight: 'bold' },
-                                bodyFont: { family: 'Outfit', size: 13 },
-                                cornerRadius: 10
-                            }
-                        },
-                        scales: {
-                            y: {
-                                beginAtZero: true,
-                                grid: { color: '#F4F7FE', drawBorder: false },
-                                ticks: { font: { family: 'Outfit', weight: '600', size: 12 }, color: '#A3AED0' }
-                            },
-                            x: {
-                                grid: { display: false },
-                                ticks: { font: { family: 'Outfit', weight: '600', size: 12 }, color: '#A3AED0' }
-                            }
-                        },
-                        animation: { duration: 2000, easing: 'easeOutQuart' }
-                    }
-                });
-            }
-        });
-
-        // Periodic background update for dashboard page
-        function fetchDashboardUpdate() {
-            fetch(window.location.href)
-                .then(res => {
-                    if (!res.ok) throw new Error("Network response not ok");
-                    return res.text();
-                })
-                .then(htmlText => {
-                    const parser = new DOMParser();
-                    const doc = parser.parseFromString(htmlText, 'text/html');
-
-                    // 1. Get new JSON data
-                    const newJsonEl = doc.getElementById('dashboard-data-json');
-                    if (!newJsonEl) return;
-                    let data = {};
-                    try {
-                        data = JSON.parse(newJsonEl.textContent);
-                    } catch (e) {
-                        return;
-                    }
-
-                    // 2. Update text values if elements exist
-                    const totalC = document.getElementById('val-total-contactos');
-                    if (totalC) totalC.textContent = data.total_contactos;
-
-                    const totalU = document.getElementById('val-total-usuarios');
-                    if (totalU) totalU.textContent = data.total_usuarios;
-
-                    const natPerc = document.getElementById('val-natural-perc');
-                    if (natPerc) natPerc.textContent = `${data.natural_count} (${parseFloat(data.natural_perc).toFixed(1)}%)`;
-
-                    const jurPerc = document.getElementById('val-juridica-perc');
-                    if (jurPerc) jurPerc.textContent = `${data.juridica_count} (${parseFloat(data.juridica_perc).toFixed(1)}%)`;
-
-                    const uActPerc = document.getElementById('val-usuarios-activos-perc');
-                    if (uActPerc) uActPerc.textContent = `${data.usuarios_activos} (${parseFloat(data.usuarios_activos_perc).toFixed(1)}%)`;
-
-                    const uInactPerc = document.getElementById('val-usuarios-inactivos-perc');
-                    if (uInactPerc) uInactPerc.textContent = `${data.usuarios_inactivos} (${parseFloat(data.usuarios_inactivos_perc).toFixed(1)}%)`;
-
-                    // 3. Update Chart.js charts dynamically
-                    if (window.myCharts['contactosChart']) {
-                        const total = data.natural_count + data.juridica_count;
-                        window.myCharts['contactosChart'].data.datasets[0].data = total === 0 ? [1, 1] : [data.natural_count, data.juridica_count];
-                        window.myCharts['contactosChart'].options.plugins.tooltip.enabled = total > 0;
-                        window.myCharts['contactosChart'].update();
-                    }
-
-                    if (window.myCharts['usuariosChart']) {
-                        const totalU = data.usuarios_activos + data.usuarios_inactivos;
-                        window.myCharts['usuariosChart'].data.datasets[0].data = totalU === 0 ? [1, 1] : [data.usuarios_activos, data.usuarios_inactivos];
-                        window.myCharts['usuariosChart'].options.plugins.tooltip.enabled = totalU > 0;
-                        window.myCharts['usuariosChart'].update();
-                    }
-
-                    if (window.myCharts['actividadesChart']) {
-                        window.myCharts['actividadesChart'].data.labels = data.acciones_labels;
-                        window.myCharts['actividadesChart'].data.datasets[0].data = data.acciones_counts;
-                        window.myCharts['actividadesChart'].update();
-                    }
-
-                    if (window.myCharts['tendenciaChart']) {
-                        window.myCharts['tendenciaChart'].data.labels = data.tendencia_labels;
-                        window.myCharts['tendenciaChart'].data.datasets[0].data = data.tendencia_counts;
-                        window.myCharts['tendenciaChart'].update();
-                    }
-
-                    // 4. Update top list container
-                    const newTop = doc.getElementById('top-contactos-container');
-                    const currentTop = document.getElementById('top-contactos-container');
-                    if (newTop && currentTop && newTop.innerHTML.trim() !== currentTop.innerHTML.trim()) {
-                        currentTop.innerHTML = newTop.innerHTML;
-                    }
-                })
-                .catch(err => console.error("Error updating dashboard data:", err));
         }
-        setInterval(fetchDashboardUpdate, 10000);
+    });
+}
 
-        // Mobile Sidebar Toggle
-        document.addEventListener('DOMContentLoaded', function() {
-            const btn = document.getElementById('hamburger-btn');
-            const sidebar = document.querySelector('.barra-lateral');
-            const overlay = document.getElementById('sidebar-overlay');
-            if (btn && sidebar && overlay) {
-                btn.addEventListener('click', function(e) {
-                    e.stopPropagation();
-                    sidebar.classList.toggle('activo');
-                    overlay.classList.toggle('activo');
-                });
-                overlay.addEventListener('click', function() {
-                    sidebar.classList.remove('activo');
-                    overlay.classList.remove('activo');
-                });
+// ── 3. Vista Temporal ────────────────────────
+function initTemporal() {
+    const ctx  = document.getElementById('chartTemporal').getContext('2d');
+    const grad = makeGradient(ctx, 'rgba(211,47,47,.28)', 'rgba(211,47,47,0)');
+
+    chartTemporal = new Chart(ctx, {
+        type : 'line',
+        data : {
+            labels  : D.temporal.anual.labels,
+            datasets: [{
+                label           : 'Interacciones',
+                data            : D.temporal.anual.data,
+                borderColor     : C.pri,
+                backgroundColor : grad,
+                borderWidth     : 3,
+                pointBackgroundColor: '#fff',
+                pointBorderColor    : C.pri,
+                pointBorderWidth    : 2.5,
+                pointRadius     : 5,
+                pointHoverRadius: 8,
+                fill            : true,
+                tension         : 0.45
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend : { display: false },
+                tooltip: {
+                    bodyFont: { weight: '700' },
+                    callbacks: { label: c => ` ${c.parsed.y} interacciones` }
+                }
+            },
+            scales: {
+                x: { grid: { display: false }, ticks: { font: { weight: '600' } } },
+                y: { grid: { color: '#F4F7FE' }, ticks: { font: { weight: '600' } }, beginAtZero: true }
             }
-        });
-    </script>
-</body>
+        }
+    });
+}
 
+// Build all day labels from Jan 1 to today
+const ALL_DAY_LABELS = (function(){
+    const labels = [];
+    const now = new Date();
+    const months = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
+    const start = new Date(now.getFullYear(), 0, 1);
+    for (let d = new Date(start); d <= now; d.setDate(d.getDate() + 1)) {
+        labels.push(d.getDate() + ' ' + months[d.getMonth()]);
+    }
+    return labels;
+})();
+
+const WINDOW_SIZE = 30;
+
+function setTemporal(view, btn) {
+    document.querySelectorAll('#btnAnual, #btnMensualDash').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    const scrollWrap = document.getElementById('dashTemporalScrollWrap');
+    if (view === 'mensual') {
+        scrollWrap.style.display = 'block';
+        const slider = document.getElementById('dashDaySlider');
+        const maxVal = Math.max(0, ALL_DAY_LABELS.length - WINDOW_SIZE);
+        slider.max = maxVal;
+        slider.value = maxVal;
+        onDashSliderChange(maxVal);
+    } else {
+        scrollWrap.style.display = 'none';
+        const td = D.temporal.anual;
+        chartTemporal.data.labels = td.labels;
+        chartTemporal.data.datasets[0].data = td.data;
+        chartTemporal.update();
+        document.getElementById('temporalSub').textContent = 'Vista anual · ' + new Date().getFullYear();
+    }
+}
+
+function onDashSliderChange(val) {
+    val = parseInt(val);
+    const end = Math.min(val + WINDOW_SIZE, ALL_DAY_LABELS.length);
+    const windowLabels = ALL_DAY_LABELS.slice(val, end);
+    chartTemporal.data.labels = windowLabels;
+    chartTemporal.data.datasets[0].data = windowLabels.map(() => 0);
+    chartTemporal.update();
+    const f = windowLabels[0] || '', l = windowLabels[windowLabels.length-1] || '';
+    document.getElementById('temporalSub').textContent = `Vista diaria · ${f} - ${l}`;
+}
+</script>
+</body>
 </html>
