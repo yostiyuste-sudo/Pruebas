@@ -17,14 +17,21 @@ from .models import Contacto, TipoContacto, TipoIdentificacion, Interaccion, Tip
 
 def enviar_correo_seguro(asunto, texto_plano, destinatarios):
     try:
-        from_email = settings.DEFAULT_FROM_EMAIL or 'noreply@constructora-dyco.com'
+        from_email = settings.DEFAULT_FROM_EMAIL
+        if not from_email:
+            print(f"[EMAIL] DEFAULT_FROM_EMAIL vacío, no se puede enviar")
+            return
+        print(f"[EMAIL] Enviando a {destinatarios} desde {from_email} via {settings.EMAIL_HOST}...")
         html_body = texto_plano.replace('\n', '<br>')
         html_content = f"""<html><body style="font-family:Segoe UI,Tahoma,sans-serif;color:#333;background:#F4F7FE;padding:20px"><div style="max-width:600px;margin:0 auto;background:#fff;padding:30px;border-radius:12px"><h1 style="color:#D32F2F;margin:0;font-size:24px">Constructora Dyco</h1><p style="color:#A3AED0;font-size:14px">Gesti&oacute;n y CRM</p><hr style="border:none;border-top:1px solid #E9EDF7;margin:20px 0"><div style="font-size:15px;color:#1B2559">{html_body}</div></div></body></html>"""
         msg = EmailMultiAlternatives(asunto, texto_plano, from_email, destinatarios)
         msg.attach_alternative(html_content, "text/html")
-        msg.send(fail_silently=True)
-    except Exception:
-        pass
+        msg.send(fail_silently=False)
+        print(f"[EMAIL] Enviado exitosamente")
+    except Exception as e:
+        print(f"[EMAIL ERROR] {e}")
+        import traceback
+        traceback.print_exc()
 
 def enviar_whatsapp_registro(telefono, pin):
     import urllib.request

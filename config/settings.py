@@ -161,6 +161,9 @@ WHATSAPP_ACCESS_TOKEN = os.getenv('WHATSAPP_ACCESS_TOKEN', 'EAATYRc2AudIBRjejG7B
 WHATSAPP_PHONE_NUMBER_ID = os.getenv('WHATSAPP_PHONE_NUMBER_ID', '1172312952629800')
 WHATSAPP_VERIFY_TOKEN = os.getenv('WHATSAPP_VERIFY_TOKEN', 'pato_123')
 
-
-
-
+import sys
+if 'runserver' in sys.argv or 'gunicorn' in sys.argv:
+    print(f"\n[CONFIG] EMAIL_HOST={EMAIL_HOST} PORT={EMAIL_PORT} TLS={EMAIL_USE_TLS}")
+    print(f"[CONFIG] EMAIL_HOST_USER={'✓ definido' if EMAIL_HOST_USER else '✗ VACÍO'}")
+    print(f"[CONFIG] EMAIL_HOST_PASSWORD={'✓ definido' if EMAIL_HOST_PASSWORD else '✗ VACÍO'}")
+    print(f"[CONFIG] DEFAULT_FROM_EMAIL={DEFAULT_FROM_EMAIL}\n")
