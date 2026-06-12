@@ -148,6 +148,8 @@ EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER', 'dsolutions918@gmail.com')
 EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD', '')
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
+RESEND_API_KEY = os.getenv('RESEND_API_KEY', '')
+
 # Configuración IMAP (Recibir Correos)
 IMAP_HOST = 'imap.gmail.com'
 IMAP_PORT = 993

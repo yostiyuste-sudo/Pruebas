@@ -306,15 +306,17 @@
         const pwdInput = document.getElementById('password');
         const eyeIcon = document.getElementById('eyeIcon');
 
-        const EYE_OPEN = `<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle>`;
-        const EYE_CLOSED = `<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line>`;
+        if (togglePwd && pwdInput && eyeIcon) {
+            const EYE_OPEN = `<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle>`;
+            const EYE_CLOSED = `<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line>`;
 
-        togglePwd.addEventListener('click', () => {
-            const visible = pwdInput.type === 'text';
-            pwdInput.type = visible ? 'password' : 'text';
-            eyeIcon.innerHTML = visible ? EYE_OPEN : EYE_CLOSED;
-            togglePwd.setAttribute('aria-label', visible ? 'Mostrar contraseña' : 'Ocultar contraseña');
-        });
+            togglePwd.addEventListener('click', () => {
+                const visible = pwdInput.type === 'text';
+                pwdInput.type = visible ? 'password' : 'text';
+                eyeIcon.innerHTML = visible ? EYE_OPEN : EYE_CLOSED;
+                togglePwd.setAttribute('aria-label', visible ? 'Mostrar contraseña' : 'Ocultar contraseña');
+            });
+        }
 
         // ═══════════════════════════════════════════════
         // MEDIDOR DE FUERZA DE CONTRASEÑA
@@ -322,29 +324,31 @@
         const pwdBar = document.getElementById('pwdBar');
         const pwdHint = document.getElementById('pwdHint');
 
-        pwdInput.addEventListener('input', () => {
-            const val = pwdInput.value;
-            if (!val) { pwdBar.style.width = '0'; pwdHint.textContent = ''; return; }
+        if (pwdInput && pwdBar && pwdHint) {
+            pwdInput.addEventListener('input', () => {
+                const val = pwdInput.value;
+                if (!val) { pwdBar.style.width = '0'; pwdHint.textContent = ''; return; }
 
-            let score = 0;
-            if (val.length >= 8) score++;
-            if (/[A-Z]/.test(val)) score++;
-            if (/[0-9]/.test(val)) score++;
-            if (/[^A-Za-z0-9]/.test(val)) score++;
+                let score = 0;
+                if (val.length >= 8) score++;
+                if (/[A-Z]/.test(val)) score++;
+                if (/[0-9]/.test(val)) score++;
+                if (/[^A-Za-z0-9]/.test(val)) score++;
 
-            const levels = [
-                { pct: '25%', color: '#ef4444', text: 'Muy débil' },
-                { pct: '50%', color: '#f97316', text: 'Débil' },
-                { pct: '75%', color: '#eab308', text: 'Aceptable' },
-                { pct: '100%', color: '#22c55e', text: 'Segura ✓' },
-            ];
+                const levels = [
+                    { pct: '25%', color: '#ef4444', text: 'Muy débil' },
+                    { pct: '50%', color: '#f97316', text: 'Débil' },
+                    { pct: '75%', color: '#eab308', text: 'Aceptable' },
+                    { pct: '100%', color: '#22c55e', text: 'Segura ✓' },
+                ];
 
-            const lvl = levels[Math.max(0, score - 1)];
-            pwdBar.style.width = lvl.pct;
-            pwdBar.style.background = lvl.color;
-            pwdHint.textContent = lvl.text;
-            pwdHint.style.color = lvl.color;
-        });
+                const lvl = levels[Math.max(0, score - 1)];
+                pwdBar.style.width = lvl.pct;
+                pwdBar.style.background = lvl.color;
+                pwdHint.textContent = lvl.text;
+                pwdHint.style.color = lvl.color;
+            });
+        }
 
         // ═══════════════════════════════════════════════
         // ANIMACIÓN BOTÓN AL ENVIAR

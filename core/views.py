@@ -17,10 +17,34 @@ from .models import Contacto, TipoContacto, TipoIdentificacion, Interaccion, Tip
 
 def enviar_correo_seguro(asunto, texto_plano, destinatarios):
     try:
-        send_mail(asunto, texto_plano, settings.DEFAULT_FROM_EMAIL, destinatarios, fail_silently=True)
-    except Exception:
-        pass
-
+        resend_key = getattr(settings, 'RESEND_API_KEY', '')
+        if resend_key:
+            import urllib.request
+            import json
+            
+            url = "https://api.resend.com/emails"
+            headers = {
+                "Authorization": f"Bearer {resend_key}",
+                "Content-Type": "application/json"
+            }
+            payload = {
+                "from": "Constructora Dyco <onboarding@resend.dev>",
+                "to": destinatarios,
+                "subject": asunto,
+                "text": texto_plano
+            }
+            req = urllib.request.Request(
+                url,
+                data=json.dumps(payload).encode('utf-8'),
+                headers=headers,
+                method='POST'
+            )
+            with urllib.request.urlopen(req, timeout=5) as response:
+                print(f"[RESEND EMAIL] Sent successfully: {response.read().decode('utf-8')}")
+        else:
+            send_mail(asunto, texto_plano, settings.DEFAULT_FROM_EMAIL, destinatarios, fail_silently=True)
+    except Exception as e:
+        print(f"[EMAIL ERROR] Failed to send email: {e}")
 
 def registro_view(request):
     error = ""
