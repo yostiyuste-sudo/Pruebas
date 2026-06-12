@@ -16,24 +16,37 @@ from django.db.models import Q, Count, Sum
 from django.db.models.functions import TruncMonth
 from .models import Contacto, TipoContacto, TipoIdentificacion, Interaccion, TipoInteraccion, Usuario, Rol, FirmaDigital, MensajeWhatsApp
 
-def enviar_correo_seguro(asunto, texto_plano, destinatarios, html_content=None):
-    import json, urllib.request, urllib.error
+def enviar_correo_seguro(asunto, texto_plano, destinatarios, html_content=None, attachments=None):
+    import json, urllib.request, urllib.error, re, base64, uuid
     api_key = getattr(settings, 'BREVO_API_KEY', '')
     if not api_key:
         return "No hay BREVO_API_KEY configurada en las variables de entorno de Render"
     try:
         from_email = settings.DEFAULT_FROM_EMAIL
         if not from_email:
-            return "No hay DEFAULT_FROM_EMAIL configurado en las variables de entorno de Render. En Brevo ve a Centro de Ventas → Remitentes y verifica un correo."
+            return "No hay DEFAULT_FROM_EMAIL configurado en las variables de entorno de Render."
         if not html_content:
             html_body = texto_plano.replace('\n', '<br>')
             html_content = f"""<html><body style="font-family:Segoe UI,Tahoma,sans-serif;color:#333;background:#F4F7FE;padding:20px"><div style="max-width:600px;margin:0 auto;background:#fff;padding:30px;border-radius:12px"><h1 style="color:#D32F2F;margin:0;font-size:24px">Constructora Dyco</h1><p style="color:#A3AED0;font-size:14px">Gesti&oacute;n y CRM</p><hr style="border:none;border-top:1px solid #E9EDF7;margin:20px 0"><div style="font-size:15px;color:#1B2559">{html_body}</div></div></body></html>"""
-        payload = json.dumps({
+
+        brevo_attachments = []
+        if attachments:
+            for att in attachments:
+                entry = {"name": att["name"], "content": att["content"]}
+                if att.get("cid"):
+                    entry["cid"] = att["cid"]
+                brevo_attachments.append(entry)
+
+        payload_data = {
             "sender": {"name": "Constructora Dyco", "email": from_email},
             "to": [{"email": d} for d in destinatarios],
             "subject": asunto,
             "htmlContent": html_content
-        }).encode()
+        }
+        if brevo_attachments:
+            payload_data["attachment"] = brevo_attachments
+
+        payload = json.dumps(payload_data).encode()
         req = urllib.request.Request(
             "https://api.brevo.com/v3/smtp/email",
             data=payload,
@@ -43,7 +56,7 @@ def enviar_correo_seguro(asunto, texto_plano, destinatarios, html_content=None):
             },
             method='POST'
         )
-        with urllib.request.urlopen(req, timeout=10) as resp:
+        with urllib.request.urlopen(req, timeout=15) as resp:
             print(f"[BREVO] Email enviado: {resp.read().decode()}")
             return None
     except urllib.error.HTTPError as e:
@@ -1373,11 +1386,36 @@ def detalle_contacto(request, id_contacto):
                     if firma and firma.html_content:
                         html_body += f"<br><br>{firma.html_content}"
 
+                    attachments_list = []
+                    import re, base64, uuid
+
+                    # Extraer imágenes base64 inline → adjuntos CID
+                    def replace_base64(m):
+                        ext = m.group(1)
+                        b64 = m.group(2)
+                        cid = str(uuid.uuid4())
+                        attachments_list.append({"name": f"img.{ext}", "content": b64, "cid": cid})
+                        return f'src="cid:{cid}"'
+                    html_body = re.sub(r'src=["\']data:image/([^;]+);base64,([^"\' >]+)["\']', replace_base64, html_body)
+
+                    # Adjuntar archivos del servidor
+                    adjuntos_paths = request.POST.getlist('adjuntos_correo_paths')
+                    if not adjuntos_paths:
+                        paths_str = request.POST.get('adjuntos_correo_paths', '')
+                        if paths_str:
+                            adjuntos_paths = [p.strip() for p in paths_str.split(',') if p.strip()]
+                    for p in adjuntos_paths:
+                        if os.path.exists(p):
+                            with open(p, 'rb') as f:
+                                b64 = base64.b64encode(f.read()).decode()
+                            attachments_list.append({"name": os.path.basename(p), "content": b64})
+
                     email_err = enviar_correo_seguro(
                         asunto if asunto else f"Mensaje de {usuario_logueado.nombre_usuario}",
                         html_body,
                         [destinatario],
-                        html_content=html_body
+                        html_content=html_body,
+                        attachments=attachments_list if attachments_list else None
                     )
 
                     if email_err:
@@ -1387,7 +1425,7 @@ def detalle_contacto(request, id_contacto):
                     else:
                         inter.historial_cambios = (inter.historial_cambios or '') + f"\n[{timezone.localtime(timezone.now()).strftime('%d/%m/%Y %H:%M')}] Correo enviado exitosamente a {destinatario}"
                         inter.save()
-                        messages.success(request, f"¡Correo enviado con éxito a {destinatario}!")
+                        messages.success(request, f"¡Correo enviado con éxito a {destinatario}")
                 except Exception as e:
                     inter.historial_cambios = (inter.historial_cambios or '') + f"\n[{timezone.localtime(timezone.now()).strftime('%d/%m/%Y %H:%M')}] ERROR: {str(e)}"
                     inter.save()
