@@ -2654,12 +2654,10 @@ def actualizar_perfil(request):
         u.save()
         
         try:
-            send_mail(
+            enviar_correo_seguro(
                 'Código de Verificación - Cambio de Correo',
                 f'Hola {u.nombre_usuario},\n\nHas solicitado cambiar tu correo electrónico. Tu código de verificación es: {pin}\n\nEste código expirará en 5 minutos.',
-                None,
-                [valor],
-                fail_silently=False,
+                [valor]
             )
             print(f"\n[SOPORTE] Código de cambio de correo para {u.nombre_usuario} a {valor}: {pin}\n")
             return JsonResponse({"ok": True, "requiere_verificacion": True, "mensaje": "Se ha enviado un código de 6 dígitos a tu nuevo correo."})
@@ -2728,12 +2726,10 @@ def reenviar_codigo_email(request):
     u.save()
     
     try:
-        send_mail(
+        enviar_correo_seguro(
             'Código de Verificación (Reenvío) - Cambio de Correo',
             f'Hola {u.nombre_usuario},\n\nTu nuevo código de verificación es: {pin}\n\nEste código expirará en 5 minutos.',
-            None,
-            [u.nuevo_email_pendiente],
-            fail_silently=False,
+            [u.nuevo_email_pendiente]
         )
         print(f"\n[SOPORTE] Nuevo código de cambio de correo para {u.nombre_usuario} a {u.nuevo_email_pendiente}: {pin}\n")
         return JsonResponse({"ok": True, "mensaje": "Código reenviado correctamente"})

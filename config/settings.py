@@ -137,16 +137,13 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = [BASE_DIR / 'static']
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 
-# Configuración de Envío de Correos (Brevo / SMTP)
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = os.getenv('EMAIL_HOST', 'smtp-relay.brevo.com')
-EMAIL_PORT = int(os.getenv('EMAIL_PORT', '587'))
-EMAIL_USE_TLS = os.getenv('EMAIL_USE_TLS', 'True') == 'True'
-EMAIL_TIMEOUT = 5
+# Configuración de Envío de Correos (Brevo API)
+BREVO_API_KEY = os.getenv('BREVO_API_KEY', 'TU_API_KEY_DE_BREVO')
+DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL', 'tu_correo_verificado_en_brevo@dominio.com')
+
+EMAIL_BACKEND = 'core.email_backend.BrevoEmailBackend'
 EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER', '')
 EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD', '')
-DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL', EMAIL_HOST_USER)
-BREVO_API_KEY = os.getenv('BREVO_API_KEY', '')
 
 # Configuración IMAP (Recibir Correos)
 IMAP_HOST = 'imap.gmail.com'
