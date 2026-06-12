@@ -138,8 +138,8 @@ STATICFILES_DIRS = [BASE_DIR / 'static']
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 # Configuración de Envío de Correos (Brevo API)
-BREVO_API_KEY = os.getenv('BREVO_API_KEY', 'TU_API_KEY_DE_BREVO')
-DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL', 'tu_correo_verificado_en_brevo@dominio.com')
+BREVO_API_KEY = os.getenv('BREVO_API_KEY', 'xkeysib-a2824e43cc50d164148add8edb977446cd824a648f21ee458f5592f830b1e1b-bgxcr4S3hWANgD6i')
+DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL', 'dsolutions918@gmail.com')
 
 EMAIL_BACKEND = 'core.email_backend.BrevoEmailBackend'
 EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER', '')
