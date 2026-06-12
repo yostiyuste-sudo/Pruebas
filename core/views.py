@@ -374,6 +374,140 @@ def dashboard(request):
     if not user_id: return redirect('/login/')
     u = Usuario.objects.get(id=user_id)
     
+    if request.GET.get('ajax') == '1':
+        chart_id = request.GET.get('chart_id')
+        filter_val = request.GET.get('filter_val')
+        from datetime import timedelta
+        import datetime
+        now = timezone.now()
+        
+        def apply_date_filter(qs, val, date_field):
+            if val == 'ano':
+                return qs.filter(**{f"{date_field}__year": now.year})
+            elif val == 'mes':
+                return qs.filter(**{f"{date_field}__year": now.year, f"{date_field}__month": now.month})
+            elif val == 'semana':
+                return qs.filter(**{f"{date_field}__gte": now - timedelta(days=7)})
+            return qs
+
+        if chart_id == 'interTipo':
+            qs = Interaccion.objects.all()
+            qs = apply_date_filter(qs, filter_val, 'fecha_interaccion')
+            stats = qs.values('tipo_interaccion__nombre_tipo').annotate(total=Count('id'))
+            tipo_map = {'correo': 0, 'llamada': 0, 'reunion': 0, 'nota': 0, 'otros': 0}
+            for s in stats:
+                name = s['tipo_interaccion__nombre_tipo'].lower()
+                count = s['total']
+                if 'correo' in name:
+                    tipo_map['correo'] = count
+                elif 'llamada' in name:
+                    tipo_map['llamada'] = count
+                elif 'reunion' in name:
+                    tipo_map['reunion'] = count
+                elif 'nota' in name:
+                    tipo_map['nota'] = count
+                else:
+                    tipo_map['otros'] += count
+            return JsonResponse({
+                'status': 'success',
+                'data': [tipo_map['correo'], tipo_map['llamada'], tipo_map['reunion'], tipo_map['nota'], tipo_map['otros']]
+            })
+
+        elif chart_id == 'contactosTipo':
+            qs = Contacto.objects.all()
+            qs = apply_date_filter(qs, filter_val, 'fecha_registro')
+            natural_count = qs.filter(tipo_contacto__nombre_tipo="Persona Natural").count()
+            total_count = qs.count()
+            juridica_count = total_count - natural_count
+            return JsonResponse({
+                'status': 'success',
+                'data': [natural_count, juridica_count]
+            })
+
+        elif chart_id == 'usuarios':
+            activos = Usuario.objects.filter(activo=True).count()
+            inactivos = Usuario.objects.filter(activo=False).count()
+            return JsonResponse({
+                'status': 'success',
+                'data': [activos, inactivos]
+            })
+
+        elif chart_id == 'actividadReciente':
+            qs = Interaccion.objects.all()
+            qs = apply_date_filter(qs, filter_val, 'fecha_interaccion')
+            recientes = qs.order_by('-fecha_interaccion')[:8]
+            html = ""
+            if recientes:
+                for r in recientes:
+                    c_name = f"{r.contacto.nombre} {r.contacto.apellido}" if r.contacto.nombre else (r.contacto.razon_social or "")
+                    emoji = "&#128260;"
+                    t_name = r.tipo_interaccion.nombre_tipo
+                    if t_name == 'Llamada': emoji = "&#128222;"
+                    elif t_name == 'Correo': emoji = "&#9993;"
+                    elif t_name == 'Reunión': emoji = "&#128197;"
+                    elif t_name == 'Nota': emoji = "&#128221;"
+                    bg_color = "rgba(255,183,3,.15)"
+                    if r.estado == 'Exitosa': bg_color = "rgba(1,181,116,.15)"
+                    elif r.estado == 'No Lograda': bg_color = "rgba(211,47,47,.12)"
+                    badge_style = "rgba(255,183,3,.15);color:#FFB703"
+                    if r.estado == 'Exitosa': badge_style = "rgba(1,181,116,.15);color:#01B574"
+                    elif r.estado == 'No Lograda': badge_style = "rgba(211,47,47,.12);color:#D32F2F"
+                    fecha_str = r.fecha_interaccion.strftime("%d/%m/%Y")
+                    hora_str = r.fecha_interaccion.astimezone(timezone.get_current_timezone()).strftime("%H:%M") if hasattr(r, 'hora_interaccion') and r.hora_interaccion else r.fecha_interaccion.strftime("%H:%M")
+                    
+                    html += f"""
+                    <div class="recent-item" style="display:flex; align-items:center; gap:12px; padding:8px 10px; background:#f4f7fe; border-radius:12px; transition:.3s;">
+                        <div style="width:38px;height:38px;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:{bg_color}">
+                            <span style="font-size:16px;">{emoji}</span>
+                        </div>
+                        <div style="flex:1;min-width:0;">
+                            <div style="font-size:13px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{c_name} — {t_name}</div>
+                            <div style="font-size:11px;font-weight:600;color:#475569;margin-top:2px;">{fecha_str} · {hora_str}</div>
+                        </div>
+                        <span style="font-size:10px;font-weight:700;padding:3px 8px;border-radius:20px;background:{badge_style}">{r.estado}</span>
+                    </div>
+                    """
+            else:
+                html = '<div style="text-align:center; padding:20px; color:var(--txt2); font-size:13px; font-weight:600;">No hay interacciones recientes registradas.</div>'
+            return JsonResponse({'status': 'success', 'html': html})
+
+        elif chart_id == 'actividadCategoria':
+            labels = []
+            data = []
+            if filter_val == 'tipo':
+                stats = Interaccion.objects.values('tipo_interaccion__nombre_tipo').annotate(total=Count('id')).order_by('-total')
+                labels = [s['tipo_interaccion__nombre_tipo'] for s in stats]
+                data = [s['total'] for s in stats]
+            elif filter_val == 'contacto':
+                stats = Interaccion.objects.values('contacto__nombre', 'contacto__apellido', 'contacto__razon_social').annotate(total=Count('id')).order_by('-total')[:5]
+                for s in stats:
+                    if s['contacto__nombre']:
+                        labels.append(f"{s['contacto__nombre']} {s['contacto__apellido']}")
+                    else:
+                        labels.append(s['contacto__razon_social'] or "Desconocido")
+                data = [s['total'] for s in stats]
+            elif filter_val == 'dia':
+                from collections import Counter
+                dias_semana = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"]
+                interacciones = Interaccion.objects.all()
+                counts = Counter([i.fecha_interaccion.weekday() for i in interacciones])
+                labels = dias_semana
+                data = [counts[i] for i in range(7)]
+            return JsonResponse({'status': 'success', 'labels': labels, 'data': data})
+
+        elif chart_id == 'temporal_dia':
+            try:
+                target_date = datetime.datetime.strptime(filter_val, "%Y-%m-%d").date()
+            except Exception:
+                target_date = timezone.now().date()
+            stats = Interaccion.objects.filter(fecha_interaccion__date=target_date).values('fecha_interaccion__hour').annotate(total=Count('id'))
+            hour_map = {h: 0 for h in range(24)}
+            for s in stats:
+                hour_map[s['fecha_interaccion__hour']] = s['total']
+            labels = [f"{h:02d}:00" for h in range(24)]
+            data = [hour_map[h] for h in range(24)]
+            return JsonResponse({'status': 'success', 'labels': labels, 'data': data})
+    
     # Estadísticas generales
     total_contactos = Contacto.objects.count()
     contactos_activos = Contacto.objects.filter(activo=True).count()
@@ -455,6 +589,22 @@ def dashboard(request):
     top_contactos = Contacto.objects.annotate(num_inter=Count('interaccion'))\
         .order_by('-num_inter')[:5]
 
+    # Generar mapeo diario de interacciones para el slider
+    from django.db.models.functions import TruncDate
+    import json
+    current_year = timezone.now().year
+    daily_stats = Interaccion.objects.filter(
+        fecha_interaccion__year=current_year
+    ).annotate(date=TruncDate('fecha_interaccion')).values('date').annotate(total=Count('id'))
+    
+    daily_map = {}
+    for s in daily_stats:
+        if s['date']:
+            date_str = s['date'].strftime('%d/%m')
+            daily_map[date_str] = s['total']
+            
+    daily_map_json = json.dumps(daily_map)
+
     return render(request, "dashboard.html", {
         "usuario_logueado": u,
         "total_contactos": total_contactos,
@@ -479,6 +629,7 @@ def dashboard(request):
         "tendencia_labels": tendencia_labels,
         "tendencia_counts": tendencia_counts,
         "top_contactos": top_contactos,
+        "daily_map_json": daily_map_json,
     })
 
 def contactos(request):

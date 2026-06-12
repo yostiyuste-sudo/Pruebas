@@ -2337,7 +2337,7 @@
             align-items: center !important;
             gap: 8px !important;
         }
-        .premium-stats-card > div:first-child h3 span {
+        .premium-stats-card > div:first-child h3 > span:first-of-type {
             display: none !important;
         }
         .premium-stats-card > div:first-child select,
@@ -3209,82 +3209,79 @@
                      </div>
  
                      <!-- CARD 6: Cumplimiento de Actividades -->
-                     <div class="premium-stats-card" style="background: white; border: 1px solid rgba(226, 232, 240, 0.8); border-radius: 24px; padding: 25px 28px; box-shadow: 0 10px 30px -5px rgba(0,0,0,0.02); transition: all 0.3s ease; display: flex; flex-direction: column; justify-content: space-between; grid-column: 1 / -1;">
-                         <div>
-                             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-                                 <h3 style="font-size: 15.5px; font-weight: 800; color: #0f172a; margin: 0; letter-spacing: -0.3px; font-family: inherit; display: flex; align-items: center; gap: 8px;">
-                                     <span style="display:inline-block; width: 4px; height: 16px; background: #10b981; border-radius: 2px;"></span>
-                                     Cumplimiento de Actividades (Total Creadas: <span id="txtTotalActividades" style="color: #10b981; font-weight: 800;">0</span>)
-                                 </h3>
-                                 <div class="card-filter-box" style="display: flex; align-items: center; gap: 6px;">
-                                     <select id="filter_cumplimiento_type" onchange="onFilterTypeChange('cumplimiento', 'cumplimiento', this.value)" style="background: white; border: 1px solid #cbd5e1; padding: 5px 10px; border-radius: 8px; font-size: 11px; font-weight: 600; color: #475569; cursor: pointer; outline: none; transition: all 0.2s ease; font-family: inherit;">
-                                         <option value="desde_creacion">Desde que se crea el contacto</option>
-                                         <option value="anio">Por año</option>
-                                         <option value="mes">Por mes</option>
-                                         <option value="dia">Por día</option>
-                                     </select>
-                                     <select id="filter_cumplimiento_val_year" onchange="onFilterValChange('cumplimiento', 'cumplimiento', this.value)" style="display: none; background: white; border: 1px solid #cbd5e1; padding: 5px 10px; border-radius: 8px; font-size: 11px; font-weight: 600; color: #475569; cursor: pointer; outline: none; transition: all 0.2s ease; font-family: inherit;">
-                                         {% for y in available_years %}
-                                             <option value="{{ y }}">{{ y }}</option>
-                                         {% endfor %}
-                                     </select>
-                                     <select id="filter_cumplimiento_val_month" onchange="onFilterValChange('cumplimiento', 'cumplimiento', this.value)" style="display: none; background: white; border: 1px solid #cbd5e1; padding: 5px 10px; border-radius: 8px; font-size: 11px; font-weight: 600; color: #475569; cursor: pointer; outline: none; transition: all 0.2s ease; font-family: inherit;">
-                                         {% for m in available_months %}
-                                             <option value="{{ m.value }}">{{ m.label }}</option>
-                                         {% endfor %}
-                                     </select>
-                                     <input type="number" id="filter_cumplimiento_val_day" min="7" value="7" onchange="onFilterValChange('cumplimiento', 'cumplimiento', this.value)" style="display: none; width: 60px; background: white; border: 1px solid #cbd5e1; padding: 4px 8px; border-radius: 8px; font-size: 11px; font-weight: 600; color: #475569; outline: none; transition: all 0.2s ease; font-family: inherit; text-align: center;">
-                                 </div>
-                             </div>
-                            <div style="display: flex; flex-direction: column; gap: 18px;">
-                                <!-- Finalizadas -->
-                                <div>
-                                    <div style="display: flex; justify-content: space-between; font-size: 12px; font-weight: 700; color: #475569; margin-bottom: 6px;">
-                                        <span>FINALIZADAS</span>
-                                        <span id="txtPctFinalizadas">0</span>
-                                    </div>
-                                    <div style="width: 100%; height: 8px; background: #e2e8f0; border-radius: 4px; overflow: hidden;">
-                                        <div id="barFinalizadas" style="width: 0%; height: 100%; background: #10b981; border-radius: 4px; transition: width 0.6s ease;"></div>
-                                    </div>
-                                </div>
-                                <!-- En Curso -->
-                                <div>
-                                    <div style="display: flex; justify-content: space-between; font-size: 12px; font-weight: 700; color: #475569; margin-bottom: 6px;">
-                                        <span>EN CURSO</span>
-                                        <span id="txtPctEnCurso">0</span>
-                                    </div>
-                                    <div style="width: 100%; height: 8px; background: #e2e8f0; border-radius: 4px; overflow: hidden;">
-                                        <div id="barEnCurso" style="width: 0%; height: 100%; background: #3b82f6; border-radius: 4px; transition: width 0.6s ease;"></div>
-                                    </div>
-                                </div>
-                                <!-- Canceladas -->
-                                <div>
-                                    <div style="display: flex; justify-content: space-between; font-size: 12px; font-weight: 700; color: #475569; margin-bottom: 6px;">
-                                        <span>CANCELADAS</span>
-                                        <span id="txtPctCanceladas">0</span>
-                                    </div>
-                                    <div style="width: 100%; height: 8px; background: #e2e8f0; border-radius: 4px; overflow: hidden;">
-                                        <div id="barCanceladas" style="width: 0%; height: 100%; background: #ef4444; border-radius: 4px; transition: width 0.6s ease;"></div>
-                                    </div>
-                                </div>
-                                <!-- Actividades Sueltas -->
-                                <div>
-                                    <div style="display: flex; justify-content: space-between; font-size: 12px; font-weight: 700; color: #475569; margin-bottom: 6px;">
-                                        <span>ACTIVIDADES SUELTAS</span>
-                                        <span id="txtPctSueltas">0</span>
-                                    </div>
-                                    <div style="width: 100%; height: 8px; background: #e2e8f0; border-radius: 4px; overflow: hidden;">
-                                        <div id="barSueltas" style="width: 0%; height: 100%; background: #8b5cf6; border-radius: 4px; transition: width 0.6s ease;"></div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                      <div class="premium-stats-card" style="background: white; border: 1px solid rgba(226, 232, 240, 0.8); border-radius: 24px; padding: 25px 28px; box-shadow: 0 10px 30px -5px rgba(0,0,0,0.02); transition: all 0.3s ease; display: flex; flex-direction: column; justify-content: space-between; grid-column: 1 / -1;">
+                          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                              <h3 style="font-size: 15.5px; font-weight: 800; color: #0f172a; margin: 0; letter-spacing: -0.3px; font-family: inherit; display: flex; align-items: center; gap: 8px;">
+                                  <span style="display:inline-block; width: 4px; height: 16px; background: #10b981; border-radius: 2px;"></span>
+                                  Cumplimiento de Actividades (Total Creadas: <span id="txtTotalActividades" style="color: #10b981; font-weight: 800;">0</span>)
+                              </h3>
+                              <div class="card-filter-box" style="display: flex; align-items: center; gap: 6px;">
+                                  <select id="filter_cumplimiento_type" onchange="onFilterTypeChange('cumplimiento', 'cumplimiento', this.value)" style="background: white; border: 1px solid #cbd5e1; padding: 5px 10px; border-radius: 8px; font-size: 11px; font-weight: 600; color: #475569; cursor: pointer; outline: none; transition: all 0.2s ease; font-family: inherit;">
+                                      <option value="desde_creacion">Desde que se crea el contacto</option>
+                                      <option value="anio">Por año</option>
+                                      <option value="mes">Por mes</option>
+                                      <option value="dia">Por día</option>
+                                  </select>
+                                  <select id="filter_cumplimiento_val_year" onchange="onFilterValChange('cumplimiento', 'cumplimiento', this.value)" style="display: none; background: white; border: 1px solid #cbd5e1; padding: 5px 10px; border-radius: 8px; font-size: 11px; font-weight: 600; color: #475569; cursor: pointer; outline: none; transition: all 0.2s ease; font-family: inherit;">
+                                      {% for y in available_years %}
+                                          <option value="{{ y }}">{{ y }}</option>
+                                      {% endfor %}
+                                  </select>
+                                  <select id="filter_cumplimiento_val_month" onchange="onFilterValChange('cumplimiento', 'cumplimiento', this.value)" style="display: none; background: white; border: 1px solid #cbd5e1; padding: 5px 10px; border-radius: 8px; font-size: 11px; font-weight: 600; color: #475569; cursor: pointer; outline: none; transition: all 0.2s ease; font-family: inherit;">
+                                      {% for m in available_months %}
+                                          <option value="{{ m.value }}">{{ m.label }}</option>
+                                      {% endfor %}
+                                  </select>
+                                  <input type="number" id="filter_cumplimiento_val_day" min="7" value="7" onchange="onFilterValChange('cumplimiento', 'cumplimiento', this.value)" style="display: none; width: 60px; background: white; border: 1px solid #cbd5e1; padding: 4px 8px; border-radius: 8px; font-size: 11px; font-weight: 600; color: #475569; outline: none; transition: all 0.2s ease; font-family: inherit; text-align: center;">
+                              </div>
+                          </div>
+                          <div style="display: flex; flex-direction: column; gap: 18px;">
+                              <!-- Finalizadas -->
+                              <div>
+                                  <div style="display: flex; justify-content: space-between; font-size: 12px; font-weight: 700; color: #334155; margin-bottom: 6px;">
+                                      <span>FINALIZADAS</span>
+                                      <span id="txtPctFinalizadas">0</span>
+                                  </div>
+                                  <div style="width: 100%; height: 8px; background: #e2e8f0; border-radius: 4px; overflow: hidden;">
+                                      <div id="barFinalizadas" style="width: 0%; height: 100%; background: #10b981; border-radius: 4px; transition: width 0.6s ease;"></div>
+                                  </div>
+                              </div>
+                              <!-- En Curso -->
+                              <div>
+                                  <div style="display: flex; justify-content: space-between; font-size: 12px; font-weight: 700; color: #334155; margin-bottom: 6px;">
+                                      <span>EN CURSO</span>
+                                      <span id="txtPctEnCurso">0</span>
+                                  </div>
+                                  <div style="width: 100%; height: 8px; background: #e2e8f0; border-radius: 4px; overflow: hidden;">
+                                      <div id="barEnCurso" style="width: 0%; height: 100%; background: #3b82f6; border-radius: 4px; transition: width 0.6s ease;"></div>
+                                  </div>
+                              </div>
+                              <!-- Canceladas -->
+                              <div>
+                                  <div style="display: flex; justify-content: space-between; font-size: 12px; font-weight: 700; color: #334155; margin-bottom: 6px;">
+                                      <span>CANCELADAS</span>
+                                      <span id="txtPctCanceladas">0</span>
+                                  </div>
+                                  <div style="width: 100%; height: 8px; background: #e2e8f0; border-radius: 4px; overflow: hidden;">
+                                      <div id="barCanceladas" style="width: 0%; height: 100%; background: #ef4444; border-radius: 4px; transition: width 0.6s ease;"></div>
+                                  </div>
+                              </div>
+                              <!-- Actividades Sueltas -->
+                              <div>
+                                  <div style="display: flex; justify-content: space-between; font-size: 12px; font-weight: 700; color: #334155; margin-bottom: 6px;">
+                                      <span>ACTIVIDADES SUELTAS</span>
+                                      <span id="txtPctSueltas">0</span>
+                                  </div>
+                                  <div style="width: 100%; height: 8px; background: #e2e8f0; border-radius: 4px; overflow: hidden;">
+                                      <div id="barSueltas" style="width: 0%; height: 100%; background: #8b5cf6; border-radius: 4px; transition: width 0.6s ease;"></div>
+                                  </div>
+                              </div>
+                          </div>
+                      </div>
 
-            <!-- SCRIPT TO LOAD AND INITIALIZE CHARTS -->
-            <script>
-                window.myCharts = window.myCharts || {};
+             <!-- SCRIPT TO LOAD AND INITIALIZE CHARTS -->
+             <script>
+                 window.myCharts = window.myCharts || {};
 
                 function updateSubSelectorVisibility(suffix, type) {
                     const yearSel = document.getElementById("filter_" + suffix + "_val_year");
@@ -3635,7 +3632,7 @@
                         window.myCharts['chartPieCorreos'] = new Chart(ctxPieCor, {
                             type: 'doughnut',
                             plugins: [{
-                                id: 'centerText',
+                                id: 'centerTextCorreos',
                                 afterDraw: function(chart) {
                                     const ctx = chart.ctx;
                                     let x = (chart.chartArea.left + chart.chartArea.right) / 2;
@@ -3697,7 +3694,7 @@
                         window.myCharts['chartPieLlamadas'] = new Chart(ctxPieLlam, {
                             type: 'doughnut',
                             plugins: [{
-                                id: 'centerText',
+                                id: 'centerTextLlamadas',
                                 afterDraw: function(chart) {
                                     const ctx = chart.ctx;
                                     let x = (chart.chartArea.left + chart.chartArea.right) / 2;
@@ -3759,7 +3756,7 @@
                         window.myCharts['chartPieReuniones'] = new Chart(ctxPieReun, {
                             type: 'doughnut',
                             plugins: [{
-                                id: 'centerText',
+                                id: 'centerTextReuniones',
                                 afterDraw: function(chart) {
                                     const ctx = chart.ctx;
                                     let x = (chart.chartArea.left + chart.chartArea.right) / 2;

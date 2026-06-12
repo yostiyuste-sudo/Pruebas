@@ -670,8 +670,8 @@
                         <span style="font-size:16px;">{% if r.tipo_interaccion.nombre_tipo == 'Llamada' %}&#128222;{% elif r.tipo_interaccion.nombre_tipo == 'Correo' %}&#9993;{% elif r.tipo_interaccion.nombre_tipo == 'Reunión' %}&#128197;{% elif r.tipo_interaccion.nombre_tipo == 'Nota' %}&#128221;{% else %}&#128260;{% endif %}</span>
                     </div>
                     <div style="flex:1;min-width:0;">
-                        <div style="font-size:13px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ r.contacto.primer_nombre }} {{ r.contacto.primer_apellido }} — {{ r.tipo_interaccion.nombre_tipo }}</div>
-                        <div style="font-size:11px;font-weight:600;color:var(--txt2);margin-top:2px;">{{ r.fecha_interaccion|date:"d/m/Y" }} · {{ r.hora_interaccion|time:"H:i" }}</div>
+                        <div style="font-size:13px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{% if r.contacto.nombre %}{{ r.contacto.nombre }} {{ r.contacto.apellido }}{% else %}{{ r.contacto.razon_social }}{% endif %} — {{ r.tipo_interaccion.nombre_tipo }}</div>
+                        <div style="font-size:11px;font-weight:600;color:#475569;margin-top:2px;">{{ r.fecha_interaccion|date:"d/m/Y" }} · {{ r.hora_interaccion|time:"H:i" }}</div>
                     </div>
                     <span style="font-size:10px;font-weight:700;padding:3px 8px;border-radius:20px;background:{% if r.estado == 'Exitosa' %}rgba(1,181,116,.15);color:#01B574{% elif r.estado == 'No Lograda' %}rgba(211,47,47,.12);color:#D32F2F{% else %}rgba(255,183,3,.15);color:#FFB703{% endif %}">{{ r.estado }}</span>
                 </div>
@@ -870,10 +870,13 @@ const D = {
         mensual : (function(){
             const labels=[]; const data=[];
             const now=new Date(); const start=new Date(now.getFullYear(),0,1);
+            const dailyMap = {{ daily_map_json|default:"{}"|safe }};
             for(let d=new Date(start);d<=now;d.setDate(d.getDate()+1)){
                 const dd=String(d.getDate()).padStart(2,'0');
                 const mm=String(d.getMonth()+1).padStart(2,'0');
-                labels.push(dd+'/'+mm); data.push(0);
+                const key = dd+'/'+mm;
+                labels.push(key); 
+                data.push(dailyMap[key] || 0);
             }
             return {labels, data};
         })()
@@ -915,20 +918,103 @@ function donutOpts(cutout = '72%') {
 // ════════════════════════════════════════════
 //  INIT
 // ════════════════════════════════════════════
-let chartTemporal, chartActividadCategoria, chartMesVsMes;
+let chartTemporal, chartActividadCategoria, chartMesVsMes, chartInterTipo, chartContactosTipo, chartUsuarios;
 
 document.addEventListener('DOMContentLoaded', () => {
     initDonuts();
     initTemporal();
     initActividadCategoria();
     initMesVsMes();
+
+    // Specific Day Event Listener
+    const specDay = document.getElementById('dashSpecificDay');
+    if (specDay) {
+        specDay.addEventListener('change', function() {
+            const val = this.value;
+            if (!val) return;
+            fetch(`?ajax=1&chart_id=temporal_dia&filter_val=${val}`)
+                .then(res => res.json())
+                .then(res => {
+                    if (res.status === 'success' && chartTemporal) {
+                        chartTemporal.data.labels = res.labels;
+                        chartTemporal.data.datasets[0].data = res.data;
+                        chartTemporal.update();
+                        document.getElementById('temporalSub').textContent = `Día específico · ${val}`;
+                    }
+                })
+                .catch(err => console.error("Error al filtrar por día específico:", err));
+        });
+    }
 });
 
 // ── Manejador de Filtros (Global) ────────────
 window.filterChart = function(selectEl, chartId) {
     const filterValue = selectEl.value;
     console.log(`Filtrando gráfica [${chartId}] con opción: ${filterValue}`);
-    // Aquí puedes añadir la lógica futura para traer nuevos datos del backend
+    
+    fetch(`?ajax=1&chart_id=${chartId}&filter_val=${filterValue}`)
+        .then(res => res.json())
+        .then(res => {
+            if (res.status === 'success') {
+                if (chartId === 'interTipo' && chartInterTipo) {
+                    const data = res.data;
+                    const total = data.reduce((a, b) => a + b, 0);
+                    chartInterTipo.data.datasets[0].data = data;
+                    chartInterTipo.update();
+                    
+                    document.querySelector('#chartInterTipo').parentElement.querySelector('.donut-val').textContent = total;
+                    
+                    const legRows = document.querySelector('#chartInterTipo').closest('.card').querySelectorAll('.leg-row');
+                    legRows.forEach((row, i) => {
+                        const val = data[i] || 0;
+                        const pct = total ? Math.round(val / total * 100) : 0;
+                        row.querySelector('.leg-right').innerHTML = `${val}<span class="leg-pct">(${pct}%)</span>`;
+                    });
+                }
+                else if (chartId === 'contactosTipo' && chartContactosTipo) {
+                    const data = res.data;
+                    const total = data.reduce((a, b) => a + b, 0);
+                    chartContactosTipo.data.datasets[0].data = data;
+                    chartContactosTipo.update();
+                    
+                    document.querySelector('#chartContactosTipo').parentElement.querySelector('.donut-val').textContent = total;
+                    
+                    const legRows = document.querySelector('#chartContactosTipo').closest('.card').querySelectorAll('.leg-row');
+                    legRows.forEach((row, i) => {
+                        const val = data[i] || 0;
+                        const pct = total ? Math.round(val / total * 100) : 0;
+                        row.querySelector('.leg-right').innerHTML = `${val}<span class="leg-pct">(${pct}%)</span>`;
+                    });
+                }
+                else if (chartId === 'usuarios' && chartUsuarios) {
+                    const data = res.data;
+                    const total = data.reduce((a, b) => a + b, 0);
+                    chartUsuarios.data.datasets[0].data = data;
+                    chartUsuarios.update();
+                    
+                    document.querySelector('#chartUsuarios').parentElement.querySelector('.donut-val').textContent = total;
+                    
+                    const legRows = document.querySelector('#chartUsuarios').closest('.card').querySelectorAll('.leg-row');
+                    legRows.forEach((row, i) => {
+                        const val = data[i] || 0;
+                        const pct = total ? Math.round(val / total * 100) : 0;
+                        row.querySelector('.leg-right').innerHTML = `${val}<span class="leg-pct">(${pct}%)</span>`;
+                    });
+                }
+                else if (chartId === 'actividadReciente') {
+                    const container = document.getElementById('recentListContainer');
+                    if (container) {
+                        container.innerHTML = res.html;
+                    }
+                }
+                else if (chartId === 'actividadCategoria' && chartActividadCategoria) {
+                    chartActividadCategoria.data.labels = res.labels;
+                    chartActividadCategoria.data.datasets[0].data = res.data;
+                    chartActividadCategoria.update();
+                }
+            }
+        })
+        .catch(err => console.error("Error al filtrar gráfica:", err));
 }
 
 // ── 1. Donuts ────────────────────────
@@ -942,7 +1028,7 @@ function initDonuts() {
 
     document.querySelector('#chartInterTipo').parentElement.querySelector('.donut-val').textContent = interTotal;
 
-    new Chart(document.getElementById('chartInterTipo'), {
+    chartInterTipo = new Chart(document.getElementById('chartInterTipo'), {
         type: 'doughnut',
         data: {
             labels: ['Correos','Llamadas','Reuniones','Notas','Otros'],
@@ -967,7 +1053,7 @@ function initDonuts() {
 
     document.querySelector('#chartContactosTipo').parentElement.querySelector('.donut-val').textContent = ctTotal;
 
-    new Chart(document.getElementById('chartContactosTipo'), {
+    chartContactosTipo = new Chart(document.getElementById('chartContactosTipo'), {
         type: 'doughnut',
         data: {
             labels: ['Personas Naturales','Personas Jurídicas'],
@@ -990,7 +1076,7 @@ function initDonuts() {
 
     document.querySelector('#chartUsuarios').parentElement.querySelector('.donut-val').textContent = uTotal;
 
-    new Chart(document.getElementById('chartUsuarios'), {
+    chartUsuarios = new Chart(document.getElementById('chartUsuarios'), {
         type: 'doughnut',
         data: {
             labels: ['Activos','Inactivos'],
@@ -1184,7 +1270,7 @@ function onDashSliderChange(val) {
     const end = Math.min(val + WINDOW_SIZE, ALL_DAY_LABELS.length);
     const windowLabels = ALL_DAY_LABELS.slice(val, end);
     chartTemporal.data.labels = windowLabels;
-    chartTemporal.data.datasets[0].data = windowLabels.map(() => 0);
+    chartTemporal.data.datasets[0].data = D.temporal.mensual.data.slice(val, end);
     chartTemporal.update();
     const f = windowLabels[0] || '', l = windowLabels[windowLabels.length-1] || '';
     document.getElementById('temporalSub').textContent = `Vista diaria · ${f} - ${l}`;
